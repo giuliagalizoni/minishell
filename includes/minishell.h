@@ -8,5 +8,14 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+# include <fcntl.h>
+
+// stuff copied directly from pipex
+char	*get_rawpath(char **envp);
+char	*get_cmd_path(char *cmd, char *rawpath);
+void	child_process(char **argv,
+			char **envp, int *pipe_fd);
+void	parent_process(char **argv,
+			char **envp, int *pipe_fd);
 
 #endif
