@@ -23,5 +23,7 @@ typedef struct s_command {
 
 // stuff copied directly from pipex
 void	process(t_command *cmd);
+char	**get_paths(char **envp);
+char	*get_cmd_path(char *cmd, char **envp);
 
 #endif
