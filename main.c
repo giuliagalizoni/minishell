@@ -33,19 +33,13 @@ int	main(int argc, char **argv, char **envp) {
 		tokens = get_tokens(line);
 		analyser(tokens, &command);
 		command.name = get_cmd_path(command.name, envp);
-		printf("Command name: %s\n", command.name);
+		process(&command);
 		int i = 0;
-		while(command.arguments[i])
-		{
-			printf("arg[%d]: %s\n", i, command.arguments[i]);
-			i++;
-		}
 
 		if (!line) {
 		      printf("\nExiting minishell\n");
 		}
 		add_history(line);
-		printf("Your line: %s\n", line);
 		free(line);
 	}
 	clear_history();
