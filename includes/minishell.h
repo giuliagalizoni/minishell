@@ -13,9 +13,6 @@
 // stuff copied directly from pipex
 char	*get_rawpath(char **envp);
 char	*get_cmd_path(char *cmd, char *rawpath);
-void	child_process(char **argv,
-			char **envp, int *pipe_fd);
-void	parent_process(char **argv,
-			char **envp, int *pipe_fd);
+void	process(char **args, char **envp);
 
 #endif
