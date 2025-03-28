@@ -25,6 +25,7 @@ void	process(t_command *cmd);
 char	**get_paths(char **envp);
 char	*get_cmd_path(char *cmd, char **envp);
 // parser
+void	command_init(t_command *command);
 char **get_tokens(char *line);
 void analyser(char **tokens, t_command *command);
 
