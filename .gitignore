@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # Vim Crap
-.swp
+*.swp
 
 # Mac Crap
 .DS_Store
