@@ -19,7 +19,7 @@ int	main() {
 
 	t_command test_cmd;
 	test_cmd.name = "/usr/bin/ls";
-	test_cmd.arguments = "ls -l /home";
-	process(cmd);
+	test_cmd.arguments = ft_split("ls -l /home", ' ');
+	process(&test_cmd);
 	return (0);
 }
