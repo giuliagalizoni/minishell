@@ -8,6 +8,12 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+# include <fcntl.h>
+
+// stuff copied directly from pipex
+void	process(t_command *cmd);
+char	**get_paths(char **envp);
+char	*get_cmd_path(char *cmd, char **envp);
 
 typedef struct s_command {
     char *name;               // Command name
