@@ -48,16 +48,17 @@ char	*get_cmd_path(char *cmd, char *rawpath)
 	return (NULL);
 }
 
-void	process(char **args, char **envp)
+void	process(t_command *cmd)
 {
 	pid_t	pid;
 	pid = fork();
 	if (pid == 0)
 	{
-		cmd = get_cmd_path(args[0], get_rawpath(envp)
+//		cmd = get_cmd_path(args[0], get_rawpath(envp)
+		execve(cmd->name, cmd->arguments, NULL);
 	}
-	if (cmd)
-		execve(cmd, &args[0], envp);
+//	if (cmd)
+//		execve(cmd, &args[0], envp);
 	free(cmd);
 	perror("Command not found");
 }
