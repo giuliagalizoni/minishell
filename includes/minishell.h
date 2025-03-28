@@ -9,4 +9,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+typedef struct s_command {
+    char *name;               // Command name
+    char **arguments;            // Arguments
+    char *input_redirect;        // Input redirection file
+    char *output_redirect;       // Output redirection file
+    int append_output;           // Boolean for append mode >> or >
+    int is_pipe;                 // Boolean: Is this command part of a pipe?
+    struct s_command *next;      // Pointer to the next command in the sequence
+} t_command;
+
 #endif
