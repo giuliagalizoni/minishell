@@ -1,8 +1,9 @@
 #include "includes/minishell.h"
 
 int	main() {
-	/*
-  char *line;
+  /*
+  char		*line;
+  t_command	test_cmd;
 
   using_history();
   while (1) {
@@ -18,7 +19,7 @@ int	main() {
   */
 
 	t_command test_cmd;
-	test_cmd.name = "/usr/bin/ls";
+	test_cmd.name = "ls";
 	test_cmd.arguments = ft_split("ls -l /home", ' ');
 	process(&test_cmd);
 	return (0);
