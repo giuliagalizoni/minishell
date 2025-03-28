@@ -22,18 +22,17 @@ int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_command	command;
 	char	**tokens;
+	(void)argc;
+	(void)argv;
 
 	command_init(&command);
 	using_history();
-	if (argc == 1)
 	while (1)
 	{
 		line = readline("minishell> ");
-		printf("%s\n", argv[0]);
 		tokens = get_tokens(line);
 		analyser(tokens, &command);
 		command.name = get_cmd_path(command.name, envp);
-		printf("command.name: %s\n", command.name);
 		process(&command);
 		command_init(&command);
 
