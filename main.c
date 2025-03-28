@@ -33,8 +33,9 @@ int	main(int argc, char **argv, char **envp) {
 		tokens = get_tokens(line);
 		analyser(tokens, &command);
 		command.name = get_cmd_path(command.name, envp);
+		printf("command.name: %s\n", command.name);
 		process(&command);
-		int i = 0;
+		command_init(&command);
 
 		if (!line) {
 		      printf("\nExiting minishell\n");

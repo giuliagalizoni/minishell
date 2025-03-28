@@ -1,3 +1,3 @@
 # rule for testing
 test:
-	cc -Wall -Wextra -Werror   executer.c parser.c main.c -Llibft -lreadline libft/libft.a
+	cc -g -Wall -Wextra -Werror   executer.c parser.c main.c -Llibft -lreadline libft/libft.a
