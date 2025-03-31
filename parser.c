@@ -51,7 +51,6 @@ void	arr_push(char ***arr, char *str)
 void	analyser(char **tokens, t_command *command)
 {
 	int i;
-	char *temp;
 
 	command->name = tokens[0];
 	// arr_push(&command.arguments, tokens[0]);
