@@ -1,10 +1,12 @@
 #include "includes/minishell.h"
 
-char **get_tokens(char *line)
+char **lexer(char *line)
 {
 	char	**tokens;
+	// ingnore '\' char
+	// dealing with "" and '' - when there's a quote, we should not discard the space
 
-	tokens = ft_split(line, ' '); //check if we need to deal with other kinds of space char
+	tokens = ft_split(line, ' ');
 	if (!tokens)
 		return (NULL);
 	return tokens;
@@ -68,7 +70,7 @@ void	command_init(t_command *command)
 
 // 	command_init(&command);
 // 	char *line = "ls -l";
-// 	char **tokens = get_tokens(line);
+// 	char **tokens = lexer(line);
 // 	analyser(tokens, &command);
 
 // 	printf("Command name: %s\n", command.name);
