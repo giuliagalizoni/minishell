@@ -1,5 +1,17 @@
 #include "includes/minishell.h"
 
+void	free_arr(char **arr)
+{
+	int	i;
+
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
+	arr = NULL;
+}
 char	**lexer(char *line)
 {
 	char	**tokens;
@@ -32,7 +44,7 @@ void	arr_push(char ***arr, char *str)
 	}
 	new_arr[i] = ft_strdup(str);
 	new_arr[i + 1] = NULL;
-	free(*arr);
+	free_arr(*arr);
 	*arr = new_arr;
 }
 
@@ -71,6 +83,7 @@ void	parser(char *line)
 	command_init(&command);
 	tokens = lexer(line);
 	analyser(tokens, &command);
+	free_arr(tokens);
 }
 
 // int	main()
