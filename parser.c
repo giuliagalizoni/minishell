@@ -43,8 +43,11 @@ void	arr_push(char ***arr, char *str)
 		i++;
 	}
 	new_arr[i] = ft_strdup(str);
+	if (!new_arr[i])
+		return ;
 	new_arr[i + 1] = NULL;
-	free_arr(*arr);
+	if (*arr)
+		free(*arr);
 	*arr = new_arr;
 }
 
@@ -60,7 +63,6 @@ void	analyser(char **tokens, t_command *command)
 		arr_push(&command->arguments, tokens[i]);
 		i++;
 	}
-
 }
 
 void	command_init(t_command *command)
@@ -87,15 +89,17 @@ t_command	parser(char *line)
 	return (command);
 }
 
-int	main()
-{
-	char *line = "ls -l";
-	t_command command = parser(line);
-	printf("Command name: %s\n", command.name);
-	int i = 0;
-	while(command.arguments[i])
-	{
-		printf("arg[%d]: %s\n", i, command.arguments[i]);
-		i++;
-	}
-}
+// int	main()
+// {
+// 	char *line = "ls -l";
+// 	t_command command = parser(line);
+// 	// printf("Command name: %s\n", command.name);
+// 	// int i = 0;
+// 	// while(command.arguments[i])
+// 	// {
+// 	// 	printf("arg[%d]: %s\n", i, command.arguments[i]);
+// 	// 	i++;
+// 	// }
+// 	if (command.arguments)
+// 		free_arr(command.arguments);
+// }
