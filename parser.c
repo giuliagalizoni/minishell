@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-char **lexer(char *line)
+char	**lexer(char *line)
 {
 	char	**tokens;
 	// ingnore '\' char
@@ -12,7 +12,7 @@ char **lexer(char *line)
 	return tokens;
 }
 
-void arr_push(char ***arr, char *str)
+void	arr_push(char ***arr, char *str)
 {
 	char	**new_arr;
 	int	len;
@@ -36,7 +36,7 @@ void arr_push(char ***arr, char *str)
 	*arr = new_arr;
 }
 
-void analyser(char **tokens, t_command *command)
+void	analyser(char **tokens, t_command *command)
 {
 	int i;
 	char *temp;
@@ -63,6 +63,15 @@ void	command_init(t_command *command)
 	command->next = NULL;
 }
 
+void	parser(char *line)
+{
+	t_command	command;
+	char	**tokens;
+
+	command_init(&command);
+	tokens = lexer(line);
+	analyser(tokens, &command);
+}
 
 // int	main()
 // {
