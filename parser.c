@@ -75,7 +75,8 @@ void	command_init(t_command *command)
 	command->next = NULL;
 }
 
-void	parser(char *line)
+//idk if it's better to return the command or to receive it from main as a pointer and just change it here
+t_command	parser(char *line)
 {
 	t_command	command;
 	char	**tokens;
@@ -84,22 +85,18 @@ void	parser(char *line)
 	tokens = lexer(line);
 	analyser(tokens, &command);
 	free_arr(tokens);
+	return (command);
 }
 
-// int	main()
-// {
-// 	t_command command;
-
-// 	command_init(&command);
-// 	char *line = "ls -l";
-// 	char **tokens = lexer(line);
-// 	analyser(tokens, &command);
-
-// 	printf("Command name: %s\n", command.name);
-// 	int i = 0;
-// 	while(command.arguments[i])
-// 	{
-// 		printf("arg[%d]: %s\n", i, command.arguments[i]);
-// 		i++;
-// 	}
-// }
+int	main()
+{
+	char *line = "ls -l";
+	t_command command = parser(line);
+	printf("Command name: %s\n", command.name);
+	int i = 0;
+	while(command.arguments[i])
+	{
+		printf("arg[%d]: %s\n", i, command.arguments[i]);
+		i++;
+	}
+}
