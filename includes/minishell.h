@@ -33,8 +33,6 @@ void	arr_push(char ***arr, char *str);
 // executer
 void	process(t_command *cmd);
 // parser
-char **get_tokens(char *line);
-void analyser(char **tokens, t_command *command);
-void	command_init(t_command *command);
+t_command *parser(char *line, t_command *command);
 
 #endif
