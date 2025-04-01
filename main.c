@@ -3,7 +3,6 @@
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_command	command;
-	char	**tokens;
 	(void)argc;
 	(void)argv;
 
@@ -12,8 +11,7 @@ int	main(int argc, char **argv, char **envp) {
 	while (1)
 	{
 		line = readline("minishell> ");
-		tokens = get_tokens(line);
-		analyser(tokens, &command);
+		parser(line, &command);
 		command.name = get_cmd_path(command.name, envp);
 		process(&command);
 		command_init(&command);
