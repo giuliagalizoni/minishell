@@ -2,7 +2,10 @@ NAME	= minishell
 CFLAGS	:= -Wall -Wextra -Werror 
 DEBUGFLAGS := -g
 ARFLAGS	= rcs
+<<<<<<< HEAD
 #TODO move srcs to src/
+=======
+>>>>>>> dec54be (fleshed up makefile a bit)
 SRCDIR	= src/
 SRCFILES = command_utils.c path_utils.c array_utils.c executer.c parser.c main.c
 CFILES	= minishell
@@ -17,8 +20,7 @@ BONUSSRC 	= $(addprefix $(SRCBONUSDIR), $(addsuffix .c, $(BONUSFILES)))
 all: $(NAME) 
 
 $(NAME): $(LIBFT)
-	#TODO
-#	cc $(CFLAGS) $(SRC) $(LIBFT) -o $(NAME)
+	cc $(CFLAGS) $(SRC) $(LIBFT) -o $(NAME)
 
 $(LIBFT): 
 	make -C ./libft
