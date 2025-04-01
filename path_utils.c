@@ -38,7 +38,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 		basepath = NULL;
 		if (access(fullpath, X_OK) == 0)
 		{
-			//free_array((void **)paths);
+			flee_arr((void **)paths);
 			return (fullpath);
 		}
 		free(fullpath);
@@ -46,6 +46,6 @@ char	*get_cmd_path(char *cmd, char **envp)
 	}
 	if (fullpath)
 		free(fullpath);
-	//free_array((void **)paths);
+	free_arr((void **)paths);
 	return (NULL);
 }
