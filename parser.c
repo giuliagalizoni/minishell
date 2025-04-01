@@ -10,6 +10,7 @@ char **get_tokens(char *line)
 	return tokens;
 }
 
+/*
 void arr_push(char ***arr, char *str)
 {
 	char	**new_arr;
@@ -33,6 +34,7 @@ void arr_push(char ***arr, char *str)
 	free(*arr);
 	*arr = new_arr;
 }
+*/
 
 void analyser(char **tokens, t_command *command)
 {

@@ -18,6 +18,7 @@
 //	}
 // }
 // int	main(int argc, char **argv, char **envp)
+/*
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_command	command;
@@ -45,3 +46,23 @@ int	main(int argc, char **argv, char **envp) {
 	clear_history();
 	return (0);
 }
+*/
+
+int	main(int argc, char **argv, char **envp)
+{
+//	char	*line;
+	t_command	command;
+	(void)argc;
+	(void)argv;
+
+	command.name = ft_strdup(get_cmd_path("ls", envp));
+	command.arguments = ft_split(ft_strdup("-al /home"), ' ');
+	process(&command);
+//	ft_lstclear((t_list *)&command);
+
+	return (0);
+}
+
+
+
+

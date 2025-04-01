@@ -20,17 +20,17 @@ typedef struct s_command {
     struct s_command *next;      // Pointer to the next command in the sequence
 } t_command;
 
+// path_utils
+char	**get_paths(char **envp);
+char	*get_cmd_path(char *cmd, char **envp);
+// array_utils
+void	free_arr(void **arr);
+void	arr_push(char ***arr, char *str);
 // stuff copied directly from pipex
 void	process(t_command *cmd);
 // parser
 char **get_tokens(char *line);
 void analyser(char **tokens, t_command *command);
 void	command_init(t_command *command);
-// path_utils
-char	**get_paths(char **envp);
-char	*get_cmd_path(char *cmd, char **envp);
-// array_utils
-void	free_array(void **arr);
-void	arr_push(char ***arr, char *str);
 
 #endif

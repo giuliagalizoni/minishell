@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-void	free_array(void **arr)
+void	free_arr(void **arr)
 {
 	size_t	i;
 
