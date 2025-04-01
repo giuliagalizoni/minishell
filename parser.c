@@ -50,7 +50,6 @@ void	arr_push(char ***arr, char *str)
 		free(*arr);
 	*arr = new_arr;
 }
-*/
 
 void	command_init(t_command *command)
 {
@@ -114,7 +113,7 @@ t_command	analyser(char **tokens)
 
 
 //idk if it's better to return the command or to receive it from main as a pointer and just change it here
-t_command	*parser(char *line, t_command *command)
+void	parser(char *line, t_command *command)
 {
 	// t_command	command;
 	char	**tokens;
@@ -122,7 +121,6 @@ t_command	*parser(char *line, t_command *command)
 	tokens = lexer(line);
 	*command = analyser(tokens);
 	free_arr(tokens);
-	return (command);
 }
 
 // int	main()
