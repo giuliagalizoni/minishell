@@ -22,11 +22,12 @@ typedef struct s_command {
 
 // stuff copied directly from pipex
 void	process(t_command *cmd);
-char	**get_paths(char **envp);
-char	*get_cmd_path(char *cmd, char **envp);
 // parser
 char **get_tokens(char *line);
 void analyser(char **tokens, t_command *command);
 void	command_init(t_command *command);
+// path_utils
+char	**get_paths(char **envp);
+char	*get_cmd_path(char *cmd, char **envp);
 
 #endif
