@@ -47,24 +47,51 @@ int	main(int argc, char **argv, char **envp) {
 // }
 // int	main(int argc, char **argv, char **envp)
 
+
 // TEST main for just trying one command and quitting
 /*
-int	main(int argc, char **argv, char **envp)
-{
-//	char	*line;
-	t_command	command;
-	(void)argc;
-	(void)argv;
+// int	main(int argc, char **argv, char **envp)
+// {
+// //	char	*line;
+// 	t_command	command;
+// =======
+// int	main(int argc, char **argv, char **envp) {
+// 	char	*line;
+// 	t_command	command;
+// 	char	**tokens;
+// >>>>>>> master
+// 	(void)argc;
+// 	(void)argv;
 
-	command_init(&command);
-	command.name = get_cmd_path("ls", envp);
-	command.arguments = ft_split("-al /home", ' ');
-	process(&command);
-//	ft_cmddelone(&command, ft_cmdclear);
-	printf("FREE THE QOMMANDS!\n");
-	free(command.name);
-	free_arr((void **)command.arguments);
+// 	command_init(&command);
 
-	return (0);
-}
+// 	command.name = get_cmd_path("ls", envp);
+// 	command.arguments = ft_split("-al /home", ' ');
+// 	process(&command);
+// //	ft_cmddelone(&command, ft_cmdclear);
+// 	printf("FREE THE QOMMANDS!\n");
+// 	free(command.name);
+// 	free_arr((void **)command.arguments);
+
+
+// 	using_history();
+// 	while (1)
+// 	{
+// 		line = readline("minishell> ");
+// 		tokens = get_tokens(line);
+// 		analyser(tokens, &command);
+// 		command.name = get_cmd_path(command.name, envp);
+// 		process(&command);
+// 		command_init(&command);
+
+// 		if (!line) {
+// 		      printf("\nExiting minishell\n");
+// 		}
+// 		add_history(line);
+// 		free(line);
+// 	}
+// 	clear_history();
+// >>>>>>> master
+// 	return (0);
+// }
 */
