@@ -23,10 +23,15 @@ typedef struct s_command {
 	struct s_command *pipe_next; // |
 } t_command;
 
-// stuff copied directly from pipex
-void	process(t_command *cmd);
+// path_utils
 char	**get_paths(char **envp);
 char	*get_cmd_path(char *cmd, char **envp);
+// array_utils
+void	free_arr(void **arr);
+void	arr_push(char ***arr, char *str);
+// command_utils
+// executer
+void	process(t_command *cmd);
 // parser
 char **get_tokens(char *line);
 void analyser(char **tokens, t_command *command);

@@ -50,6 +50,7 @@ void	arr_push(char ***arr, char *str)
 		free(*arr);
 	*arr = new_arr;
 }
+*/
 
 void	command_init(t_command *command)
 {
