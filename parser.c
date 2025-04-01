@@ -1,17 +1,5 @@
 #include "includes/minishell.h"
 
-void	free_arr(char **arr)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-		free(arr[i++]);
-	free(arr);
-	arr = NULL;
-}
 char	**lexer(char *line)
 {
 	char	**tokens;
@@ -22,47 +10,6 @@ char	**lexer(char *line)
 	if (!tokens)
 		return (NULL);
 	return tokens;
-}
-
-void	arr_push(char ***arr, char *str)
-{
-	char	**new_arr;
-	int	len;
-	int	i;
-
-	len = 0;
-	while(*arr && (*arr)[len])
-			len++;
-	new_arr = (char **)malloc(sizeof(char *) * (len + 2)); //null term + new str
-	if (!new_arr)
-		return ;
-	i = 0;
-	while (i < len)
-	{
-		new_arr[i] = (*arr)[i];
-		i++;
-	}
-	new_arr[i] = ft_strdup(str);
-	if (!new_arr[i])
-		return ;
-	new_arr[i + 1] = NULL;
-	if (*arr)
-		free(*arr);
-	*arr = new_arr;
-}
-
-void	command_init(t_command *command)
-{
-	command->name = NULL;
-	command->arguments = NULL;
-	command->input_redirect = NULL;
-	command->is_heredoc = 0;
-	command->heredoc_delimiter = NULL;
-	command->output_redirect = NULL;
-	command->append_output = 0;
-	command->is_pipe = 0;
-	command->next = NULL;
-	command->pipe_next = NULL;
 }
 
 // figure out how to create the next commands
@@ -120,7 +67,7 @@ void	parser(char *line, t_command *command)
 	// command_init(command); // figure this out
 	tokens = lexer(line);
 	*command = analyser(tokens);
-	free_arr(tokens);
+	free_arr((void **)tokens);
 }
 
 // int	main()

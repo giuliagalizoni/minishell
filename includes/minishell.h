@@ -30,9 +30,10 @@ char	*get_cmd_path(char *cmd, char **envp);
 void	free_arr(void **arr);
 void	arr_push(char ***arr, char *str);
 // command_utils
+void	command_init(t_command *command);
 // executer
 void	process(t_command *cmd);
 // parser
-t_command *parser(char *line, t_command *command);
+void	parser(char *line, t_command *command);
 
 #endif
