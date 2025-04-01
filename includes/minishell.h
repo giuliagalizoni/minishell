@@ -10,11 +10,6 @@
 #include <unistd.h>
 # include <fcntl.h>
 
-// stuff copied directly from pipex
-void	process(t_command *cmd);
-char	**get_paths(char **envp);
-char	*get_cmd_path(char *cmd, char **envp);
-
 typedef struct s_command {
     char *name;               // Command name
     char **arguments;            // Arguments
@@ -24,5 +19,14 @@ typedef struct s_command {
     int is_pipe;                 // Boolean: Is this command part of a pipe?
     struct s_command *next;      // Pointer to the next command in the sequence
 } t_command;
+
+// stuff copied directly from pipex
+void	process(t_command *cmd);
+char	**get_paths(char **envp);
+char	*get_cmd_path(char *cmd, char **envp);
+// parser
+char **get_tokens(char *line);
+void analyser(char **tokens, t_command *command);
+void	command_init(t_command *command);
 
 #endif
