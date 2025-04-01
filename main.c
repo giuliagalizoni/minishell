@@ -58,7 +58,7 @@ int	main(int argc, char **argv, char **envp)
 	command.name = ft_strdup(get_cmd_path("ls", envp));
 	command.arguments = ft_split(ft_strdup("-al /home"), ' ');
 	process(&command);
-//	ft_lstclear((t_list *)&command);
+	ft_cmddelone(&command, ft_cmdclear);
 
 	return (0);
 }

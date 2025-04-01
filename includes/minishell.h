@@ -26,6 +26,10 @@ char	*get_cmd_path(char *cmd, char **envp);
 // array_utils
 void	free_arr(void **arr);
 void	arr_push(char ***arr, char *str);
+// command_utils
+void	ft_cmdclear(t_command *cmd);
+void	ft_cmddelone(t_command *cmd, void (*del)(void *));
+void	ft_cmdlstclear(t_command **cmd, void (*del)(void *));
 // stuff copied directly from pipex
 void	process(t_command *cmd);
 // parser
