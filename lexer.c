@@ -15,22 +15,6 @@ char	*prep_buffer(char *line, char *buff, char ***tokens, int *buffi)
 	*buffi = 0; // set the buffer index to 0 to start next token
 	return (buff);
 }
-
-void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
-{
-	char	quote;
-
-	quote = line[(*i)++];
-	while (line[*i] && (line[*i] != quote))
-		buff[*buffi++] = line[*i++]; //copy the content inside quotes
-	if (!line[*i]) // open but never closed quotes
-	{
-		perror("Invalid quotes");
-		free(buff);
-		free_arr((void**)tokens);
-		return ;
-	}
-}
 char	**lexer(char *line)
 {
 	char	**tokens;
