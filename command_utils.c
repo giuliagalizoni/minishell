@@ -49,3 +49,16 @@ void	clear_command_chain(t_command *command)
 		command = tmp;
 	}
 }
+
+int	count_commands(t_command *command)
+{
+	int	count;
+
+	count = 0;
+	while (command)
+	{
+		count++;
+		command = command->next;
+	}
+	return (count);
+}

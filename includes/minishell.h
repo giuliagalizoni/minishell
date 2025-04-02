@@ -34,6 +34,7 @@ void	arr_push(char ***arr, char *str);
 void	command_init(t_command *command);
 void	set_command_paths(t_command *command, char **envp);
 void	clear_command_chain(t_command *command);
+int	count_commands(t_command *command);
 // executer
 void	process(t_command *cmd);
 // parser
