@@ -21,6 +21,7 @@ typedef struct s_command {
     int is_pipe;                 // Boolean: Is this command part of a pipe?
     struct s_command *next;      // ;
 	struct s_command *pipe_next; // |
+	int	index;
 } t_command;
 
 // path_utils
