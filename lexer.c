@@ -92,12 +92,12 @@ char	**lexer(char *line, char ***tokens)
 	return free(buff), *tokens; // review return value later
 }
 
-int main() {
-	char **tokens = NULL;
-	tokens = lexer(" < \"file echo<<\"   \"Hello world\" |pipe> 'output    '|another \"one more pipe     \"   >> cool", &tokens);
-	while (*tokens)
-	{
-		printf("token: %s\n", *tokens);
-		tokens++;
-	}
-}
+// int main() {
+// 	char **tokens = NULL;
+// 	tokens = lexer(" < \"file echo<<\"   \"Hello world\" |pipe> 'output    '|another \"one more pipe     \"   >> cool", &tokens);
+// 	while (*tokens)
+// 	{
+// 		printf("token: %s\n", *tokens);
+// 		tokens++;
+// 	}
+// }
