@@ -47,6 +47,7 @@ int	main(int argc, char **argv, char **envp) {
 			printf("Command: %s\n", tmp->name);
 			tmp = tmp->pipe_next;
 		}
+		clear_command_chain(&command);
 		command_init(&command);
 
 		/*

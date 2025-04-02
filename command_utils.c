@@ -30,3 +30,22 @@ void	set_command_paths(t_command *command, char **envp)
 	}
 }
 
+void	clear_command_chain(t_command *command)
+{
+	t_command	*tmp;
+
+	while (command)
+	{
+		tmp = command->pipe_next;
+		free(command->name);
+		free_arr((void **)command->arguments);
+		/*
+		free(command->input_redirect);
+		free(command->heredoc_delimiter);
+		free(command->output_redirect);
+		free(command->next);
+		*/
+		//free(command);
+		command = tmp;
+	}
+}
