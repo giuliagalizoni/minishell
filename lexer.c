@@ -15,11 +15,33 @@ char	*prep_buffer(char *line, char *buff, char ***tokens, int *buffi)
 	*buffi = 0; // set the buffer index to 0 to start next token
 	return (buff);
 }
+
+void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
+{
+	char	quote;
+
+	if (buffi > 0) // closing quotes - end of token
+		buff = prep_buffer(line, buff, tokens, buffi);
+	quote = line[*i];
+	(*i)++;
+	while (line[*i] && (line[*i] != quote))
+		buff[(*buffi)++] = line[(*i)++]; //copy the content inside quotes
+	if (!line[*i]) // open but never closed quotes
+	{
+		perror("Invalid quotes");
+		free(buff);
+		free_arr((void**)tokens);
+		return ;
+	}
+	(*i)++;
+	buff = prep_buffer(line, buff, tokens, buffi);
+}
+
+
 char	**lexer(char *line)
 {
 	char	**tokens;
 	char	*buff;
-	char	quote;
 	int		i;
 	int		buffi;
 
@@ -37,21 +59,7 @@ char	**lexer(char *line)
 		if (!line[i])
 			break ;
 		if (line[i] == 39 || line[i] == 34) // create token inside quotes
-		{
-			if (buffi > 0) // closing quotes - end of token
-				buff = prep_buffer(line, buff, &tokens, &buffi);
-			// handle_quotes(line, buff, &tokens, &i, &buffi);
-			quote = line[i++];
-			while (line[i] && (line[i] != quote))
-				buff[buffi++] = line[i++]; //copy the content inside quotes
-			if (!line[i]) // open but never closed quotes
-			{
-				perror("Invalid quotes");
-				return (free(buff), free_arr((void**)tokens), NULL);
-			}
-			i++;
-			buff = prep_buffer(line, buff, &tokens, &buffi);
-		}
+			handle_quotes(line, buff, &tokens, &i, &buffi);
 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>') // create tokens for operators
 		{
 			if (buffi > 0)
@@ -75,7 +83,7 @@ char	**lexer(char *line)
 }
 
 int main() {
-	char **tokens = lexer(" < file echo<<   \"Hello world\" |pipe> output|another \"one more pipe     \"   >> cool");
+	char **tokens = lexer(" < \"file echo<<\"   \"Hello world\" |pipe> 'output    '|another \"one more pipe     \"   >> cool");
 	while (*tokens)
 	{
 		printf("token: %s\n", *tokens);
