@@ -1,17 +1,5 @@
 #include "includes/minishell.h"
 
-char	**lexer(char *line)
-{
-	char	**tokens;
-	// ingnore '\' char
-	// dealing with "" and '' - when there's a quote, we should not discard the space
-
-	tokens = ft_split(line, ' ');
-	if (!tokens)
-		return (NULL);
-	return tokens;
-}
-
 // figure out how to create the next commands
 t_command	analyser(char **tokens)
 {
@@ -64,10 +52,9 @@ t_command	analyser(char **tokens)
 //idk if it's better to return the command or to receive it from main as a pointer and just change it here
 void	parser(char *line, t_command *command)
 {
-	// t_command	command;
 	char	**tokens;
-	// command_init(command); // figure this out
-	tokens = lexer(line);
+
+	lexer(line, &tokens);
 	*command = analyser(tokens);
 	free_arr((void **)tokens);
 }
@@ -110,5 +97,5 @@ void	parser(char *line, t_command *command)
 //     }
 
 // 	if (command.arguments)
-// 		free_arr(command.arguments);
+// 		free_arr((void **)command.arguments);
 // }
