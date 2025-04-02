@@ -13,12 +13,13 @@ char	**lexer(char *line)
 }
 
 // figure out how to create the next commands
-t_command	analyser(char **tokens)
+t_command	analyser(char **tokens, int index)
 {
 	t_command command;
 	int i;
 
 	command_init(&command);
+	command.index = index;
 	//idk yet if this rule works for all the cases
 	if (tokens[0][0] != '<')
 		command.name = ft_strdup(tokens[0]);
@@ -50,7 +51,7 @@ t_command	analyser(char **tokens)
 			command.pipe_next = malloc(sizeof(t_command));
 			if (!command.pipe_next)
 				return command;
-			*command.pipe_next = analyser(tokens + (i++));
+			*command.pipe_next = analyser(tokens + (i++), index + 1);
 			break ;
 		}
 		else // all other cases will be arguments
@@ -68,16 +69,23 @@ void	parser(char *line, t_command *command)
 	char	**tokens;
 	// command_init(command); // figure this out
 	tokens = lexer(line);
-	*command = analyser(tokens);
+	*command = analyser(tokens, 0);
 	free_arr((void **)tokens);
 }
 // parser testing main
 // int	main()
 // {
-// 	char *line = "< infile grep a1 | wc -w >> outfile";
+// 	char *line = "< infile grep a1 | wc -w >> outfile | lalalal | lelelel";
 // 	t_command command;
-// 	command_init(&command);
 // 	parser(line, &command);
+
+// 	t_command *current = &command;
+// 	while (current)
+// 	{
+// 		printf("Command index: %d\n", current->index);
+// 		printf("Command name: %s\n", current->name);
+// 		current = current->pipe_next;
+// 	}
 // 	printf("Command name: %s\n", command.name);
 // 	int i = 0;
 // 	while(command.arguments[i])
