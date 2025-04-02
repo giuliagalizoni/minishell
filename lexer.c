@@ -20,7 +20,7 @@ void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
 {
 	char	quote;
 
-	if (buffi > 0) // closing quotes - end of token
+	if (*buffi > 0) // closing quotes - end of token
 		buff = prep_buffer(line, buff, tokens, buffi);
 	quote = line[*i];
 	(*i)++;
@@ -37,6 +37,16 @@ void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
 	buff = prep_buffer(line, buff, tokens, buffi);
 }
 
+void	handle_operator(char *line, char *buff, char ***tokens, int *i, int *buffi)
+{
+	if (*buffi > 0)
+		buff = prep_buffer(line, buff, tokens, buffi);
+	buff[(*buffi)++] = line[*i];
+	if ((line[*i] == '<' && line[(*i) + 1] == '<') || (line[*i] == '>' && line[(*i) + 1] == '>')) // check for << and >>
+		buff[(*buffi)++] = line[++(*i)];
+	buff = prep_buffer(line, buff, tokens, buffi);
+	(*i)++;
+}
 
 char	**lexer(char *line)
 {
@@ -61,18 +71,11 @@ char	**lexer(char *line)
 		if (line[i] == 39 || line[i] == 34) // create token inside quotes
 			handle_quotes(line, buff, &tokens, &i, &buffi);
 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>') // create tokens for operators
-		{
-			if (buffi > 0)
-				buff = prep_buffer(line, buff, &tokens, &buffi);
-			buff[buffi++] = line[i];
-			if ((line[i] == '<' && line[i + 1] == '<') || (line[i] == '>' && line[i + 1] == '>')) // check for << and >>
-				buff[buffi++] = line[++i];
-			buff = prep_buffer(line, buff, &tokens, &buffi);
-			i++;
-		}
+			handle_operator(line, buff, &tokens, &i, &buffi);
 		else // create all the other tokens
 		{
-			while (line[i] && line[i] != ' ' && line[i] != '|' && line[i] != '<' && line[i] != '>' && line[i] != 34 && line[i] != 39) //all kinds of delimiters
+			while (line[i] && line[i] != ' ' && line[i] != '|' && line[i] != '<'
+				&& line[i] != '>' && line[i] != 34 && line[i] != 39) //all kinds of delimiters
 				buff[buffi++] = line[i++];
 			if (buffi > 0)
 				buff = prep_buffer(line, buff, &tokens, &buffi);
