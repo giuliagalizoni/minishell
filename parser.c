@@ -27,7 +27,7 @@ t_command	analyser(char **tokens)
 			command.append_output = 1;
 		else if (!ft_strncmp(tokens[i], ">", 1)) // append
 			command.append_output = 0;
-		else if ((tokens[i] -1) && !ft_strncmp((tokens[i]-1), ">>", 2))
+		else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
 			command.output_redirect = ft_strdup(tokens[i]);
 		else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
 			command.output_redirect = ft_strdup(tokens[i]);
@@ -50,15 +50,15 @@ t_command	analyser(char **tokens)
 
 
 //idk if it's better to return the command or to receive it from main as a pointer and just change it here
-void	parser(char *line, t_command *command)
-{
-	char	**tokens;
+// void	parser(char *line, t_command *command)
+// {
+// 	char	**tokens;
 
-	lexer(line, &tokens);
-	*command = analyser(tokens);
-	free_arr((void **)tokens);
-}
-// parser testing main
+// 	lexer(line, &tokens);
+// 	*command = analyser(tokens);
+// 	free_arr((void **)tokens);
+// }
+// // parser testing main
 // int	main()
 // {
 // 	char *line = "< infile grep a1 | wc -w >> outfile";
@@ -90,6 +90,10 @@ void	parser(char *line, t_command *command)
 //             printf("next.input_redirect: %s\n", command.pipe_next->input_redirect);
 //         else
 //             printf("next.input_redirect: (null)\n");
+// 		if (command.pipe_next->output_redirect)
+//             printf("next.output_redirect: %s\n", command.pipe_next->output_redirect);
+//         else
+//             printf("next.output_redirect: (null)\n");
 //         printf("heredoc_delimiter: %s\n", command.pipe_next->heredoc_delimiter);
 //         printf("is_heredoc: %i\n", command.pipe_next->is_heredoc);
 //         printf("append_output: %i\n", command.pipe_next->append_output);
