@@ -32,6 +32,7 @@ void	free_arr(void **arr);
 void	arr_push(char ***arr, char *str);
 // command_utils
 void	command_init(t_command *command);
+void	set_command_paths(t_command *command, char **envp);
 // executer
 void	process(t_command *cmd);
 // parser

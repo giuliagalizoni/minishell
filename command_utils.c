@@ -15,3 +15,18 @@ void	command_init(t_command *command)
 	command->next = NULL;
 	command->pipe_next = NULL;
 }
+
+void	set_command_paths(t_command *command, char **envp)
+{
+	char	*full_cmd_path;
+
+	// TODO maybe move this to the parser
+	while (command)
+	{
+		full_cmd_path = get_cmd_path(command->name, envp);
+		free(command->name);
+		command->name = full_cmd_path;
+		command = command->pipe_next;
+	}
+}
+

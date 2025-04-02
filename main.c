@@ -30,6 +30,7 @@ int	main(int argc, char **argv, char **envp) {
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_command	command;
+	t_command	*tmp;
 	(void)argc;
 	(void)argv;
 
@@ -39,15 +40,18 @@ int	main(int argc, char **argv, char **envp) {
 	{
 		line = readline("minishell> ");
 		parser(line, &command);
-		while (command.pipe_next)
+		set_command_paths(&command, envp);
+		tmp = &command;
+		while (tmp)
 		{
-			printf("Command: %s\n", command.name);
-			command = *command.pipe_next;
+			printf("Command: %s\n", tmp->name);
+			tmp = tmp->pipe_next;
 		}
+		command_init(&command);
+
 		/*
 		command.name = get_cmd_path(command.name, envp);
 		process(&command);
-		command_init(&command);
 
 		if (!line) {
 		      printf("\nExiting minishell\n");
