@@ -50,15 +50,15 @@ t_command	analyser(char **tokens)
 
 
 //idk if it's better to return the command or to receive it from main as a pointer and just change it here
-// void	parser(char *line, t_command *command)
-// {
-// 	char	**tokens;
+void	parser(char *line, t_command *command)
+{
+	char	**tokens;
 
-// 	lexer(line, &tokens);
-// 	*command = analyser(tokens);
-// 	free_arr((void **)tokens);
-// }
-// // parser testing main
+	lexer(line, &tokens);
+	*command = analyser(tokens);
+	free_arr((void **)tokens);
+}
+// parser testing main
 // int	main()
 // {
 // 	char *line = "< infile grep a1 | wc -w >> outfile";
