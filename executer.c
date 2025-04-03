@@ -13,29 +13,28 @@ void	process(t_command *cmd)
 }
 */
 
-void	process(t_command *cmd)
+void	process(t_command *cmd, int cmd_count)
 {
 	while (cmd)
 	{
-		child_process(cmd);
-		cmd = cmd->next;
+		child_process(cmd, cmd_count);
+		cmd = cmd->pipe_next;
 	}
 }
 
-void	child_process(t_command *cmd)
+void	child_process(t_command *cmd, int cmd_count)
 {
 	pid_t	pid;
 	int	fd[2];
-	int	cmd_count;
-	
 	// we need to
 	// check that it's the first or last cmd in the pipe
 	// otherwise we redirect it's stdin to the read end of the last cmd
 	// and or the 
-	cmd_count = count_commands(cmd);
-	printf("cmd count: %d\n", cmd_count);
+	printf("cmd index: %d cmd count: %d\n", cmd->index, cmd_count);
+	if (cmd->index == 0)
+		pintf("first cmd\n");
 	if (cmd->index == (cmd_count - 1))
-		printf("last command:\n");
+		printf("index: %d count: %d last command:\n", cmd->index, cmd_count);
 
 	pid = fork();
 	if (pid == 0)
