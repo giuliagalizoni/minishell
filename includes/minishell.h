@@ -36,6 +36,7 @@ void	set_command_paths(t_command *command, char **envp);
 void	clear_command_chain(t_command *command);
 int	count_commands(t_command *command);
 // executer
+void	child_process(t_command *cmd);
 void	process(t_command *cmd);
 // parser
 void	parser(char *line, t_command *command);

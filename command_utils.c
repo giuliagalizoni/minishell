@@ -14,6 +14,7 @@ void	command_init(t_command *command)
 	command->is_pipe = 0;
 	command->next = NULL;
 	command->pipe_next = NULL;
+	command->index = 0;
 }
 
 void	set_command_paths(t_command *command, char **envp)
@@ -58,7 +59,7 @@ int	count_commands(t_command *command)
 	while (command)
 	{
 		count++;
-		command = command->next;
+		command = command->pipe_next;
 	}
 	return (count);
 }
