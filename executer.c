@@ -1,4 +1,10 @@
 #include "includes/minishell.h"
+// TODO
+// split the function into process / child, see what needs to be passed around
+// put the pids in the command struct
+// flesh out error handling a bit more (free the command object at every
+// error?)
+// see if we can get rid of the prev_pipe_read_fd, i don't like it
 void	process(t_command *cmd, int command_count)
 {
 	int	fd[2];
