@@ -10,6 +10,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+// TODO Move cmd_count here, change pipe_next to next?
 typedef struct s_command {
     char *name;               // Command name
     char **arguments;            // Arguments
@@ -36,6 +37,7 @@ void	set_command_paths(t_command *command, char **envp);
 void	clear_command_chain(t_command *command);
 int	count_commands(t_command *command);
 // executer
+// TODO Maybe move the cmd_count to the t_command struct
 void	child_process(t_command *cmd, int cmd_count);
 void	process(t_command *cmd, int cmd_count);
 // parser
