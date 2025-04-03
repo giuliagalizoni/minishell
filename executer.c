@@ -2,16 +2,89 @@
 void	process(t_command *cmd, int command_count)
 {
 	int	fd[2];
-	pid_t	pid1;
-	pid_t	pid2;
-	int	status1;
-	int	status2;
+	//TODO move the pids to the cmd stuct
+	pid_t	*pids;
+	int	status;
+	int	prev_pipe_read_fd;
 
 	(void)command_count;
+
+	prev_pipe_read_fd = STDIN_FILENO;
+	pids = malloc(command_count * sizeof(int));
+	if (!pids)
+		perror("malloc fail");
+
 
 	if (pipe(fd) == -1)
 		perror("pipe fail");
 
+	while (cmd)
+	{
+		if (cmd->index < command_count - 1 && command_count > 1)
+		{
+			if (pipe(fd) == -1)
+			{
+				perror("pipe fail");
+				free(pids);
+				exit(EXIT_FAILURE);
+			}
+		}
+		pid_t pid = fork();
+		if (pid == -1)
+		{
+			perror("fork fail");
+			//some cleanup, close fds, free pids
+		}
+		else if (pid == 0)
+		{
+			// TODO do i really need this prev_pipe_read_fd
+			if (prev_pipe_read_fd != STDIN_FILENO) 
+			{
+				if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
+				{
+					perror("dup2 fail for stdin redirection");
+					exit(EXIT_FAILURE);
+				}
+				close(prev_pipe_read_fd);
+			}
+			if (cmd->index < command_count - 1)
+			{
+				close(fd[0]);
+				if (dup2(fd[1], STDOUT_FILENO) == -1)
+				{
+					perror("dup2 failed for stdout redirection");
+					exit(EXIT_FAILURE);
+				}
+				close(fd[1]);
+			}
+			execve(cmd->name, cmd->arguments, NULL);
+			perror("execve failed");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			pids[cmd->index] = pid;
+			if (prev_pipe_read_fd != STDIN_FILENO)
+				close(prev_pipe_read_fd);
+			if (cmd->index < command_count - 1)
+			{
+				close(fd[1]);
+				prev_pipe_read_fd = fd[0];
+			}
+		}
+		cmd = cmd->pipe_next;
+	}
+	int	i;
+	i = 0;
+	while (i < command_count)
+	{
+		waitpid(pids[i], &status, 0);
+		i++;
+	}
+	free(pids);
+
+
+	/*
 	pid1 = fork();
 	if (pid1 == -1)
 		perror("fork fail");
@@ -54,6 +127,7 @@ void	process(t_command *cmd, int command_count)
 	close(fd[1]);
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
+	*/
 
 }
 /*
