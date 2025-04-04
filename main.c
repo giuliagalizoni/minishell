@@ -41,19 +41,12 @@ int	main(int argc, char **argv, char **envp) {
 		line = readline("minishell> ");
 		parser(line, &command);
 		set_command_paths(&command, envp);
-		cmd_count = count_commands(&command);
-		process(&command, cmd_count);
+		command.cmd_meta.num_cmds = count_commands(&command);
+		process(&command, command.cmd_meta.num_cmds);
 		clear_command_chain(&command);
 		command_init(&command);
-
-		/*
-		command.name = get_cmd_path(command.name, envp);
-		process(&command);
-
-		if (!line) {
+		if (!line)
 		      printf("\nExiting minishell\n");
-		}
-		*/
 		add_history(line);
 		free(line);
 	}
