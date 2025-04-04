@@ -39,4 +39,4 @@ test:
 	cc $(DEBUGFLAGS) $(SRCFILES) -Llibft -lreadline $(LIBFT) -o $(NAME)
 
 tester:
-	cc $(DEBUGFLAGS) tester.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c -Llibft -lreadline $(LIBFT) -o $(NAME)
+	cc $(DEBUGFLAGS) tester.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c -Llibft -lreadline $(LIBFT) -o test
