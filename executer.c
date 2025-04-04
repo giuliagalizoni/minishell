@@ -5,7 +5,7 @@
 // flesh out error handling a bit more (free the command object at every
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
-void	process(t_command *cmd, int command_count)
+void	process(t_command *cmd)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -13,10 +13,10 @@ void	process(t_command *cmd, int command_count)
 	int	status;
 	int	prev_pipe_read_fd;
 
-	(void)command_count;
 
+	printf("real num of cmds: %d\n", cmd->cmd_meta.num_cmds);
 	prev_pipe_read_fd = STDIN_FILENO;
-	pids = malloc(command_count * sizeof(int));
+	pids = malloc(cmd->cmd_meta.num_cmds * sizeof(int));
 	if (!pids)
 		perror("malloc fail");
 
@@ -26,7 +26,7 @@ void	process(t_command *cmd, int command_count)
 
 	while (cmd)
 	{
-		if (cmd->index < command_count - 1 && command_count > 1)
+		if (cmd->index < cmd->cmd_meta.num_cmds - 1 && cmd->cmd_meta.num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -53,7 +53,7 @@ void	process(t_command *cmd, int command_count)
 				}
 				close(prev_pipe_read_fd);
 			}
-			if (cmd->index < command_count - 1)
+			if (cmd->index < cmd->cmd_meta.num_cmds - 1)
 			{
 				close(fd[0]);
 				if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -72,7 +72,7 @@ void	process(t_command *cmd, int command_count)
 			pids[cmd->index] = pid;
 			if (prev_pipe_read_fd != STDIN_FILENO)
 				close(prev_pipe_read_fd);
-			if (cmd->index < command_count - 1)
+			if (cmd->index < cmd->cmd_meta.num_cmds - 1)
 			{
 				close(fd[1]);
 				prev_pipe_read_fd = fd[0];
@@ -82,7 +82,7 @@ void	process(t_command *cmd, int command_count)
 	}
 	int	i;
 	i = 0;
-	while (i < command_count)
+	while (i < cmd->cmd_meta.num_cmds)
 	{
 		waitpid(pids[i], &status, 0);
 		i++;
