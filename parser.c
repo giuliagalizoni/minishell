@@ -11,6 +11,28 @@ void	init_pipe(t_command *command, char **tokens, int *i, int *index)
 		return ;
 	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1);
 }
+
+void    check_operators(t_command *command, char **tokens, int i)
+{
+	if (!ft_strncmp(tokens[i], "<<", 2))
+		command->is_heredoc = 1;
+	else if (!ft_strncmp(tokens[i], "<", 1))
+		command->is_heredoc = 0;
+	else if (i > 0 && !ft_strncmp(tokens[i-1], "<", 1))
+		command->input_redirect = ft_strdup(tokens[i]);
+	else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2))
+		command->heredoc_delimiter = ft_strdup(tokens[i]);
+	else if (!ft_strncmp(tokens[i], ">>", 2))
+		command->append_output = 1;
+	else if (!ft_strncmp(tokens[i], ">", 1))
+		command->append_output = 0;
+	else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
+		command->output_redirect = ft_strdup(tokens[i]);
+	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
+		command->output_redirect = ft_strdup(tokens[i]);
+	else
+		arr_push(&command->arguments, tokens[i]);
+}
 t_command	analyser(char **tokens, int index)
 {
 	t_command command;
@@ -31,24 +53,8 @@ t_command	analyser(char **tokens, int index)
 			init_pipe(&command, tokens, &i, &index);
 			break ;
 		}
-		else if (!ft_strncmp(tokens[i], "<<", 2))
-			command.is_heredoc = 1;
-		else if (!ft_strncmp(tokens[i], "<", 1))
-			command.is_heredoc = 0;
-		else if (i > 0 && !ft_strncmp(tokens[i-1], "<", 1))
-			command.input_redirect = ft_strdup(tokens[i]);
-		else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2))
-			command.heredoc_delimiter = ft_strdup(tokens[i]);
-		else if (!ft_strncmp(tokens[i], ">>", 2))
-			command.append_output = 1;
-		else if (!ft_strncmp(tokens[i], ">", 1))
-			command.append_output = 0;
-		else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
-			command.output_redirect = ft_strdup(tokens[i]);
-		else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
-			command.output_redirect = ft_strdup(tokens[i]);
 		else
-			arr_push(&command.arguments, tokens[i]);
+			check_operators(&command, tokens, i);
 		i++;
 	}
 	return (command);
@@ -67,7 +73,7 @@ void	parser(char *line, t_command *command)
 // parser testing main
 // int	main()
 // {
-// 	char *line = "< infile grep a1 | wc -w >> outfile | lalalal | lelelel";
+// 	char *line = "< infile grep a1 | wc -w >> outfile";
 // 	t_command command;
 // 	parser(line, &command);
 
