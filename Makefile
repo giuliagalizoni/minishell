@@ -7,7 +7,7 @@ ARFLAGS	= rcs
 =======
 >>>>>>> dec54be (fleshed up makefile a bit)
 SRCDIR	= src/
-SRCFILES = command_utils.c path_utils.c array_utils.c executer.c parser.c main.c
+SRCFILES = command_utils.c path_utils.c array_utils.c executer.c parser.c main.c lexer.c
 CFILES	= minishell
 OBJDIR	= obj/
 LIBFT	= libft/libft.a
