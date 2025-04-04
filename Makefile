@@ -1,5 +1,5 @@
 NAME	= minishell
-CFLAGS	:= -Wall -Wextra -Werror 
+CFLAGS	:= -Wall -Wextra -Werror
 DEBUGFLAGS := -g
 ARFLAGS	= rcs
 #TODO move srcs to src/
@@ -14,17 +14,17 @@ BONUSSRC 	= $(addprefix $(SRCBONUSDIR), $(addsuffix .c, $(BONUSFILES)))
 
 
 .PHONY: all
-all: $(NAME) 
+all: $(NAME)
 
 
 $(NAME): $(LIBFT)
 	cc $(CFLAGS) $(SRC) $(LIBFT) -o $(NAME)
 
-$(LIBFT): 
+$(LIBFT):
 	make -C ./libft
-	
+
 .PHONY: clean
-clean: 
+clean:
 	make fclean -C libft
 
 .PHONY: fclean
@@ -37,3 +37,6 @@ re: fclean all
 # rule for testing
 test:
 	cc $(DEBUGFLAGS) $(SRCFILES) -Llibft -lreadline $(LIBFT) -o $(NAME)
+
+tester:
+	cc $(DEBUGFLAGS) tester.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c -Llibft -lreadline $(LIBFT) -o $(NAME)
