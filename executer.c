@@ -26,7 +26,8 @@ void	process(t_command *cmd)
 
 	while (cmd)
 	{
-		// if not last cmd, if
+		// if there's more than one cmd and we not in the last cmd,
+		// create a pipe
 		if (cmd->index < cmd_meta.num_cmds - 1 && cmd_meta.num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
@@ -44,32 +45,16 @@ void	process(t_command *cmd)
 		}
 		else if (pid == 0)
 		{
-			// TODO do i really need this prev_pipe_read_fd
-			if (prev_pipe_read_fd != STDIN_FILENO) 
-			{
-				if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-				{
-					perror("dup2 fail for stdin redirection");
-					exit(EXIT_FAILURE);
-				}
-				close(prev_pipe_read_fd);
-			}
-			if (cmd->index < cmd_meta.num_cmds - 1)
-			{
-				close(fd[0]);
-				if (dup2(fd[1], STDOUT_FILENO) == -1)
-				{
-					perror("dup2 failed for stdout redirection");
-					exit(EXIT_FAILURE);
-				}
-				close(fd[1]);
-			}
-			execve(cmd->name, cmd->arguments, NULL);
-			perror("execve failed");
-			exit(EXIT_FAILURE);
+			// maybe fd and prev_pipe_read_fd should be
+			// pointers?but it seems to work
+			child_process(cmd, prev_pipe_read_fd, fd, cmd_meta.num_cmds);
 		}
 		else
 		{
+			//parent process, pushes each child process pid to
+			//array, closes the prev pipe for all processes except
+			//first, if it not the last closes the read pipe and
+			//sets the next pipe
 			pids[cmd->index] = pid;
 			if (prev_pipe_read_fd != STDIN_FILENO)
 				close(prev_pipe_read_fd);
@@ -89,122 +74,33 @@ void	process(t_command *cmd)
 		i++;
 	}
 	free(pids);
-
-
-	/*
-	pid1 = fork();
-	if (pid1 == -1)
-		perror("fork fail");
-	if (pid1 == 0)
+}
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
+{
+	// TODO do i really need this prev_pipe_read_fd
+	// if it's not the first cmd, redirect input
+	if (prev_pipe_read_fd != STDIN_FILENO) 
+	{
+		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
+		{
+			perror("dup2 fail for stdin redirection");
+			exit(EXIT_FAILURE);
+		}
+		close(prev_pipe_read_fd);
+	}
+	// if it's not the last cmd, redirect output
+	if (cmd->index < num_cmds - 1)
 	{
 		close(fd[0]);
-		if (dup2(fd[1], 1) == -1)
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
 		{
-			perror("dup2 fail");
-			close(fd[1]);
+			perror("dup2 failed for stdout redirection");
+			exit(EXIT_FAILURE);
 		}
 		close(fd[1]);
-		execve(cmd->name, cmd->arguments, NULL);
-		perror("exec fail");
 	}
-	pid2 = fork();
-	if (pid2 == -1)
-	{
-		perror("fork 2 fail");
-		close(fd[0]);
-		close(fd[1]);
-		waitpid(pid1, &status1, 0);
-		exit(1);
-	}
-	if (pid2 == 0)
-	{
-		close(fd[1]);
-		if (dup2(fd[0], 0) == -1)
-		{
-			perror("dup2 fail");
-			close(fd[0]);
-			exit(1);
-		}
-		close(fd[0]);
-		execve(cmd->pipe_next->name, cmd->pipe_next->arguments, NULL);
-		perror("exec fail");
-		exit(1);
-	}
-	close(fd[0]);
-	close(fd[1]);
-	waitpid(pid1, &status1, 0);
-	waitpid(pid2, &status2, 0);
-	*/
-
+	// do we need a case for a single command?
+	execve(cmd->name, cmd->arguments, NULL);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
 }
-/*
-void	process(t_command *cmd)
-{
-	pid_t	pid;
-	pid = fork();
-	if (pid == 0)
-	{
-		execve(cmd->name, cmd->arguments, NULL);
-	}
-	wait(NULL);
-}
-
-void	process(t_command *cmd, int cmd_count)
-{
-	while (cmd)
-	{
-		child_process(cmd, cmd_count);
-		cmd = cmd->pipe_next;
-	}
-}
-
-void	child_process(t_command *cmd, int cmd_count)
-{
-	pid_t	pid;
-	int	fd[2];
-	// we need to
-	// check that it's the first or last cmd in the pipe
-	// otherwise we redirect it's stdin to the read end of the last cmd
-	// and or the 
-	if (pipe(fd) == -1)
-		perror("Pipe creation error");// wrapper fn for cleanup?
-	pid = fork();
-	if (pid == -1)
-		perror("Fork creation error");
-	if (pid == 0)
-	{
-		printf("pid==0first cmd: %s index %d is_pipe? %d\n", cmd->name, cmd->index, cmd->is_pipe);
-		if (cmd->index == 0 && !(cmd->is_pipe))
-			execve(cmd->name, cmd->arguments, NULL);
-		if (cmd->index == 0 && cmd->is_pipe)
-		{
-			printf("first cmd\n");
-			dup2(fd[1], 1);
-			close(fd[1]);
-			execve(cmd->name, cmd->arguments, NULL);
-		}
-		if (cmd->index > 0 && cmd->index < (cmd_count - 1))
-			printf("Mid cmd\n");
-		if (cmd->index == cmd_count - 1 )
-		{
-
-			close(fd[1]);
-			dup2(fd[0], 0);
-			close(fd[0]);
-			printf("last cmd\n");
-			execve(cmd->name, cmd->arguments, NULL);
-		}
-	}
-	wait(NULL);
-
-
-
-
-	if (pipe(fd) == -1)
-		perror("Pipe creation error");// wrapper fn for cleanup?
-	pid = fork();
-	if (pid == -1)
-		perror("Fork creation error");
-	if (pid == -1)
-}
-*/
