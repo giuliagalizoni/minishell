@@ -4,6 +4,7 @@
 // move command_init here
 void	command_init(t_command *command)
 {
+
 	command->name = NULL;
 	command->arguments = NULL;
 	command->input_redirect = NULL;
@@ -12,9 +13,9 @@ void	command_init(t_command *command)
 	command->output_redirect = NULL;
 	command->append_output = 0;
 	command->is_pipe = 0;
-	command->next = NULL;
 	command->pipe_next = NULL;
 	command->index = 0;
+	command->cmd_globals.num_commands = 0; 
 }
 
 void	set_command_paths(t_command *command, char **envp)
