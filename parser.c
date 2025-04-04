@@ -12,7 +12,7 @@ void	init_pipe(t_command *command, char **tokens, int *i, int *index)
 	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1);
 }
 
-void    check_operators(t_command *command, char **tokens, int i)
+void	check_operators(t_command *command, char **tokens, int i)
 {
 	if (!ft_strncmp(tokens[i], "<<", 2))
 		command->is_heredoc = 1;
@@ -70,55 +70,3 @@ void	parser(char *line, t_command *command)
 	*command = analyser(tokens, 0);
 	free_arr((void **)tokens);
 }
-// parser testing main
-// int	main()
-// {
-// 	char *line = "< infile grep a1 | wc -w >> outfile";
-// 	t_command command;
-// 	parser(line, &command);
-
-// 	t_command *current = &command;
-// 	while (current)
-// 	{
-// 		printf("Command index: %d\n", current->index);
-// 		printf("Command name: %s\n", current->name);
-// 		current = current->pipe_next;
-// 	}
-// 	printf("Command name: %s\n", command.name);
-// 	int i = 0;
-// 	while(command.arguments[i])
-// 	{
-// 		printf("arg[%d]: %s\n", i, command.arguments[i]);
-// 		i++;
-// 	}
-// 	printf("input_redirect: %s\n", command.input_redirect);
-// 	printf("heredoc_delimiter: %s\n", command.heredoc_delimiter);
-// 	printf("is_heredoc: %i\n", command.is_heredoc);
-// 	printf("append_output: %i\n", command.append_output);
-// 	printf("is_pipe: %i\n", command.is_pipe);
-// 	if (command.pipe_next)
-//     {
-//         printf("pipe_next.name: %s\n", command.pipe_next->name);
-//         i = 0;
-//         while (command.pipe_next->arguments && command.pipe_next->arguments[i])
-//         {
-//             printf("next.arg[%d]: %s\n", i, command.pipe_next->arguments[i]);
-//             i++;
-//         }
-//         if (command.pipe_next->input_redirect)
-//             printf("next.input_redirect: %s\n", command.pipe_next->input_redirect);
-//         else
-//             printf("next.input_redirect: (null)\n");
-// 		if (command.pipe_next->output_redirect)
-//             printf("next.output_redirect: %s\n", command.pipe_next->output_redirect);
-//         else
-//             printf("next.output_redirect: (null)\n");
-//         printf("heredoc_delimiter: %s\n", command.pipe_next->heredoc_delimiter);
-//         printf("is_heredoc: %i\n", command.pipe_next->is_heredoc);
-//         printf("append_output: %i\n", command.pipe_next->append_output);
-//         printf("is_pipe: %i\n", command.pipe_next->is_pipe);
-//     }
-
-// 	if (command.arguments)
-// 		free_arr((void **)command.arguments);
-// }
