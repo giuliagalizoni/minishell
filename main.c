@@ -45,7 +45,7 @@ int	main(int argc, char **argv, char **envp) {
 		process(&command, command.cmd_meta.num_cmds);
 		clear_command_chain(&command);
 		command_init(&command);
-		if (!line) {
+		if (!line)
 		      printf("\nExiting minishell\n");
 		add_history(line);
 		free(line);

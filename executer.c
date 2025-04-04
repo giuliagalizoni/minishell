@@ -14,6 +14,7 @@ void	process(t_command *cmd, int command_count)
 	int	prev_pipe_read_fd;
 
 
+	printf("real num of cmds: %d\n", cmd->cmd_meta.num_cmds);
 	prev_pipe_read_fd = STDIN_FILENO;
 	pids = malloc(command_count * sizeof(int));
 	if (!pids)
