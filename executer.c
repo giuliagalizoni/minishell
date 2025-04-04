@@ -12,9 +12,9 @@ void	process(t_command *cmd)
 	pid_t	*pids;
 	int	status;
 	int	prev_pipe_read_fd;
+	t_cmd_meta	cmd_meta;
 
-
-	printf("real num of cmds: %d\n", cmd->cmd_meta.num_cmds);
+	cmd_meta = cmd->cmd_meta;
 	prev_pipe_read_fd = STDIN_FILENO;
 	pids = malloc(cmd->cmd_meta.num_cmds * sizeof(int));
 	if (!pids)
@@ -26,7 +26,8 @@ void	process(t_command *cmd)
 
 	while (cmd)
 	{
-		if (cmd->index < cmd->cmd_meta.num_cmds - 1 && cmd->cmd_meta.num_cmds > 1)
+		// if not last cmd, if
+		if (cmd->index < cmd_meta.num_cmds - 1 && cmd_meta.num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -53,7 +54,7 @@ void	process(t_command *cmd)
 				}
 				close(prev_pipe_read_fd);
 			}
-			if (cmd->index < cmd->cmd_meta.num_cmds - 1)
+			if (cmd->index < cmd_meta.num_cmds - 1)
 			{
 				close(fd[0]);
 				if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -72,7 +73,7 @@ void	process(t_command *cmd)
 			pids[cmd->index] = pid;
 			if (prev_pipe_read_fd != STDIN_FILENO)
 				close(prev_pipe_read_fd);
-			if (cmd->index < cmd->cmd_meta.num_cmds - 1)
+			if (cmd->index < cmd_meta.num_cmds - 1)
 			{
 				close(fd[1]);
 				prev_pipe_read_fd = fd[0];
@@ -82,7 +83,7 @@ void	process(t_command *cmd)
 	}
 	int	i;
 	i = 0;
-	while (i < cmd->cmd_meta.num_cmds)
+	while (i < cmd_meta.num_cmds)
 	{
 		waitpid(pids[i], &status, 0);
 		i++;
