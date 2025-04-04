@@ -10,10 +10,10 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-typedef struct	s_cmd_globals
+typedef struct	s_cmd_meta
 {
-	int	num_commands;	
-}	t_cmd_globals;
+	int	num_cmds;
+}	t_cmd_meta;
 
 typedef struct	s_command
 {
@@ -27,7 +27,7 @@ typedef struct	s_command
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;
-	t_cmd_globals	cmd_globals;
+	t_cmd_globals	cmd_meta;
 }	t_command;
 
 // path_utils
