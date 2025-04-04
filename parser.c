@@ -1,6 +1,16 @@
 #include "includes/minishell.h"
 
-// figure out how to create the next commands
+t_command	analyser(char **tokens, int index);
+
+void	init_pipe(t_command *command, char **tokens, int *i, int *index)
+{
+	command->is_pipe = 1;
+	tokens++;
+	command->pipe_next = malloc(sizeof(t_command));
+	if (!command->pipe_next)
+		return ;
+	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1);
+}
 t_command	analyser(char **tokens, int index)
 {
 	t_command command;
@@ -8,41 +18,36 @@ t_command	analyser(char **tokens, int index)
 
 	command_init(&command);
 	command.index = index;
-	//idk yet if this rule works for all the cases
+
 	if (tokens[0][0] != '<')
 		command.name = ft_strdup(tokens[0]);
 	else
 		command.name = ft_strdup(tokens[2]);
 	i = 0;
-	while (tokens[i]) //I'm not completely sure if the use of strncmp is the best one for all cases, but for now it's working
+	while (tokens[i])
 	{
-		if (!ft_strncmp(tokens[i], "<<", 2)) //not heredoc, regular input redirection
+		if (!ft_strncmp(tokens[i], "|", 1))
+		{
+			init_pipe(&command, tokens, &i, &index);
+			break ;
+		}
+		else if (!ft_strncmp(tokens[i], "<<", 2))
 			command.is_heredoc = 1;
-		else if (!ft_strncmp(tokens[i], "<", 1)) //heredoc
+		else if (!ft_strncmp(tokens[i], "<", 1))
 			command.is_heredoc = 0;
-		else if (i > 0 && !ft_strncmp(tokens[i-1], "<", 1)) // if the previous is redirection operator, the current will be infile
+		else if (i > 0 && !ft_strncmp(tokens[i-1], "<", 1))
 			command.input_redirect = ft_strdup(tokens[i]);
-		else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2)) // if the previous is heredoc operator, the current will be heredoc delimiter
+		else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2))
 			command.heredoc_delimiter = ft_strdup(tokens[i]);
-		else if (!ft_strncmp(tokens[i], ">>", 2)) // just redirect, not append
+		else if (!ft_strncmp(tokens[i], ">>", 2))
 			command.append_output = 1;
-		else if (!ft_strncmp(tokens[i], ">", 1)) // append
+		else if (!ft_strncmp(tokens[i], ">", 1))
 			command.append_output = 0;
 		else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
 			command.output_redirect = ft_strdup(tokens[i]);
 		else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
 			command.output_redirect = ft_strdup(tokens[i]);
-		else if (!ft_strncmp(tokens[i], "|", 1)) // pipe
-		{
-			command.is_pipe = 1;
-			tokens++;
-			command.pipe_next = malloc(sizeof(t_command));
-			if (!command.pipe_next)
-				return command;
-			*command.pipe_next = analyser(tokens + (i++), index + 1);
-			break ;
-		}
-		else // all other cases will be arguments
+		else
 			arr_push(&command.arguments, tokens[i]);
 		i++;
 	}
@@ -50,7 +55,6 @@ t_command	analyser(char **tokens, int index)
 }
 
 
-//idk if it's better to return the command or to receive it from main as a pointer and just change it here
 void	parser(char *line, t_command *command)
 {
 	char	**tokens;
