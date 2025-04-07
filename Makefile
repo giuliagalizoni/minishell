@@ -1,24 +1,35 @@
-NAME	= minishell
+NAME	:= minishell
+CC := clang
 CFLAGS	:= -Wall -Wextra -Werror
-DEBUGFLAGS := -g
-ARFLAGS	= rcs
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+CFLAGS += -g
+$(info Building with debug flags enabled: CFLAGS=$(CFLAGS))
+endif
+LDFLAGS := -lreadline -Llibft -l:libft.a
+
 #TODO move srcs to src/
-SRCDIR	= src/
-SRCFILES = command_utils.c path_utils.c array_utils.c executer.c parser.c main.c lexer.c
-CFILES	= minishell
-OBJDIR	= obj/
-LIBFT	= libft/libft.a
-
-SRC 	= $(addprefix $(SRCDIR), $(addsuffix .c, $(CFILES)))
-BONUSSRC 	= $(addprefix $(SRCBONUSDIR), $(addsuffix .c, $(BONUSFILES)))
-
+SRCDIR	:= .
+OBJDIR	:= obj
+SRCFILES := $(wildcard $(SRCDIR)/*.c)
+OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
+LIBFT	:= libft/libft.a
 
 .PHONY: all
-all: $(NAME)
+all: $(LIBFT) $(NAME)
 
+$(NAME): $(OBJFILES)
+	@echo "Linking $@..."
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $(NAME)
+	@echo "The $@ has been built successfully" 
 
-$(NAME): $(LIBFT)
-	cc $(CFLAGS) $(SRC) $(LIBFT) -o $(NAME)
+$(OBJDIR)/%.o : $(SRCDIR)/%.c | $(OBJDIR)
+	@echo "compiling $@"
+	$(CC) $(CFLAGS) -Ilibft -c $< -o $@
+
+$(OBJDIR):
+	@echo "Creating directory $@..."
+	@mkdir -p $@
 
 $(LIBFT):
 	make -C ./libft
@@ -29,14 +40,17 @@ clean:
 
 .PHONY: fclean
 fclean: clean
+	rm -rf $(OBJDIR)
 	rm -f $(NAME)
 
 .PHONY: re
 re: fclean all
 
+# TODO this is a bit of a hack because we can only have one main so the tests
+# have to be in separate folders so they are skipped by the wildcards, so in
+# turn the source files have to be hardcoded here
 # rule for testing
-test:
-	cc $(DEBUGFLAGS) $(SRCFILES) -Llibft -lreadline $(LIBFT) -o $(NAME)
-
-tester:
-	cc $(DEBUGFLAGS) tester.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c -Llibft -lreadline $(LIBFT) -o test
+lextest:
+	cc $(CFLAGS) lexer_test/lexer_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o lexer_test
+exectest:
+	cc $(CFLAGS) exec_test/exec_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o exec_test
