@@ -5,6 +5,37 @@
 // flesh out error handling a bit more (free the command object at every
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
+
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
+{
+	// TODO do i really need this prev_pipe_read_fd
+	// if it's not the first cmd, redirect input
+	if (prev_pipe_read_fd != STDIN_FILENO) 
+	{
+		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
+		{
+			perror("dup2 fail for stdin redirection");
+			exit(EXIT_FAILURE);
+		}
+		close(prev_pipe_read_fd);
+	}
+	// if it's not the last cmd, redirect output
+	if (cmd->index < num_cmds - 1)
+	{
+		close(fd[0]);
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+		{
+			perror("dup2 failed for stdout redirection");
+			exit(EXIT_FAILURE);
+		}
+		close(fd[1]);
+	}
+	// do we need a case for a single command?
+	execve(cmd->name, cmd->arguments, NULL);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
+}
+
 void	process(t_command *cmd)
 {
 	int	fd[2];
@@ -74,33 +105,4 @@ void	process(t_command *cmd)
 		i++;
 	}
 	free(pids);
-}
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
-{
-	// TODO do i really need this prev_pipe_read_fd
-	// if it's not the first cmd, redirect input
-	if (prev_pipe_read_fd != STDIN_FILENO) 
-	{
-		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-		{
-			perror("dup2 fail for stdin redirection");
-			exit(EXIT_FAILURE);
-		}
-		close(prev_pipe_read_fd);
-	}
-	// if it's not the last cmd, redirect output
-	if (cmd->index < num_cmds - 1)
-	{
-		close(fd[0]);
-		if (dup2(fd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2 failed for stdout redirection");
-			exit(EXIT_FAILURE);
-		}
-		close(fd[1]);
-	}
-	// do we need a case for a single command?
-	execve(cmd->name, cmd->arguments, NULL);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
 }
