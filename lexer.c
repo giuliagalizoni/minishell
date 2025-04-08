@@ -1,25 +1,41 @@
 #include "includes/minishell.h"
 
-char	*prep_buffer(char *line, char *buff, char ***tokens, int *buffi)
+char	*prep_buffer(char *line, char **buff, char ***tokens, int *buffi)
 {
-		buff[*buffi] = '\0'; // Null-terminate current token
-    	if (!arr_push(tokens, ft_strdup(buff))) // change arr push
-		{
-			perror("arr_push failed");
-			free(buff);
-			free_arr((void **)tokens);
-			return NULL;
-		}
-		free(buff);
-		buff = malloc(ft_strlen(line) + 1); // allocate again
-		if (!buff)
-		{
-			perror("malloc for buff failed");
-			free_arr((void **)tokens);
-			return (NULL);
-		}
-		*buffi = 0; // set the buffer index to 0 to start next token
-		return (buff);
+	char *token;
+	char *new_buff;
+
+	(*buff)[*buffi] = '\0'; // Null-terminate current token
+	token = ft_strdup(*buff);
+	if (!token)
+	{
+		perror("ft_strdup failed");
+		free(*buff);
+		free_arr((void **)tokens);
+		buff = NULL;
+		return NULL;
+	}
+	if (!arr_push(tokens, token)) // change arr push
+	{
+		perror("arr_push failed");
+		free(token);
+		free(*buff);
+		free_arr((void **)tokens);
+		return NULL;
+	}
+	if (*buff)
+		free(*buff);
+	*buff = NULL;
+	new_buff = malloc(ft_strlen(line) + 1); // allocate again
+	if (!new_buff)
+	{
+		perror("malloc for buff failed");
+		free_arr((void **)tokens);
+		return (NULL);
+	}
+	*buff = new_buff;
+	*buffi = 0; // set the buffer index to 0 to start next token
+	return (new_buff);
 }
 
 void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
@@ -27,7 +43,7 @@ void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
 	char	quote;
 
 	if (*buffi > 0) // closing quotes - end of token
-		buff = prep_buffer(line, buff, tokens, buffi);
+		buff = prep_buffer(line, &buff, tokens, buffi);
 	quote = line[*i];
 	(*i)++;
 	while (line[*i] && (line[*i] != quote))
@@ -40,17 +56,17 @@ void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
 		return ;
 	}
 	(*i)++;
-	buff = prep_buffer(line, buff, tokens, buffi);
+	buff = prep_buffer(line, &buff, tokens, buffi);
 }
 
 void	handle_operator(char *line, char *buff, char ***tokens, int *i, int *buffi)
 {
 	if (*buffi > 0)
-		buff = prep_buffer(line, buff, tokens, buffi);
+		buff = prep_buffer(line, &buff, tokens, buffi);
 	buff[(*buffi)++] = line[*i];
 	if ((line[*i] == '<' && line[(*i) + 1] == '<') || (line[*i] == '>' && line[(*i) + 1] == '>')) // check for << and >>
 		buff[(*buffi)++] = line[++(*i)];
-	buff = prep_buffer(line, buff, tokens, buffi);
+	buff = prep_buffer(line, &buff, tokens, buffi);
 	(*i)++;
 }
 
@@ -92,7 +108,7 @@ char	**lexer(char *line, char ***tokens)
 				&& line[i] != '>' && line[i] != 34 && line[i] != 39) //all kinds of delimiters
 				buff[buffi++] = line[i++];
 			if (buffi > 0)
-				buff = prep_buffer(line, buff, tokens, &buffi);
+				buff = prep_buffer(line, &buff, tokens, &buffi);
 		}
 	}
 	return free(buff), *tokens; // review return value later
