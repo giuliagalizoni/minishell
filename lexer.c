@@ -2,21 +2,24 @@
 
 char	*prep_buffer(char *line, char *buff, char ***tokens, int *buffi)
 {
-	char *new_buff;
-
-	new_buff = (char *)malloc(ft_strlen(line) + 1); // allocate again
-	if (!new_buff)
-	{
-		perror("malloc for buff failed");
-		free_arr((void **)tokens);
-		return (NULL);
-	}
-	buff[(*buffi)] = '\0'; // null terminate buff
-	arr_push(tokens, buff); //push to tokens arr
-	free(buff);
-	buff = new_buff;
-	*buffi = 0; // set the buffer index to 0 to start next token
-	return (buff);
+		buff[*buffi] = '\0'; // Null-terminate current token
+    	if (!arr_push(tokens, ft_strdup(buff))) // change arr push
+		{
+			perror("arr_push failed");
+			free(buff);
+			free_arr((void **)tokens);
+			return NULL;
+		}
+		free(buff);
+		buff = malloc(ft_strlen(line) + 1); // allocate again
+		if (!buff)
+		{
+			perror("malloc for buff failed");
+			free_arr((void **)tokens);
+			return (NULL);
+		}
+		*buffi = 0; // set the buffer index to 0 to start next token
+		return (buff);
 }
 
 void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
