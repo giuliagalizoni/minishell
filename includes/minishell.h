@@ -48,5 +48,6 @@ void	process(t_command *cmd);
 // parser
 void	parser(char *line, t_command *command);
 char	**lexer(char *line, char ***tokens);
+char **newlexer(char *line, char ***tokens);
 
 #endif
