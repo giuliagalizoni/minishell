@@ -35,7 +35,7 @@ char	**get_paths(char **envp);
 char	*get_cmd_path(char *cmd, char **envp);
 // array_utils
 void	free_arr(void **arr);
-void	arr_push(char ***arr, char *str);
+char	**arr_push(char ***arr, char *str);
 // command_utils
 void	command_init(t_command *command);
 void	set_command_paths(t_command *command, char **envp);

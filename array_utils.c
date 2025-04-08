@@ -17,7 +17,7 @@ void	free_arr(void **arr)
 	arr = NULL;
 }
 
-void	arr_push(char ***arr, char *str)
+char	**arr_push(char ***arr, char *str)
 {
 	char	**new_arr;
 	int	len;
@@ -28,7 +28,7 @@ void	arr_push(char ***arr, char *str)
 			len++;
 	new_arr = (char **)malloc(sizeof(char *) * (len + 2)); //null term + new str
 	if (!new_arr)
-		return ;
+		return NULL;
 	i = 0;
 	while (i < len)
 	{
@@ -37,9 +37,10 @@ void	arr_push(char ***arr, char *str)
 	}
 	new_arr[i] = ft_strdup(str);
 	if (!new_arr[i])
-		return ;
+		return NULL;
 	new_arr[i + 1] = NULL;
 	if (*arr)
 		free(*arr);
 	*arr = new_arr;
+	return new_arr;
 }
