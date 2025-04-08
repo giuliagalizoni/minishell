@@ -42,7 +42,7 @@ int	main(int argc, char **argv, char **envp) {
 		parser(line, &command);
 		set_command_paths(&command, envp);
 		command.cmd_meta.num_cmds = count_commands(&command);
-		process(&command, command.cmd_meta.num_cmds);
+		process(&command);
 		clear_command_chain(&command);
 		command_init(&command);
 		if (!line)
