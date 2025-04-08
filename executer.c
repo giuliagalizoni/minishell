@@ -36,6 +36,18 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	exit(EXIT_FAILURE);
 }
 
+void	wait_for_children(pid_t *pids, int num_cmds)
+{
+	int	i;
+
+	i = 0;
+	while (i < num_cmds)
+	{
+		waitpid(pids[i], &status, 0);
+		i++;
+	}
+}
+
 void	process(t_command *cmd)
 {
 	int	fd[2];
@@ -97,12 +109,6 @@ void	process(t_command *cmd)
 		}
 		cmd = cmd->pipe_next;
 	}
-	int	i;
-	i = 0;
-	while (i < cmd_meta.num_cmds)
-	{
-		waitpid(pids[i], &status, 0);
-		i++;
-	}
+	wait_for_children(pids, cmd_meta.num_cmds);
 	free(pids);
 }
