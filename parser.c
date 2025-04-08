@@ -41,6 +41,7 @@ t_command	analyser(char **tokens, int index)
 	command_init(&command);
 	command.index = index;
 
+	// review this latter and include find_path logic
 	if (tokens[0][0] != '<')
 		command.name = ft_strdup(tokens[0]);
 	else
@@ -66,7 +67,7 @@ void	parser(char *line, t_command *command)
 	char	**tokens;
 
 	tokens = NULL;
-	tokens = lexer(line, &tokens);
+	tokens = newlexer(line, &tokens);
 	*command = analyser(tokens, 0);
 	free_arr((void **)tokens);
 }
