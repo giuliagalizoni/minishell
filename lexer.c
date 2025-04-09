@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-void	push_reset(char ***tokens, char *line, int *start, int *len)
+static void	push_reset(char ***tokens, char *line, int *start, int *len)
 {
 	arr_push(tokens, ft_substr(line, *start, *len));
 	*start = 0;
@@ -72,13 +72,13 @@ char **lexer(char *line, char ***tokens)
 	return *tokens;
 }
 
-// int main() {
-// 	char **tokens = NULL;
-// 	char *line = "    ls	 -l >file |wc >> file     ";
-// 	tokens = newlexer(line, &tokens);
-// 	while (*tokens)
-// 	{
-// 		printf("token: %s\n", *tokens);
-// 		tokens++;
-// 	}
-// }
+int main() {
+	char **tokens = NULL;
+	char *line = "ls -l | wc | cat";
+	tokens = lexer(line, &tokens);
+	while (*tokens)
+	{
+		printf("token: %s\n", *tokens);
+		tokens++;
+	}
+}

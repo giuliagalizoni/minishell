@@ -2,7 +2,7 @@
 
 t_command	analyser(char **tokens, int index);
 
-void	init_pipe(t_command *command, char **tokens, int *i, int *index)
+static void	init_pipe(t_command *command, char **tokens, int *i, int *index)
 {
 	command->is_pipe = 1;
 	tokens++;
@@ -12,7 +12,7 @@ void	init_pipe(t_command *command, char **tokens, int *i, int *index)
 	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1);
 }
 
-void	check_operators(t_command *command, char **tokens, int i)
+static void	check_operators(t_command *command, char **tokens, int i)
 {
 	if (!ft_strncmp(tokens[i], "<<", 2))
 		command->is_heredoc = 1;
