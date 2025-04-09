@@ -47,7 +47,7 @@ static void	handle_tokens(char *line, char ***tokens, int *i, int *start, int *l
 	if (line[*i])
 		(*i)++;
 }
-char **newlexer(char *line, char ***tokens)
+char **lexer(char *line, char ***tokens)
 {
 	int i;
 	int start;
