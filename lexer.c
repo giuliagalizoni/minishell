@@ -71,14 +71,3 @@ char **lexer(char *line, char ***tokens)
 	}
 	return *tokens;
 }
-
-int main() {
-	char **tokens = NULL;
-	char *line = "ls -l | wc | cat";
-	tokens = lexer(line, &tokens);
-	while (*tokens)
-	{
-		printf("token: %s\n", *tokens);
-		tokens++;
-	}
-}
