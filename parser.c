@@ -1,15 +1,13 @@
 #include "includes/minishell.h"
 
-t_command	analyser(char **tokens, int index);
-
-static void	init_pipe(t_command *command, char **tokens, int *i, int *index)
+static void	init_pipe(t_command *command, char **tokens, int *i, int *index, char **envp)
 {
 	command->is_pipe = 1;
 	tokens++;
 	command->pipe_next = malloc(sizeof(t_command));
 	if (!command->pipe_next)
 		return ;
-	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1);
+	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp);
 }
 
 static void	check_operators(t_command *command, char **tokens, int i)
@@ -34,16 +32,16 @@ static void	check_operators(t_command *command, char **tokens, int i)
 		arr_push(&command->arguments, tokens[i]);
 }
 
-void	set_name(t_command *command, char **tokens)
+void	set_name(t_command *command, char **tokens, char **envp)
 {
 	int i;
 
 	i = 0;
 	while(tokens[i][0] == '<')
 		i = i + 2;
-	command->name = ft_strdup(tokens[i]);
+	command->name = get_cmd_path(tokens[i], envp);
 }
-t_command	analyser(char **tokens, int index)
+t_command	analyser(char **tokens, int index, char **envp)
 {
 	t_command command;
 	int i;
@@ -51,8 +49,8 @@ t_command	analyser(char **tokens, int index)
 	command_init(&command);
 	command.index = index;
 
-	set_name(&command, tokens);
 	// review this latter and include find_path logic
+	set_name(&command, tokens, envp);
 	// if (tokens[0][0] != '<')
 	// 	command.name = ft_strdup(tokens[0]);
 	// else
@@ -62,7 +60,7 @@ t_command	analyser(char **tokens, int index)
 	{
 		if (!ft_strncmp(tokens[i], "|", 1))
 		{
-			init_pipe(&command, tokens, &i, &index);
+			init_pipe(&command, tokens, &i, &index, envp);
 			break ;
 		}
 		else
@@ -73,12 +71,12 @@ t_command	analyser(char **tokens, int index)
 }
 
 
-void	parser(char *line, t_command *command)
+void	parser(char *line, t_command *command, char **envp)
 {
 	char	**tokens;
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
-	*command = analyser(tokens, 0);
+	*command = analyser(tokens, 0, envp);
 	free_arr((void **)tokens);
 }
