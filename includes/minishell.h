@@ -47,7 +47,8 @@ int	count_commands(t_command *command);
 void	process(t_command *cmd);
 void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
 // parser
-void	parser(char *line, t_command *command);
+void	parser(char *line, t_command *command, char **envp);
+t_command	analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 
 #endif
