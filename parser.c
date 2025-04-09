@@ -33,6 +33,16 @@ static void	check_operators(t_command *command, char **tokens, int i)
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
+
+void	set_name(t_command *command, char **tokens)
+{
+	int i;
+
+	i = 0;
+	while(tokens[i][0] == '<')
+		i = i + 2;
+	command->name = ft_strdup(tokens[i]);
+}
 t_command	analyser(char **tokens, int index)
 {
 	t_command command;
@@ -41,11 +51,12 @@ t_command	analyser(char **tokens, int index)
 	command_init(&command);
 	command.index = index;
 
+	set_name(&command, tokens);
 	// review this latter and include find_path logic
-	if (tokens[0][0] != '<')
-		command.name = ft_strdup(tokens[0]);
-	else
-		command.name = ft_strdup(tokens[2]);
+	// if (tokens[0][0] != '<')
+	// 	command.name = ft_strdup(tokens[0]);
+	// else
+	// 	command.name = ft_strdup(tokens[2]);
 	i = 0;
 	while (tokens[i])
 	{
