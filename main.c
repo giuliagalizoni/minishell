@@ -30,7 +30,6 @@ int	main(int argc, char **argv, char **envp) {
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_command	command;
-	// int		cmd_count;
 	(void)argc;
 	(void)argv;
 

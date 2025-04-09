@@ -45,6 +45,7 @@ int	count_commands(t_command *command);
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
 void	process(t_command *cmd);
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
 // parser
 void	parser(char *line, t_command *command);
 char	**lexer(char *line, char ***tokens);
