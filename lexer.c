@@ -1,109 +1,84 @@
 #include "includes/minishell.h"
 
-char	*prep_buffer(char *line, char *buff, char ***tokens, int *buffi)
+static void	push_reset(char ***tokens, char *line, int *start, int *len)
 {
-		buff[*buffi] = '\0'; // Null-terminate current token
-    	if (!arr_push(tokens, ft_strdup(buff))) // change arr push
-		{
-			perror("arr_push failed");
-			free(buff);
-			free_arr((void **)tokens);
-			return NULL;
-		}
-		free(buff);
-		buff = malloc(ft_strlen(line) + 1); // allocate again
-		if (!buff)
-		{
-			perror("malloc for buff failed");
-			free_arr((void **)tokens);
-			return (NULL);
-		}
-		*buffi = 0; // set the buffer index to 0 to start next token
-		return (buff);
+	arr_push(tokens, ft_substr(line, *start, *len));
+	*start = 0;
+	*len = 0;
 }
-
-void	handle_quotes(char *line, char *buff, char ***tokens, int *i, int *buffi)
+static void	handle_quotes(char *line, char ***tokens, int *i, int *start, int *len)
 {
-	char	quote;
+	char quote;
 
-	if (*buffi > 0) // closing quotes - end of token
-		buff = prep_buffer(line, buff, tokens, buffi);
 	quote = line[*i];
 	(*i)++;
+	*start = *i;
 	while (line[*i] && (line[*i] != quote))
-		buff[(*buffi)++] = line[(*i)++]; //copy the content inside quotes
-	if (!line[*i]) // open but never closed quotes
+		(*i)++;
+	if (!line[*i])
 	{
 		perror("Invalid quotes");
-		free(buff);
 		free_arr((void**)tokens);
 		return ;
 	}
-	(*i)++;
-	buff = prep_buffer(line, buff, tokens, buffi);
-}
-
-void	handle_operator(char *line, char *buff, char ***tokens, int *i, int *buffi)
-{
-	if (*buffi > 0)
-		buff = prep_buffer(line, buff, tokens, buffi);
-	buff[(*buffi)++] = line[*i];
-	if ((line[*i] == '<' && line[(*i) + 1] == '<') || (line[*i] == '>' && line[(*i) + 1] == '>')) // check for << and >>
-		buff[(*buffi)++] = line[++(*i)];
-	buff = prep_buffer(line, buff, tokens, buffi);
+	*len = *i - *start;
+	push_reset(tokens, line, start, len);
 	(*i)++;
 }
 
-char *init_lexer(char *line, int *i, int *buffi)
+static void	handle_operators(char *line, char ***tokens, int *i, int *start, int *len)
 {
-	char	*buff;
-
-	buff = (char *)malloc(ft_strlen(line) + 1); //if the buffer is big enough for the whole string, it will be big enough for the token
-	if (!buff)
-	{
-		perror("malloc for buff failed");
-		return (NULL);
-	}
-	*i = 0;
-	*buffi = 0;
-	return (buff);
+	*start = *i;
+	if ((line[*i] == '<' && line[(*i) + 1] == '<') || (line[*i] == '>' && line[(*i) + 1] == '>'))
+		(*i)++;
+	*len = (*i - *start) + 1;
+	push_reset(tokens, line, start, len);
+	(*i)++;
 }
 
-char	**lexer(char *line, char ***tokens)
+static void	handle_tokens(char *line, char ***tokens, int *i, int *start, int *len)
 {
-	char	*buff;
-	int		i;
-	int		buffi;
+	*start = *i;
+	while (line[*i] && line[*i] != ' ' && line[*i] != '|' && line[*i] != '<'
+		&& line[*i] != '>' && line[*i] != 34 && line[*i] != 39) //all kinds of delimiters
+		(*i)++;
+	*len = *i - *start;
+	push_reset(tokens, line, start, len);
+	if (line[*i])
+		(*i)++;
+}
+char **lexer(char *line, char ***tokens)
+{
+	int i;
+	int start;
+	int len;
 
-	buff = init_lexer(line, &i, &buffi);
+	i = 0;
+	start = 0;
+	len = 0;
 	while(line[i])
 	{
-		while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13))) // all the isspace() chars
-			i++; //skip if there's space in the beggining
+		while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13)))
+			i++;
 		if (!line[i])
 			break ;
 		if (line[i] == 39 || line[i] == 34) // create token inside quotes
-			handle_quotes(line, buff, tokens, &i, &buffi);
+			handle_quotes(line, tokens, &i, &start, &len);
 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>') // create tokens for operators
-			handle_operator(line, buff, tokens, &i, &buffi);
+			handle_operators(line, tokens, &i, &start, &len);
 		else // create all the other tokens
-		{
-			while (line[i] && line[i] != ' ' && line[i] != '|' && line[i] != '<'
-				&& line[i] != '>' && line[i] != 34 && line[i] != 39) //all kinds of delimiters
-				buff[buffi++] = line[i++];
-			if (buffi > 0)
-				buff = prep_buffer(line, buff, tokens, &buffi);
-		}
+			handle_tokens(line, tokens, &i, &start, &len);
 	}
-	return free(buff), *tokens; // review return value later
+	return *tokens;
 }
 
-// int main() {
-// 	char **tokens = NULL;
-// 	tokens = lexer(" < \"file echo<<\"   \"Hello world\" |pipe> 'output    '|another \"one more pipe     \"   >> cool", &tokens);
-// 	while (*tokens)
-// 	{
-// 		printf("token: %s\n", *tokens);
-// 		tokens++;
-// 	}
-// }
+int main() {
+	char **tokens = NULL;
+	char *line = "ls -l | wc | cat";
+	tokens = lexer(line, &tokens);
+	while (*tokens)
+	{
+		printf("token: %s\n", *tokens);
+		tokens++;
+	}
+}
