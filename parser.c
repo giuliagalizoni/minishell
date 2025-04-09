@@ -67,7 +67,7 @@ void	parser(char *line, t_command *command)
 	char	**tokens;
 
 	tokens = NULL;
-	tokens = newlexer(line, &tokens);
+	tokens = lexer(line, &tokens);
 	*command = analyser(tokens, 0);
 	free_arr((void **)tokens);
 }
