@@ -40,7 +40,7 @@ static void	handle_tokens(char *line, char ***tokens, int *i, int *start, int *l
 {
 	*start = *i;
 	while (line[*i] && line[*i] != ' ' && line[*i] != '|' && line[*i] != '<'
-		&& line[*i] != '>' && line[*i] != 34 && line[*i] != 39) //all kinds of delimiters
+		&& line[*i] != '>' && line[*i] != 34 && line[*i] != 39)
 		(*i)++;
 	*len = *i - *start;
 	push_reset(tokens, line, start, len);
@@ -62,23 +62,12 @@ char **lexer(char *line, char ***tokens)
 			i++;
 		if (!line[i])
 			break ;
-		if (line[i] == 39 || line[i] == 34) // create token inside quotes
+		if (line[i] == 39 || line[i] == 34)
 			handle_quotes(line, tokens, &i, &start, &len);
-		else if (line[i] == '|' || line[i] == '<' || line[i] == '>') // create tokens for operators
+		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
 			handle_operators(line, tokens, &i, &start, &len);
-		else // create all the other tokens
+		else
 			handle_tokens(line, tokens, &i, &start, &len);
 	}
 	return *tokens;
-}
-
-int main() {
-	char **tokens = NULL;
-	char *line = "ls -l | wc | cat";
-	tokens = lexer(line, &tokens);
-	while (*tokens)
-	{
-		printf("token: %s\n", *tokens);
-		tokens++;
-	}
 }
