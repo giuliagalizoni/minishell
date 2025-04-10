@@ -47,5 +47,9 @@ void	process(t_command *cmd, int num_cmds);
 void	parser(char *line, t_command *command, char **envp);
 t_command	analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
+// builtin_utils
+int	is_builtin(char *name);
+int	is_equal(char *name, char *builtin);
+void	builtin_router(t_command *cmd);
 
 #endif
