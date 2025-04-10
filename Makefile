@@ -50,6 +50,8 @@ re: fclean all
 # have to be in separate folders so they are skipped by the wildcards, so in
 # turn the source files have to be hardcoded here
 # rule for testing
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all --suppressions=./suppressions/readline.supp ./minishell
 lextest:
 	cc $(CFLAGS) lexer_test/lexer_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o lexer_test
 exectest:
