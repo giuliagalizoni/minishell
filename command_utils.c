@@ -15,7 +15,6 @@ void	command_init(t_command *command)
 	command->is_pipe = 0;
 	command->pipe_next = NULL;
 	command->index = 0;
-	command->cmd_meta.num_cmds = 0;
 }
 
 void	set_command_paths(t_command *command, char **envp)
