@@ -12,8 +12,9 @@ int	main(int argc, char **argv, char **envp) {
 	while (1)
 	{
 		line = readline("minishell> ");
-		parser(line, &command);
-		set_command_paths(&command, envp);
+
+		parser(line, &command, envp);
+		// set_command_paths(&command, envp);
 		num_cmds = count_commands(&command);
 		process(&command, num_cmds);
 		clear_command_chain(&command);

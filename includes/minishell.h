@@ -13,6 +13,7 @@
 typedef struct	s_command
 {
 	char	*name;               // Command name
+	char	*path;
 	char	**arguments;            // Arguments
 	char	*input_redirect;        // Input redirection file
 	int	is_heredoc;             // 1 if "<<", 0 otherwise
@@ -43,7 +44,8 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
 void	process(t_command *cmd, int num_cmds);
 // parser
-void	parser(char *line, t_command *command);
+void	parser(char *line, t_command *command, char **envp);
+t_command	analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 
 #endif
