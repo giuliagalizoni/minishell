@@ -35,11 +35,12 @@ static void	check_operators(t_command *command, char **tokens, int i)
 void	set_name(t_command *command, char **tokens, char **envp)
 {
 	int i;
-
+	// errors "unexpected token" like <<< or < < < > or
 	i = 0;
 	while(tokens[i][0] == '<')
 		i = i + 2;
-	command->name = get_cmd_path(tokens[i], envp);
+	command->name = ft_strdup(tokens[i]);
+	command->path =	get_cmd_path(tokens[i], envp);
 }
 t_command	analyser(char **tokens, int index, char **envp)
 {
@@ -48,13 +49,7 @@ t_command	analyser(char **tokens, int index, char **envp)
 
 	command_init(&command);
 	command.index = index;
-
-	// review this latter and include find_path logic
 	set_name(&command, tokens, envp);
-	// if (tokens[0][0] != '<')
-	// 	command.name = ft_strdup(tokens[0]);
-	// else
-	// 	command.name = ft_strdup(tokens[2]);
 	i = 0;
 	while (tokens[i])
 	{

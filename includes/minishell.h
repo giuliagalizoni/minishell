@@ -18,6 +18,7 @@ typedef struct	s_cmd_meta
 typedef struct	s_command
 {
 	char	*name;               // Command name
+	char	*path;
 	char	**arguments;            // Arguments
 	char	*input_redirect;        // Input redirection file
 	int	is_heredoc;             // 1 if "<<", 0 otherwise
