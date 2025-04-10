@@ -1,8 +1,23 @@
 #include "includes/minishell.h"
 // TODO
+// split the function into process / child, see what needs to be passed around
 // put the pids in the command struct
 // flesh out error handling a bit more (free the command object at every
 // error?)
+// see if we can get rid of the prev_pipe_read_fd, i don't like it
+
+void	wait_for_children(pid_t *pids, int num_cmds)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < num_cmds)
+	{
+		waitpid(pids[i], &status, 0);
+		i++;
+	}
+}
 
 void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 {
@@ -34,42 +49,27 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	exit(EXIT_FAILURE);
 }
 
-void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd)
+void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
 {
 	pids[cmd->index] = pid;
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (cmd->index < cmd->cmd_meta.num_cmds - 1)
+	if (cmd->index < num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
 	}
 }
 
-void	wait_for_children(pid_t *pids, int num_cmds)
-{
-	int	i;
-	int	status;
-
-	i = 0;
-	while (i < num_cmds)
-	{
-		waitpid(pids[i], &status, 0);
-		i++;
-	}
-}
-
-void	process(t_command *cmd)
+void	process(t_command *cmd, int num_cmds)
 {
 	int	fd[2];
-	//TODO move the pids to the cmd stuct(is it necessary?)
+	//TODO move the pids to the cmd stuct
 	pid_t	*pids;
 	int	prev_pipe_read_fd;
-	t_cmd_meta	cmd_meta;
 
-	cmd_meta = cmd->cmd_meta;
 	prev_pipe_read_fd = STDIN_FILENO;
-	pids = malloc(cmd->cmd_meta.num_cmds * sizeof(int));
+	pids = malloc(num_cmds * sizeof(int));
 	if (!pids)
 		perror("malloc fail");
 
@@ -79,9 +79,8 @@ void	process(t_command *cmd)
 
 	while (cmd)
 	{
-		// if there's more than one cmd and we not in the last cmd,
-		// create a pipe
-		if (cmd->index < cmd_meta.num_cmds - 1 && cmd_meta.num_cmds > 1)
+		// if not last cmd, if
+		if (cmd->index < num_cmds - 1 && num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -97,11 +96,11 @@ void	process(t_command *cmd)
 			//some cleanup, close fds, free pids
 		}
 		else if (pid == 0)
-			child_process(cmd, prev_pipe_read_fd, fd, cmd_meta.num_cmds);
+			child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
 		else
-			parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd);
+			parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
 		cmd = cmd->pipe_next;
 	}
-	wait_for_children(pids, cmd_meta.num_cmds);
+	wait_for_children(pids, num_cmds);
 	free(pids);
 }

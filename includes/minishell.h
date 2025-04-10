@@ -10,11 +10,6 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-typedef struct	s_cmd_meta
-{
-	int	num_cmds;
-}	t_cmd_meta;
-
 typedef struct	s_command
 {
 	char	*name;               // Command name
@@ -27,7 +22,6 @@ typedef struct	s_command
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;
-	t_cmd_meta	cmd_meta;
 }	t_command;
 
 // path_utils
@@ -44,8 +38,10 @@ int	count_commands(t_command *command);
 // executer
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
-void	process(t_command *cmd);
+// TODO parent_process has too many args
 void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
+void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
+void	process(t_command *cmd, int num_cmds);
 // parser
 void	parser(char *line, t_command *command);
 char	**lexer(char *line, char ***tokens);
