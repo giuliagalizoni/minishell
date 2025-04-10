@@ -44,7 +44,10 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		close(fd[1]);
 	}
 	// do we need a case for a single command?
-	execve(cmd->name, cmd->arguments, NULL);
+	if (is_builtin(cmd->name))
+		builtin_router(cmd);
+	else
+		execve(cmd->path, cmd->arguments, NULL);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
@@ -89,6 +92,10 @@ void	process(t_command *cmd, int num_cmds)
 				exit(EXIT_FAILURE);
 			}
 		}
+		//TODO what to do when its more than one cmd?bash seems to just
+		//eat it up
+		if (num_cmds == 1 && is_equal(cmd->name, "exit"))
+			exit_shell(cmd);
 		pid_t pid = fork();
 		if (pid == -1)
 		{
