@@ -2,7 +2,11 @@
 
 static void	push_reset(char ***tokens, char *line, int *start, int *len)
 {
-	arr_push(tokens, ft_substr(line, *start, *len));
+	char	*token;
+
+	token = ft_substr(line, *start, *len);
+	arr_push(tokens, token);
+	free(token);
 	*start = 0;
 	*len = 0;
 }
