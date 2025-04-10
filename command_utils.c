@@ -35,7 +35,6 @@ void	set_command_paths(t_command *command, char **envp)
 void	clear_command_chain(t_command *command)
 {
 	t_command	*tmp;
-	t_command	*current;
 
 	if (!command)
 		return ;
