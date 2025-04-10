@@ -52,41 +52,9 @@ void print_command_list(t_command *command)
         current = current->pipe_next;
     }
 }
-void free_command(t_command *command)
-{
-    if (!command)
-        return;
-
-    // Free the command name
-    if (command->name)
-        free(command->name);
-
-    // Free the arguments array
-    if (command->arguments)
-        free_arr((void **)command->arguments);
-
-    // Free the input redirect
-    if (command->input_redirect)
-        free(command->input_redirect);
-
-    // Free the heredoc delimiter
-    if (command->heredoc_delimiter)
-        free(command->heredoc_delimiter);
-
-    // Free the output redirect
-    if (command->output_redirect)
-        free(command->output_redirect);
-
-    // Recursively free the next command in the pipeline
-    if (command->pipe_next)
-    {
-        free_command(command->pipe_next);
-        free(command->pipe_next);
-    }
-}
 
 // Main function to test lexer and parser
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envp)
 {
     if (argc < 2)
     {
@@ -109,11 +77,11 @@ int main(int argc, char **argv)
 
     // Test parser
     t_command command;
-    parser(line, &command);
+    parser(line, &command, envp);
     print_command_list(&command);
 
     // Free memory
     free_arr((void **)tokens);
-	free_command(&command);
+	clear_command_chain(&command);
     return 0;
 }
