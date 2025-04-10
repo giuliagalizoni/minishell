@@ -52,4 +52,6 @@ void	parser(char *line, t_command *command, char **envp);
 t_command	analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 
+void	exit_shell(t_command *command);
+
 #endif

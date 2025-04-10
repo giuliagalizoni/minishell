@@ -35,21 +35,29 @@ void	set_command_paths(t_command *command, char **envp)
 void	clear_command_chain(t_command *command)
 {
 	t_command	*tmp;
+	t_command	*current;
 
+	if (!command)
+		return ;
 	while (command)
 	{
 		tmp = command->pipe_next;
-		free(command->name);
-		free_arr((void **)command->arguments);
-		/*
-		free(command->input_redirect);
-		free(command->heredoc_delimiter);
-		free(command->output_redirect);
-		free(command->next);
-		*/
-		//free(command);
+		if (command->name)
+			free(command->name);
+		if (command->path)
+			free(command->path);
+		if (command->arguments)
+			free_arr((void **)command->arguments);
+		if (command->input_redirect)
+			free(command->input_redirect);
+		if (command->heredoc_delimiter)
+			free(command->heredoc_delimiter);
+		if (command->output_redirect)
+			free(command->output_redirect);
 		command = tmp;
 	}
+	free(tmp);
+	free(command);
 }
 
 int	count_commands(t_command *command)
