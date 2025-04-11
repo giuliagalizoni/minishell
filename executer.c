@@ -19,7 +19,7 @@ void	wait_for_children(pid_t *pids, int num_cmds)
 	}
 }
 
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds, char **envp)
 {
 	// TODO do i really need this prev_pipe_read_fd
 	// if it's not the first cmd, redirect input
@@ -45,7 +45,7 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	}
 	// do we need a case for a single command?
 	if (is_builtin(cmd->name))
-		builtin_router(cmd);
+		builtin_router(cmd, envp);
 	else
 	{
 		execve(cmd->path, cmd->arguments, NULL);
@@ -67,7 +67,7 @@ void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pip
 	}
 }
 
-void	process(t_command *cmd, int num_cmds)
+void	process(t_command *cmd, int num_cmds, char **envp)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -106,7 +106,7 @@ void	process(t_command *cmd, int num_cmds)
 			//some cleanup, close fds, free pids
 		}
 		else if (pid == 0)
-			child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
+			child_process(cmd, prev_pipe_read_fd, fd, num_cmds, envp);
 		else
 			parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
 		cmd = cmd->pipe_next;

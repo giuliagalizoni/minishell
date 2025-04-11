@@ -4,22 +4,25 @@ void	print_arr(char **arr)
 {
 	int	i;
 
+	printf("printer function\n");
 	i = 0;
 	while(arr[i])
 	{
-		prinf("%s\n", arr[i]);
+		printf("%s\n", arr[i]);
 		i++;
 	}
 }
 void	export(t_command *cmd, char **envp)
 {
 	char **envp_copy;
-	char **exports;
+	// char **exports;
 
+	printf("calling executer\n");
 	envp_copy = envp;
 	if (!cmd->arguments[1])
 	{
-		print_arr(envp_copy);
+		printf("no arguments\n");
+		print_arr(envp);
 	}
 
 	// array of export variables
