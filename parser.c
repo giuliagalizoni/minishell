@@ -4,10 +4,10 @@ static void	init_pipe(t_command *command, char **tokens, int *i, int *index, cha
 {
 	command->is_pipe = 1;
 	tokens++;
-	command->pipe_next = malloc(sizeof(t_command));
-	if (!command->pipe_next)
-		return ;
-	*command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp);
+	// command->pipe_next = malloc(sizeof(t_command));
+	// if (!command->pipe_next)
+	// 	return ;
+	command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp);
 }
 
 static void	check_operators(t_command *command, char **tokens, int i)
@@ -42,36 +42,40 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	command->name = ft_strdup(tokens[i]);
 	command->path =	get_cmd_path(tokens[i], envp);
 }
-t_command	analyser(char **tokens, int index, char **envp)
+t_command	*analyser(char **tokens, int index, char **envp)
 {
-	t_command command;
+	t_command *command;
 	int i;
 
-	command_init(&command);
-	command.index = index;
-	set_name(&command, tokens, envp);
+	command = malloc(sizeof(t_command));
+	if (!command)
+		return (NULL);
+	command_init(command);
+	command->index = index;
+	set_name(command, tokens, envp);
 	i = 0;
 	while (tokens[i])
 	{
 		if (!ft_strncmp(tokens[i], "|", 1))
 		{
-			init_pipe(&command, tokens, &i, &index, envp);
+			init_pipe(command, tokens, &i, &index, envp);
 			break ;
 		}
 		else
-			check_operators(&command, tokens, i);
+			check_operators(command, tokens, i);
 		i++;
 	}
 	return (command);
 }
 
 
-void	parser(char *line, t_command *command, char **envp)
+t_command	*parser(char *line, t_command *command, char **envp)
 {
 	char	**tokens;
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
-	*command = analyser(tokens, 0, envp);
+	command = analyser(tokens, 0, envp);
 	free_arr((void **)tokens);
+	return (command);
 }

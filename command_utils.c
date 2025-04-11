@@ -52,6 +52,7 @@ void	clear_command_chain(t_command *command)
 			free(command->heredoc_delimiter);
 		if (command->output_redirect)
 			free(command->output_redirect);
+		free(command);
 		command = tmp;
 	}
 	free(tmp);

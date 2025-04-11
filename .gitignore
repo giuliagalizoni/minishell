@@ -36,7 +36,7 @@
 *.x86_64
 *.hex
 minishell
-test
+parsertest
 
 # Debug files
 *.dSYM/

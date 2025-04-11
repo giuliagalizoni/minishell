@@ -1,15 +1,5 @@
 #include "includes/minishell.h"
 
-void	exit_shell(t_command *cmd)
-{
-	// TODO not exiting because we are in a forked process
-	// need to move the check for exit to the parent??
-	printf("poopi\n");
-	printf("cmd %s\n", cmd->name);
-	exit(1);
-	printf("why no exiting\n");
-}
-
 int	is_equal(char *name, char *builtin)
 {
 	if (ft_strlen(name) != ft_strlen(builtin))

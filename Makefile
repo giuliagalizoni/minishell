@@ -21,7 +21,7 @@ all: $(LIBFT) $(NAME)
 $(NAME): $(OBJFILES)
 	@echo "Linking $@..."
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $(NAME)
-	@echo "The $@ has been built successfully" 
+	@echo "The $@ has been built successfully"
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.c | $(OBJDIR)
 	@echo "compiling $@"
@@ -53,6 +53,6 @@ re: fclean all
 valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all --suppressions=./suppressions/readline.supp ./minishell
 lextest:
-	cc $(CFLAGS) lexer_test/lexer_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o lexer_test
+	cc $(CFLAGS) lexer_test/lexer_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o parsertest
 exectest:
 	cc $(CFLAGS) exec_test/exec_test.c command_utils.c path_utils.c array_utils.c executer.c parser.c lexer.c $(LDFLAGS) -o exec_test
