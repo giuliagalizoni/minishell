@@ -69,7 +69,7 @@ t_command	*analyser(char **tokens, int index, char **envp)
 }
 
 
-void	parser(char *line, t_command *command, char **envp)
+t_command	*parser(char *line, t_command *command, char **envp)
 {
 	char	**tokens;
 
@@ -77,4 +77,5 @@ void	parser(char *line, t_command *command, char **envp)
 	tokens = lexer(line, &tokens);
 	command = analyser(tokens, 0, envp);
 	free_arr((void **)tokens);
+	return (command);
 }
