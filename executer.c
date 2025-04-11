@@ -23,7 +23,7 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 {
 	// TODO do i really need this prev_pipe_read_fd
 	// if it's not the first cmd, redirect input
-	if (prev_pipe_read_fd != STDIN_FILENO) 
+	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
 		{
@@ -47,9 +47,12 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	if (is_builtin(cmd->name))
 		builtin_router(cmd);
 	else
+	{
 		execve(cmd->path, cmd->arguments, NULL);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
+		perror("execve failed"); //move this here so the error wont be printed when it's builtin
+		exit(EXIT_FAILURE);
+	}
+	exit(EXIT_SUCCESS); //put this here to exit the child process when builtin, maybe we can move it to the router later
 }
 
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
