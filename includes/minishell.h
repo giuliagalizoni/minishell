@@ -53,5 +53,6 @@ int	is_equal(char *name, char *builtin);
 void	builtin_router(t_command *cmd);
 
 void	exit_shell(t_command *command);
+void	echo(t_command *cmd);
 
 #endif
