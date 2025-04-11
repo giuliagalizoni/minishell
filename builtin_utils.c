@@ -24,4 +24,6 @@ void	builtin_router(t_command *cmd)
 {
 	if (is_equal(cmd->name, "exit"))
 		exit_shell(cmd);
+	else if (is_equal(cmd->name, "echo"))
+		echo(cmd);
 }
