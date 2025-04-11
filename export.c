@@ -1,7 +1,27 @@
 #include "includes/minishell.h"
 
-void	export()
+void	print_arr(char **arr)
 {
+	int	i;
+
+	i = 0;
+	while(arr[i])
+	{
+		prinf("%s\n", arr[i]);
+		i++;
+	}
+}
+void	export(t_command *cmd, char **envp)
+{
+	char **envp_copy;
+	char **exports;
+
+	envp_copy = envp;
+	if (!cmd->arguments[1])
+	{
+		print_arr(envp_copy);
+	}
+
 	// array of export variables
 	// copy of envp
 
