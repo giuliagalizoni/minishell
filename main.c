@@ -20,7 +20,7 @@ int	main(int argc, char **argv, char **envp) {
 		command = parser(line, command, envp);
 		// set_command_paths(command, envp);
 		num_cmds = count_commands(command);
-		process(command, num_cmds);
+		process(command, num_cmds, envp);
 		clear_command_chain(command);
 		if (!line)
 		      printf("\nExiting minishell\n");

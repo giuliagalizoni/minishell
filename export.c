@@ -14,11 +14,11 @@ void	print_arr(char **arr)
 }
 void	export(t_command *cmd, char **envp)
 {
-	char **envp_copy;
+	// char **envp_copy;
 	// char **exports;
 
 	printf("calling executer\n");
-	envp_copy = envp;
+	// envp_copy = envp;
 	if (!cmd->arguments[1])
 	{
 		printf("no arguments\n");
