@@ -98,7 +98,10 @@ void	process(t_command *cmd, int num_cmds)
 		//TODO what to do when its more than one cmd?bash seems to just
 		//eat it up
 		if (num_cmds == 1 && is_equal(cmd->name, "exit"))
+		{
+			free(pids);
 			exit_shell(cmd);
+		}
 		pid_t pid = fork();
 		if (pid == -1)
 		{
