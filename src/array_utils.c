@@ -53,7 +53,7 @@ char	**arr_push(char ***arr, char *str)
 	{
 		// There was a potential memory leak here where new_arr
 		// was not being freed if ft_strdup failed
-		free_arr(new_arr);
+		free_arr((void **)new_arr);
 		new_arr = NULL;
 		return NULL;
 	}
