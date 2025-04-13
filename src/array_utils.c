@@ -14,7 +14,8 @@ void	free_arr(void **arr)
 		i++;
 	}
 	free(arr);
-	arr = NULL;
+//	arr = NULL; // no point in NULLing the pointer here as it's local
+//	- need to do it from the code that owns the pointer!
 }
 
 char	**arr_push(char ***arr, char *str)
