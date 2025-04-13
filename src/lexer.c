@@ -23,6 +23,7 @@ static void	handle_quotes(char *line, char ***tokens, int *i, int *start, int *l
 	{
 		perror("Invalid quotes");
 		free_arr((void**)tokens);
+		tokens = NULL;
 		return ;
 	}
 	*len = *i - *start;
