@@ -7,11 +7,8 @@ int	main(int argc, char **argv, char **envp) {
 	(void)argc;
 	(void)argv;
 
-	command = malloc(sizeof(t_command));
-	if (!command)
-		return (1);
-	command_init(command);
-	free(command);
+
+	command = NULL;
 	using_history();
 	while (1)
 	{
