@@ -55,4 +55,9 @@ void	builtin_router(t_command *cmd);
 void	exit_shell(t_command *command);
 void	echo(t_command *cmd);
 
+//test functions
+void print_tokens(char **tokens);
+void print_command(t_command *command);
+void print_command_list(t_command *command);
+
 #endif

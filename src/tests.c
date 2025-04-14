@@ -1,4 +1,4 @@
-#include "../includes/minishell.h"
+#include "includes/minishell.h"
 
 // ANSI color codes
 #define RESET "\033[0m"
@@ -52,36 +52,3 @@ void print_command_list(t_command *command)
         current = current->pipe_next;
     }
 }
-
-// Main function to test lexer and parser
-// int main(int argc, char **argv, char **envp)
-// {
-//     if (argc < 2)
-//     {
-//         printf(RED "Usage: %s <command_line>\n" RESET, argv[0]);
-//         return 1;
-//     }
-
-//     char *line = argv[1];
-//     printf(BLUE "Input line: " RESET "%s\n\n", line);
-
-//     // Test lexer
-//     char **tokens = NULL;
-//     tokens = lexer(line, &tokens);
-//     if (!tokens)
-//     {
-//         printf(RED "Lexer failed.\n" RESET);
-//         return 1;
-//     }
-//     print_tokens(tokens);
-
-//     // Test parser
-//     t_command command;
-//     parser(line, &command, envp);
-//     print_command_list(&command);
-
-//     // Free memory
-//     free_arr((void **)tokens);
-// 	clear_command_chain(&command);
-//     return 0;
-// }

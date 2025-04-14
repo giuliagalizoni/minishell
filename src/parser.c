@@ -65,6 +65,7 @@ t_command	*analyser(char **tokens, int index, char **envp)
 			check_operators(command, tokens, i);
 		i++;
 	}
+	print_command(command);
 	return (command);
 }
 
@@ -75,7 +76,9 @@ t_command	*parser(char *line, t_command *command, char **envp)
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
+	print_tokens(tokens);
 	command = analyser(tokens, 0, envp);
+	print_command_list(command);
 	free_arr((void **)tokens);
 	return (command);
 }
