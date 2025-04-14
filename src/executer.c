@@ -38,18 +38,16 @@ static void	input_redirection(t_command *cmd)
 
 static void	output_redirection(t_command *cmd)
 {
-	int	i;
 	int	file;
 
-	i = 0;
-	while(cmd->output_redirect[i])
+	while(cmd->outfile)
 	{
-		file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+		file = open(cmd->outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 1);
 		close(file);
-		i++;
+		cmd->outfile = cmd->outfile->next;
 	}
 }
 
@@ -80,7 +78,7 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	}
 	if (cmd->input_redirect)
 		input_redirection(cmd);
-	if (cmd->output_redirect)
+	if (cmd->outfile)
 		output_redirection(cmd);
 	else
 	{

@@ -10,6 +10,22 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+/*
+typedef struct	s_envvars
+{
+	char	*key;
+	char	*value;
+	struct s_vars	*next;
+}	t_envvars;
+
+*/
+typedef struct	s_outfile
+{
+	int	is_append;
+	char	*filename;
+	struct s_outfile *next;
+}	t_outfile;
+
 typedef struct	s_command
 {
 	char	*name;               // Command name
@@ -18,8 +34,9 @@ typedef struct	s_command
 	char	**input_redirect;        // Input redirection file
 	int	is_heredoc;             // 1 if "<<", 0 otherwise
 	char	*heredoc_delimiter;     // Delimiter for "<<"
-	char	**output_redirect;       // Output redirection file
-	int	append_output;           // Boolean for append mode >> or >
+//	char	**output_redirect;       // Output redirection file
+//	int	append_output;           // Boolean for append mode >> or >
+	t_outfile	*outfile;
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;

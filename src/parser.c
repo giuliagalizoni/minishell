@@ -20,6 +20,7 @@ static void	check_operators(t_command *command, char **tokens, int i)
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
+	/*
 	else if (!ft_strncmp(tokens[i], ">>", 2))
 		command->append_output = 1;
 	else if (!ft_strncmp(tokens[i], ">", 1))
@@ -28,6 +29,7 @@ static void	check_operators(t_command *command, char **tokens, int i)
 		arr_push(&command->output_redirect, tokens[i]);
 	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
 		arr_push(&command->output_redirect, tokens[i]);
+		*/
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
@@ -43,12 +45,36 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	command->name = ft_strdup(tokens[i]);
 	command->path =	get_cmd_path(tokens[i], envp);
 }
+
+void	add_outfile(t_command *cmd, char **tokens, int i)
+{
+	t_outfile	*outfile;
+	if (cmd->outfile)
+	{
+		while(cmd->outfile->next)
+			cmd->outfile = cmd->outfile->next;
+		cmd->outfile->next = malloc(sizeof(t_outfile));
+		outfile = cmd->outfile->next;
+	}
+	else
+	{
+		cmd->outfile = malloc(sizeof(t_outfile));
+		outfile = cmd->outfile;
+	}
+	if (outfile == NULL)
+		perror("Error allocating memory");// TODO the usual, make better cleanup
+	outfile->is_append = 0;
+	outfile->filename = ft_strdup(tokens[i + 1]);
+}
+
 t_command	*analyser(char **tokens, int index, char **envp)
 {
-	t_command *command;
+	t_command	*command;
+	t_outfile	*outfile;
 	int i;
 
 	command = malloc(sizeof(t_command));
+	outfile = NULL;
 	if (!command)
 		return (NULL);
 	command_init(command);
@@ -61,6 +87,10 @@ t_command	*analyser(char **tokens, int index, char **envp)
 		{
 			init_pipe(command, tokens, &i, &index, envp);
 			break ;
+		}
+		else if (!ft_strncmp(tokens[i], ">", 1) || !(ft_strncmp(tokens[i], ">>", 2)))
+		{
+			add_outfile(command, tokens, i);
 		}
 		else
 			check_operators(command, tokens, i);
