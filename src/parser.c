@@ -17,7 +17,7 @@ static void	check_operators(t_command *command, char **tokens, int i)
 	else if (!ft_strncmp(tokens[i], "<", 1))
 		command->is_heredoc = 0;
 	else if (i > 0 && !ft_strncmp(tokens[i-1], "<", 1))
-		command->input_redirect = ft_strdup(tokens[i]);
+		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && !ft_strncmp(tokens[i-1], "<<", 2))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
 	else if (!ft_strncmp(tokens[i], ">>", 2))
@@ -25,9 +25,9 @@ static void	check_operators(t_command *command, char **tokens, int i)
 	else if (!ft_strncmp(tokens[i], ">", 1))
 		command->append_output = 0;
 	else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
-		command->output_redirect = ft_strdup(tokens[i]);
+		arr_push(&command->output_redirect, tokens[i]);
 	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
-		command->output_redirect = ft_strdup(tokens[i]);
+		arr_push(&command->output_redirect, tokens[i]);
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
