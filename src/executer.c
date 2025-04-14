@@ -82,9 +82,6 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		input_redirection(cmd);
 	if (cmd->output_redirect)
 		output_redirection(cmd);
-	// do we need a case for a single command?
-	if (is_builtin(cmd->name))
-		builtin_router(cmd);
 	else
 	{
 		execve(cmd->path, cmd->arguments, NULL);
@@ -134,24 +131,31 @@ void	process(t_command *cmd, int num_cmds)
 				exit(EXIT_FAILURE);
 			}
 		}
+		//TODO do we need a case for a single command?
 		//TODO what to do when its more than one cmd?bash seems to just
 		//eat it up
-		if (num_cmds == 1 && is_equal(cmd->name, "exit"))
+		if (is_builtin(cmd->name))
 		{
-			free(pids);
-			exit_shell(cmd);
+			// TODO what are we doing with the pipes and everything
+			// here
+			builtin_router(cmd);
+			cmd = cmd->pipe_next;
+			// include parent process cleanup here?
 		}
-		pid_t pid = fork();
-		if (pid == -1)
-		{
-			perror("fork fail");
-			//some cleanup, close fds, free pids
-		}
-		else if (pid == 0)
-			child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
 		else
-			parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
-		cmd = cmd->pipe_next;
+		{
+			pid_t pid = fork();
+			if (pid == -1)
+			{
+				perror("fork fail");
+				//some cleanup, close fds, free pids
+			}
+			else if (pid == 0)
+				child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
+			else
+				parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
+			cmd = cmd->pipe_next;
+		}
 	}
 	wait_for_children(pids, num_cmds);
 	free(pids);
