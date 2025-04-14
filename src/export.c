@@ -68,25 +68,38 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 
 void	export(t_command *cmd, char **envp, t_vars **exp_vars)
 {
-	// char	**envp_copy;
-	char	**temp;
 	int i;
+	char *arg;
+	char *eq;
+	char *key;
+	char *value;
 
 	if (!cmd->arguments[1])
+	{
 		print_arr(envp);
-	// envp_copy = envp;
+		return ;
+	}
 	i = 1;
 	while(cmd->arguments[i])
 	{
-		temp = ft_split(cmd->arguments[i], '=');
-		if (!temp[0] || !temp[i])
+		arg = cmd->arguments[i];
+		eq = ft_strchr(arg, '=');
+		if (!eq)
+			add_or_update_var(exp_vars, arg, NULL);
+		else
 		{
-			free_arr((void **)temp);
-			i++;
-			continue;
+			key = ft_substr(arg, 0, eq - arg);
+			value = ft_strdup(eq+1);
+			if ((value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
+			{
+				char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
+				free(value);
+				value = temp;
+			}
+			add_or_update_var(exp_vars, key, value);
+			free(key);
+			free(value);
 		}
-		add_or_update_var(exp_vars, temp[0], temp[1]);
-		free_arr((void **)temp);
 		i++;
 	}
 	print_vars(*exp_vars);
