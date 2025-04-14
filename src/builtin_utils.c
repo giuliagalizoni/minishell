@@ -20,12 +20,12 @@ int	is_builtin(char *name)
 	return (0);
 }
 
-void	builtin_router(t_command *cmd, char **envp)
+void	builtin_router(t_command *cmd, char **envp, t_vars **exp_vars)
 {
 	if (is_equal(cmd->name, "exit"))
 		exit_shell(cmd);
 	else if (is_equal(cmd->name, "echo"))
 		echo(cmd);
 	else if (is_equal(cmd->name, "export"))
-		export(cmd, envp);
+		export(cmd, envp, exp_vars);
 }
