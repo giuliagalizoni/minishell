@@ -10,7 +10,7 @@ int	main(int argc, char **argv, char **envp) {
 
 
 	command = NULL;
-	exp_vars = NULL;
+	exp_vars = init_envp(envp);
 	using_history();
 	while (1)
 	{
@@ -19,7 +19,7 @@ int	main(int argc, char **argv, char **envp) {
 		command = parser(line, command, envp);
 		// set_command_paths(command, envp);
 		num_cmds = count_commands(command);
-		process(command, num_cmds, envp, &exp_vars);
+		process(command, num_cmds, &exp_vars);
 		clear_command_chain(command);
 		if (!line)
 		      printf("\nExiting minishell\n");

@@ -53,9 +53,9 @@ int	count_commands(t_command *command);
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
 // TODO parent_process has too many args
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds, char **envp, t_vars **exp_vars);
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds, t_vars **exp_vars);
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
-void	process(t_command *cmd, int num_cmds, char **envp, t_vars **exp_vars);
+void	process(t_command *cmd, int num_cmds, t_vars **exp_vars);
 // parser
 t_command	*parser(char *line, t_command *command, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp);
@@ -63,13 +63,13 @@ char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
 int	is_equal(char *name, char *builtin);
-void	builtin_router(t_command *cmd, char **envp, t_vars **exp_vars);
+void	builtin_router(t_command *cmd, t_vars **exp_vars);
 
 void	exit_shell(t_command *command);
 void	echo(t_command *cmd);
-void	export(t_command *cmd, char **envp, t_vars **exp_vars);
+void	export(t_command *cmd, t_vars **exp_vars);
 
 
-void	print_vars(t_vars *vars);
+t_vars *init_envp(char **envp);
 
 #endif

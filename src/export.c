@@ -1,17 +1,5 @@
 #include "includes/minishell.h"
 
-void	print_arr(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while(arr[i])
-	{
-		printf("export %s\n", arr[i]);
-		i++;
-	}
-}
-
 t_vars	*find_last(t_vars *lst)
 {
 	if (!lst)
@@ -40,9 +28,59 @@ void	print_vars(t_vars *vars)
 {
 	while (vars)
 	{
-		printf("key: %s\nvalue: %s\n", vars->key, vars->value);
+		printf("export %s=\"%s\"\n", vars->key, vars->value);
 		vars = vars->next;
 	}
+}
+
+t_vars *parse_var(const char *arg)
+{
+    t_vars *new_var;
+    char *eq;
+    char *key;
+    char *value;
+
+    eq = ft_strchr(arg, '=');
+    if (!eq)
+    {
+        key = ft_strdup(arg);
+        value = NULL;
+    }
+    else
+    {
+        key = ft_substr(arg, 0, eq - arg);
+        value = ft_strdup(eq + 1);
+
+        // Handle quoted values
+        if (value && (value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
+        {
+            char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
+            free(value);
+            value = temp;
+        }
+    }
+
+    new_var = malloc(sizeof(t_vars));
+    new_var->key = key;
+    new_var->value = value;
+    new_var->next = NULL;
+
+    return new_var;
+}
+
+t_vars *init_envp(char **envp)
+{
+	t_vars *head = NULL;
+	t_vars *new_var;
+	int i = 0;
+
+	while (envp[i])
+	{
+		new_var = parse_var(envp[i]);
+		push_list(&head, new_var);
+		i++;
+	}
+	return head;
 }
 
 void	add_or_update_var(t_vars **head, char *key, char *value)
@@ -66,44 +104,33 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	push_list(head, new_var);
 }
 
-void	export(t_command *cmd, char **envp, t_vars **exp_vars)
+void	export(t_command *cmd, t_vars **exp_vars)
 {
 	int i;
-	char *arg;
-	char *eq;
-	char *key;
-	char *value;
+	t_vars	*new_var;
 
 	if (!cmd->arguments[1])
 	{
-		print_arr(envp);
+		print_vars(*exp_vars);
 		return ;
 	}
 	i = 1;
-	while(cmd->arguments[i])
+	while (cmd->arguments[i])
 	{
-		arg = cmd->arguments[i];
-		eq = ft_strchr(arg, '=');
-		if (!eq)
-			add_or_update_var(exp_vars, arg, NULL);
-		else
+		new_var = parse_var(cmd->arguments[i]);
+		if (new_var)
 		{
-			key = ft_substr(arg, 0, eq - arg);
-			value = ft_strdup(eq+1);
-			if ((value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
-			{
-				char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
-				free(value);
-				value = temp;
-			}
-			add_or_update_var(exp_vars, key, value);
-			free(key);
-			free(value);
+			add_or_update_var(exp_vars, new_var->key, new_var->value);
+			free(new_var->key);
+			free(new_var->value);
+			free(new_var);
 		}
 		i++;
 	}
-	print_vars(*exp_vars);
+	printf("Final export list:\n");
+	print_vars(*exp_vars); //debug
 }
+
 
 	// key=value
 	// if key -> update
