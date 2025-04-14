@@ -1,5 +1,9 @@
 #include "includes/minishell.h"
 
+// TODO
+// order list by ascii
+// deal with syntax errors *= bash: export: `*=': not a valid identifier
+// cleanup before exiting
 t_vars	*find_last(t_vars *lst)
 {
 	if (!lst)
@@ -130,14 +134,3 @@ void	export(t_command *cmd, t_vars **exp_vars)
 	printf("Final export list:\n");
 	print_vars(*exp_vars); //debug
 }
-
-
-	// key=value
-	// if key -> update
-	// if !key -> add key and value
-	// if !value -> keep key empty
-	// add key to envp
-
-	//export alone should show all variables
-
-	//syntax errors
