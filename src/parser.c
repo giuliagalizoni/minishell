@@ -37,6 +37,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	int i;
 	// errors "unexpected token" like <<< or < < < > or
 	i = 0;
+	// need to also account for > and >>
 	while(tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
