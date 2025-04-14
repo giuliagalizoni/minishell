@@ -138,7 +138,7 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 		{
 			// TODO what are we doing with the pipes and everything
 			// here
-			builtin_router(cmd);
+			builtin_router(cmd, exp_vars);
 			cmd = cmd->pipe_next;
 			// include parent process cleanup here?
 		}

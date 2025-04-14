@@ -53,7 +53,7 @@ int	count_commands(t_command *command);
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
 // TODO parent_process has too many args
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds, t_vars **exp_vars);
+void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
 void	process(t_command *cmd, int num_cmds, t_vars **exp_vars);
 // parser
