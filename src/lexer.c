@@ -23,6 +23,7 @@ static void	handle_quotes(char *line, char ***tokens, int *i, int *start, int *l
 	{
 		perror("Invalid quotes");
 		free_arr((void**)tokens);
+		tokens = NULL;
 		return ;
 	}
 	*len = *i - *start;
@@ -48,8 +49,6 @@ static void	handle_tokens(char *line, char ***tokens, int *i, int *start, int *l
 		(*i)++;
 	*len = *i - *start;
 	push_reset(tokens, line, start, len);
-	if (line[*i])
-		(*i)++;
 }
 char **lexer(char *line, char ***tokens)
 {
