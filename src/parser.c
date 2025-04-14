@@ -65,7 +65,6 @@ t_command	*analyser(char **tokens, int index, char **envp)
 			check_operators(command, tokens, i);
 		i++;
 	}
-	print_command(command);
 	return (command);
 }
 

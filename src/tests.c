@@ -23,6 +23,7 @@ void print_command(t_command *command)
 {
     printf(GREEN "Command index: " RESET "%d\n", command->index);
     printf(GREEN "Command name: " RESET "%s\n", command->name);
+
     if (command->arguments)
     {
         printf(GREEN "Arguments:\n" RESET);
@@ -32,11 +33,27 @@ void print_command(t_command *command)
     else
         printf(GREEN "Arguments: " RESET "(none)\n");
 
-    printf(MAGENTA "Input redirect: " RESET "%s\n", command->input_redirect ? command->input_redirect : "(none)");
+    if (command->input_redirect)
+    {
+        printf(MAGENTA "Input redirects:\n" RESET);
+        for (int i = 0; command->input_redirect[i]; i++)
+            printf(YELLOW "  input[%d]: " RESET "%s\n", i, command->input_redirect[i]);
+    }
+    else
+        printf(MAGENTA "Input redirects: " RESET "(none)\n");
+
+    if (command->output_redirect)
+    {
+        printf(MAGENTA "Output redirects:\n" RESET);
+        for (int i = 0; command->output_redirect[i]; i++)
+            printf(YELLOW "  output[%d]: " RESET "%s\n", i, command->output_redirect[i]);
+    }
+    else
+        printf(MAGENTA "Output redirects: " RESET "(none)\n");
+
     printf(MAGENTA "Heredoc delimiter: " RESET "%s\n", command->heredoc_delimiter ? command->heredoc_delimiter : "(none)");
     printf(MAGENTA "Is heredoc: " RESET "%d\n", command->is_heredoc);
     printf(MAGENTA "Append output: " RESET "%d\n", command->append_output);
-    printf(MAGENTA "Output redirect: " RESET "%s\n", command->output_redirect ? command->output_redirect : "(none)");
     printf(MAGENTA "Is pipe: " RESET "%d\n", command->is_pipe);
     printf("\n");
 }
