@@ -17,13 +17,6 @@ typedef struct s_vars
 	struct s_vars	*next;
 } t_vars;
 
-typedef struct s_vars
-{
-	char	*key;
-	char	*value;
-	struct s_vars	*next;
-} t_vars;
-
 typedef struct	s_command
 {
 	char	*name;               // Command name
@@ -38,12 +31,6 @@ typedef struct	s_command
 	struct	s_command *pipe_next; // |
 	int	index;
 }	t_command;
-
-typedef struct s_msh
-{
-	t_vars **env;
-	t_command **command;
-} t_msh;
 
 typedef struct s_msh
 {
