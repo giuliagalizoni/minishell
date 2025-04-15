@@ -42,7 +42,7 @@ static void	output_redirection(t_command *cmd)
 
 	while(cmd->outfile)
 	{
-		file = open(cmd->outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+	//	file = open(cmd->outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
 		//file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here

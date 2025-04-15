@@ -70,7 +70,6 @@ t_command	*analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
-int	is_equal(char *name, char *builtin);
 void	builtin_router(t_command *cmd, t_vars **exp_vars);
 
 void	exit_shell(t_command *command);
@@ -78,7 +77,9 @@ void	echo(t_command *cmd);
 void	export(t_command *cmd, t_vars **exp_vars);
 
 //list_utils - maybe rename to redirection_utils or sthg like that later 
-void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles);
+void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
+//general_utils
+int	is_equal(char *str1, char *str2);
 
 t_vars *init_envp(char **envp);
 
