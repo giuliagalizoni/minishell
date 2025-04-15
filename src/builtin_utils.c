@@ -1,14 +1,5 @@
 #include "includes/minishell.h"
 
-int	is_equal(char *name, char *builtin)
-{
-	if (ft_strlen(name) != ft_strlen(builtin))
-		return 0;
-	if (!ft_strncmp(name, builtin, ft_strlen(builtin)))
-		return (1);
-	return (0);
-
-}
 int	is_builtin(char *name)
 {
 	if (is_equal(name, "echo") || is_equal(name, "cd") || is_equal(name, "pwd"))

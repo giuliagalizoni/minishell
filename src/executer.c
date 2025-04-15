@@ -36,20 +36,21 @@ static void	input_redirection(t_command *cmd)
 	}
 }
 
-static void	output_redirection(t_command *cmd)
+static void	output_redirection(t_outfile *outfile)
 {
-	int	i;
 	int	file;
 
-	i = 0;
-	while(cmd->output_redirect[i])
+	while(outfile)
 	{
-		file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (outfile->is_append)
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644); 
+		else
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 1);
 		close(file);
-		i++;
+		outfile = outfile->next;
 	}
 }
 
@@ -78,17 +79,15 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		}
 		close(fd[1]);
 	}
+	//TODO what to do with builtins?if i just move his code to process it
+	//hangs. Mayb just copy it to the builtin router?
 	if (cmd->input_redirect)
 		input_redirection(cmd);
-	if (cmd->output_redirect)
-		output_redirection(cmd);
-	else
-	{
-		execve(cmd->path, cmd->arguments, NULL);
-		perror("execve failed"); //move this here so the error wont be printed when it's builtin
-		exit(EXIT_FAILURE);
-	}
-	exit(EXIT_SUCCESS); //put this here to exit the child process when builtin, maybe we can move it to the router later
+	if (cmd->outfile)
+		output_redirection(cmd->outfile);
+	execve(cmd->path, cmd->arguments, NULL);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
 }
 
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
@@ -159,4 +158,6 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 	}
 	wait_for_children(pids, num_cmds);
 	free(pids);
+	close(fd[0]);
+	close(fd[1]);
 }

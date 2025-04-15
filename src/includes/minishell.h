@@ -17,6 +17,13 @@ typedef struct s_vars
 	struct s_vars	*next;
 } t_vars;
 
+typedef struct	s_outfile
+{
+	int	is_append;
+	char	*filename;
+	struct s_outfile *next;
+}	t_outfile;
+
 typedef struct	s_command
 {
 	char	*name;               // Command name
@@ -25,8 +32,9 @@ typedef struct	s_command
 	char	**input_redirect;        // Input redirection file
 	int	is_heredoc;             // 1 if "<<", 0 otherwise
 	char	*heredoc_delimiter;     // Delimiter for "<<"
-	char	**output_redirect;       // Output redirection file
-	int	append_output;           // Boolean for append mode >> or >
+//	char	**output_redirect;       // Output redirection file
+//	int	append_output;           // Boolean for append mode >> or >
+	t_outfile	*outfile;
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;
@@ -62,13 +70,16 @@ t_command	*analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
-int	is_equal(char *name, char *builtin);
 void	builtin_router(t_command *cmd, t_vars **exp_vars);
 
 void	exit_shell(t_command *command);
 void	echo(t_command *cmd);
 void	export(t_command *cmd, t_vars **exp_vars);
 
+//list_utils - maybe rename to redirection_utils or sthg like that later 
+void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
+//general_utils
+int	is_equal(char *str1, char *str2);
 
 t_vars *init_envp(char **envp);
 
