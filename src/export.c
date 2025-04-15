@@ -32,6 +32,8 @@ void	print_vars(t_vars *vars)
 {
 	while (vars)
 	{
+		if (!vars->key)
+			return ;
 		printf("export %s=\"%s\"\n", vars->key, vars->value);
 		vars = vars->next;
 	}
@@ -54,8 +56,9 @@ t_vars *parse_var(const char *arg)
     {
         key = ft_substr(arg, 0, eq - arg);
         value = ft_strdup(eq + 1);
-        // Handle quoted values
-        if (value && (value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
+        // if value == ""
+		//		value = next argument on cmd->arguments array
+		if (value && (value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
         {
             char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
             free(value);
@@ -105,6 +108,7 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	new_var = malloc(sizeof(t_vars));
 	new_var->key = ft_strdup(key);
 	new_var->value = ft_strdup(value);
+	new_var->next = NULL;
 	push_list(head, new_var);
 }
 
