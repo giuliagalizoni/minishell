@@ -4,14 +4,12 @@ static void	init_pipe(t_command *command, char **tokens, int *i, int *index, cha
 {
 	command->is_pipe = 1;
 	tokens++;
-	// command->pipe_next = malloc(sizeof(t_command));
-	// if (!command->pipe_next)
-	// 	return ;
 	command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp);
 }
 
 static void	check_operators(t_command *command, char **tokens, int i)
 {
+	// change to isequal
 	if (!ft_strncmp(tokens[i], "<<", 2))
 		command->is_heredoc = 1;
 	else if (!ft_strncmp(tokens[i], "<", 1))
@@ -37,6 +35,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	int i;
 	// errors "unexpected token" like <<< or < < < > or
 	i = 0;
+	// need to also account for > and >>
 	while(tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
