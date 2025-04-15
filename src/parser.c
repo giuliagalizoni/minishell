@@ -44,27 +44,6 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	command->path =	get_cmd_path(tokens[i], envp);
 }
 
-void	add_outfile(t_command *cmd, char **tokens, int i)
-{
-	t_outfile	*outfile;
-	if (cmd->outfile)
-	{
-		while(cmd->outfile->next)
-			cmd->outfile = cmd->outfile->next;
-		cmd->outfile->next = malloc(sizeof(t_outfile));
-		outfile = cmd->outfile->next;
-	}
-	else
-	{
-		cmd->outfile = malloc(sizeof(t_outfile));
-		outfile = cmd->outfile;
-	}
-	if (outfile == NULL)
-		perror("Error allocating memory");// TODO the usual, make better cleanup
-	outfile->is_append = 0;
-	outfile->filename = ft_strdup(tokens[i + 1]);
-}
-
 t_command	*analyser(char **tokens, int index, char **envp)
 {
 	t_command	*command;

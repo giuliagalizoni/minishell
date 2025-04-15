@@ -77,6 +77,8 @@ void	exit_shell(t_command *command);
 void	echo(t_command *cmd);
 void	export(t_command *cmd, t_vars **exp_vars);
 
+//list_utils - maybe rename to redirection_utils or sthg like that later 
+void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles);
 
 t_vars *init_envp(char **envp);
 
