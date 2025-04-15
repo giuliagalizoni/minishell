@@ -21,7 +21,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   path_utils.c\
 	   builtin_utils.c\
 	   exit.c\
-	   echo.c)
+	   echo.c\
+	   export.c)
 
 SRCFILES := $(MODULES) $(SRCDIR)/main.c
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))

@@ -44,7 +44,7 @@ static void	output_redirection(t_command *cmd)
 	i = 0;
 	while(cmd->output_redirect[i])
 	{
-		file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+		file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 1);
@@ -103,7 +103,7 @@ void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pip
 	}
 }
 
-void	process(t_command *cmd, int num_cmds)
+void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -138,7 +138,7 @@ void	process(t_command *cmd, int num_cmds)
 		{
 			// TODO what are we doing with the pipes and everything
 			// here
-			builtin_router(cmd);
+			builtin_router(cmd, exp_vars);
 			cmd = cmd->pipe_next;
 			// include parent process cleanup here?
 		}
