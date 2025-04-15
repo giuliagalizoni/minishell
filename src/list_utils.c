@@ -37,3 +37,20 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	tmp->next = outfile;
 	outfile->next = NULL;
 }
+
+
+/*
+ * TODO need to clear up that lsit of files but this is not it
+void	filelistclear(t_outfile **outfiles)
+{
+	if ((*outfiles)->next)
+		filelistclear(&(*outfiles)->next);
+	if (*outfiles)
+	{
+		free(&(*outfiles)->filename);
+		free(*outfiles);
+	}
+
+	outfiles = NULL;
+}
+*/

@@ -57,6 +57,12 @@ void	clear_command_chain(t_command *command)
 		if (command->output_redirect)
 			free(command->output_redirect);
 			*/
+		if (command->outfile)
+		{
+			free(command->outfile->filename);
+			free(command->outfile);
+			command->outfile = NULL;
+		}
 		free(command);
 		command = tmp;
 	}

@@ -66,10 +66,7 @@ t_command	*analyser(char **tokens, int index, char **envp)
 			break ;
 		}
 		else if (!ft_strncmp(tokens[i], ">", 1) || !(ft_strncmp(tokens[i], ">>", 2)))
-		{
-			printf("adding outfile %s\n", tokens[i + 1]);
 			add_outfile(command, tokens, &command->outfile, &i);
-		}
 		else
 			check_operators(command, tokens, i);
 		i++;
