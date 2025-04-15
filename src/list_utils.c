@@ -22,7 +22,6 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	if (outfile == NULL)
 		perror("Error allocating memory"); // TODO the usual, fix
 						   // cleanup
-	//TODO change to is_equal
 	if (is_equal(tokens[*i], ">"))
 		outfile->is_append = 0;
 	else if (is_equal(tokens[*i], ">>"))
@@ -31,13 +30,10 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	(*i)++;
 	if (!*outfiles)
 	{
-		printf("adding first outfile %s with redirection=%d\n", outfile->filename, outfile->is_append);
 		*outfiles = outfile;
 		return ;
 	}
-	printf("currently at outfile nr %d with name %s and redirection %d\n", *i, outfile->filename, outfile->is_append);
 	tmp = filelast(*outfiles);
-	printf("adding it to last outfile named %s\n", tmp->filename);
 	tmp->next = outfile;
 	outfile->next = NULL;
 }

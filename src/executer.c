@@ -42,7 +42,7 @@ static void	output_redirection(t_command *cmd)
 
 	while(cmd->outfile)
 	{
-	//	file = open(cmd->outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+		file = open(cmd->outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
 		//file = open(cmd->output_redirect[i], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
@@ -81,13 +81,9 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		input_redirection(cmd);
 	if (cmd->outfile)
 		output_redirection(cmd);
-	else
-	{
-		execve(cmd->path, cmd->arguments, NULL);
-		perror("execve failed"); //move this here so the error wont be printed when it's builtin
-		exit(EXIT_FAILURE);
-	}
-	exit(EXIT_SUCCESS); //put this here to exit the child process when builtin, maybe we can move it to the router later
+	execve(cmd->path, cmd->arguments, NULL);
+	perror("execve failed");
+	exit(EXIT_FAILURE);
 }
 
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
