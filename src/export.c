@@ -1,7 +1,6 @@
 #include "includes/minishell.h"
 
 // TODO
-// order list by ascii
 // deal with syntax errors *= bash: export: `*=': not a valid identifier
 // cleanup before exiting
 t_vars	*find_last(t_vars *lst)
@@ -34,7 +33,10 @@ void	print_vars(t_vars *vars)
 	{
 		if (!vars->key)
 			return ;
-		printf("export %s=\"%s\"\n", vars->key, vars->value);
+		if (vars->value)
+			printf("export %s=\"%s\"\n", vars->key, vars->value);
+		else
+		printf("export %s\n", vars->key);
 		vars = vars->next;
 	}
 }
@@ -106,9 +108,11 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 		if (is_equal(current->key, key))
 		{
 			free(current->value);
-			// maybe I need to init ft_strdup in a variable so I can free
-			// it's not working so I'll leave it for later
-			current->value = ft_strdup(value);
+			// maybe I need to init ft_strdup in a variable so I can free // it's not working so I'll leave it for later
+			if (value)
+				current->value = ft_strdup(value);
+			else
+				current->value = NULL;
 			return;
 		}
 		current = current->next;
@@ -117,6 +121,7 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	new_var = malloc(sizeof(t_vars));
 	new_var->key = ft_strdup(key);
 	new_var->value = ft_strdup(value);
+	// TODO: Check ft_strdup results
 	new_var->next = NULL;
 	push_list(head, new_var);
 }
