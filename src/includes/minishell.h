@@ -44,6 +44,7 @@ typedef struct s_msh
 {
 	t_vars **env;
 	t_command **command;
+	int	exit_status;
 } t_msh;
 
 // path_utils
