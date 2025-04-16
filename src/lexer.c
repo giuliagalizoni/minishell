@@ -67,6 +67,8 @@ static void	handle_operators(char *line, char ***tokens, char *result, int *i)
 		result[1] = line[(*i)++];
 		result[2] = '\0';
 	}
+	else
+		result[1] = '\0';
 	push_token(tokens, result);
 	(*i)++;
 }
