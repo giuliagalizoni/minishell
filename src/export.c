@@ -40,7 +40,15 @@ void	print_vars(t_vars *vars)
 		vars = vars->next;
 	}
 }
-
+int	validate_key(char	*key)
+{
+	// loop the whole key
+	// check if the beggining is alpha or underscore
+	// check if the rest is alnum
+	// if not, return error
+	// bash: export: `123adifh=jfis': not a valid identifier
+	return 0;
+}
 t_vars *parse_var(const char *arg)
 {
 	t_vars *new_var;
