@@ -43,9 +43,9 @@ static void	output_redirection(t_outfile *outfile)
 	while(outfile)
 	{
 		if (outfile->is_append)
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644); 
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
 		else
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 1);
@@ -102,7 +102,7 @@ void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pip
 	}
 }
 
-void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
+void	process(t_msh *msh, int num_cmds)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -118,10 +118,10 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 	if (pipe(fd) == -1)
 		perror("pipe fail");
 
-	while (cmd)
+	while (msh->command)
 	{
 		// if not last cmd, if
-		if (cmd->index < num_cmds - 1 && num_cmds > 1)
+		if (msh->command->index < num_cmds - 1 && num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -133,12 +133,12 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 		//TODO do we need a case for a single command?
 		//TODO what to do when its more than one cmd?bash seems to just
 		//eat it up
-		if (is_builtin(cmd->name))
+		if (is_builtin(msh->command->name))
 		{
 			// TODO what are we doing with the pipes and everything
 			// here
-			builtin_router(cmd, exp_vars);
-			cmd = cmd->pipe_next;
+			builtin_router(msh);
+			msh->command = msh->command->pipe_next;
 			// include parent process cleanup here?
 		}
 		else
@@ -150,10 +150,10 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 				//some cleanup, close fds, free pids
 			}
 			else if (pid == 0)
-				child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
+				child_process(msh->command, prev_pipe_read_fd, fd, num_cmds);
 			else
-				parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
-			cmd = cmd->pipe_next;
+				parent_process(msh->command, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
+			msh->command = msh->command->pipe_next;
 		}
 	}
 	wait_for_children(pids, num_cmds);

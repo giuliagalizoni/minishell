@@ -11,12 +11,12 @@ int	is_builtin(char *name)
 	return (0);
 }
 
-void	builtin_router(t_command *cmd, t_vars **exp_vars)
+void	builtin_router(t_msh *msh)
 {
-	if (is_equal(cmd->name, "exit"))
-		exit_shell(cmd);
-	else if (is_equal(cmd->name, "echo"))
-		echo(cmd);
-	else if (is_equal(cmd->name, "export"))
-		export(cmd, exp_vars);
+	if (is_equal(msh->command->name, "exit"))
+		exit_shell(msh->command);
+	else if (is_equal(msh->command->name, "echo"))
+		echo(msh->command);
+	else if (is_equal(msh->command->name, "export"))
+		export(msh);
 }
