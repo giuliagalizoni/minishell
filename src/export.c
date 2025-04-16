@@ -56,8 +56,7 @@ t_vars *parse_var(const char *arg)
     {
         key = ft_substr(arg, 0, eq - arg);
         value = ft_strdup(eq + 1);
-        // if value == ""
-		//		value = next argument on cmd->arguments array
+		// keep or not keep quotes?
 		if (value && (value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
         {
             char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
@@ -65,13 +64,19 @@ t_vars *parse_var(const char *arg)
             value = temp;
         }
     }
-
+	// TODO: Add more robust key validation (alphanumeric + underscore, not starting with digit)
     new_var = malloc(sizeof(t_vars));
-    new_var->key = key;
-    new_var->value = value;
-    new_var->next = NULL;
-
-    return new_var;
+	if (!new_var) // Check malloc result
+    {
+		free(key);
+		free(value);
+		perror("malloc failed in parse_var");
+		return (NULL);
+    }
+	new_var->key = key;
+	new_var->value = value;
+	new_var->next = NULL;
+	return new_var;
 }
 
 t_vars *init_envp(char **envp)
@@ -83,7 +88,8 @@ t_vars *init_envp(char **envp)
 	while (envp[i])
 	{
 		new_var = parse_var(envp[i]);
-		push_list(&head, new_var);
+		if (new_var)
+			push_list(&head, new_var);
 		i++;
 	}
 	return head;
@@ -91,14 +97,17 @@ t_vars *init_envp(char **envp)
 
 void	add_or_update_var(t_vars **head, char *key, char *value)
 {
-	t_vars *current = *head;
+	t_vars *current;
 	t_vars *new_var;
 
+	current = *head;
 	while(current)
 	{
 		if (is_equal(current->key, key))
 		{
 			free(current->value);
+			// maybe I need to init ft_strdup in a variable so I can free
+			// it's not working so I'll leave it for later
 			current->value = ft_strdup(value);
 			return;
 		}
@@ -112,6 +121,62 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	push_list(head, new_var);
 }
 
+static void	swap_vars(t_vars *a, t_vars *b)
+{
+	char	*temp_key;
+	char	*temp_value;
+
+	temp_key = a->key;
+	temp_value = a->value;
+	a->key = b->key;
+	a->value = b->value;
+	b->key = temp_key;
+	b->value = temp_value;
+}
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] != '\0' || s2[i] != '\0')
+	{
+		if (s1[i] > s2[i])
+			return (1);
+		else if (s1[i] < s2[i])
+			return (-1);
+		i++;
+	}
+	return (0);
+}
+
+void	sort_vars_list(t_vars *head)
+{
+    int		swapped;
+    t_vars	*current;
+    t_vars	*last_ptr;
+
+	last_ptr = NULL;
+	if (head == NULL || head->next == NULL)
+		return ;
+	swapped = 1;
+	while (swapped)
+	{
+		swapped = 0;
+		current = head;
+		while (current->next != last_ptr)
+		{
+			if (ft_strcmp(current->key, current->next->key) > 0)
+			{
+				swap_vars(current, current->next);
+				swapped = 1;
+			}
+			current = current->next;
+		}
+		last_ptr = current;
+	}
+}
+
 void	export(t_msh *msh)
 {
 	int i;
@@ -119,6 +184,7 @@ void	export(t_msh *msh)
 
 	if (!msh->command->arguments[1])
 	{
+		sort_vars_list(msh->myenv);
 		print_vars(msh->myenv);
 		return ;
 	}
