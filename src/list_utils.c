@@ -27,6 +27,7 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	else if (is_equal(tokens[*i], ">>"))
 		outfile->is_append = 1;
 	outfile->filename = ft_strdup(tokens[*i + 1]);
+	outfile->next = NULL;
 	(*i)++;
 	if (!*outfiles)
 	{
@@ -35,7 +36,6 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	}
 	tmp = filelast(*outfiles);
 	tmp->next = outfile;
-	outfile->next = NULL;
 }
 
 

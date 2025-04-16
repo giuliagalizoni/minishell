@@ -112,23 +112,23 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	push_list(head, new_var);
 }
 
-void	export(t_command *cmd, t_vars **exp_vars)
+void	export(t_msh *msh)
 {
 	int i;
 	t_vars	*new_var;
 
-	if (!cmd->arguments[1])
+	if (!msh->command->arguments[1])
 	{
-		print_vars(*exp_vars);
+		print_vars(msh->myenv);
 		return ;
 	}
 	i = 1;
-	while (cmd->arguments[i])
+	while (msh->command->arguments[i])
 	{
-		new_var = parse_var(cmd->arguments[i]);
+		new_var = parse_var(msh->command->arguments[i]);
 		if (new_var)
 		{
-			add_or_update_var(exp_vars, new_var->key, new_var->value);
+			add_or_update_var(&msh->myenv, new_var->key, new_var->value);
 			free(new_var->key);
 			free(new_var->value);
 			free(new_var);
