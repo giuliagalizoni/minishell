@@ -107,7 +107,7 @@ void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pip
 	}
 }
 
-void	process(t_msh *msh, int num_cmds)
+int	process(t_msh *msh, int num_cmds)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -115,6 +115,7 @@ void	process(t_msh *msh, int num_cmds)
 	int	status;
 	int	prev_pipe_read_fd;
 
+	status = 0;
 	prev_pipe_read_fd = STDIN_FILENO;
 	pids = malloc(num_cmds * sizeof(int));
 	if (!pids)
@@ -162,9 +163,10 @@ void	process(t_msh *msh, int num_cmds)
 			msh->command = msh->command->pipe_next;
 		}
 	}
+	//what if the last command is a builtin
 	status = wait_for_children(pids, num_cmds);
-	printf("exit status: %d\n", status);
 	free(pids);
 	close(fd[0]);
 	close(fd[1]);
+	return (status);
 }
