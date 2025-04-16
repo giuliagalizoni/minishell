@@ -42,18 +42,24 @@ void print_command(t_command *command)
     else
         printf(MAGENTA "Input redirects: " RESET "(none)\n");
 
-    if (command->output_redirect)
-    {
-        printf(MAGENTA "Output redirects:\n" RESET);
-        for (int i = 0; command->output_redirect[i]; i++)
-            printf(YELLOW "  output[%d]: " RESET "%s\n", i, command->output_redirect[i]);
-    }
+		if (command->outfile)
+		{
+			printf(MAGENTA "Output redirects:\n" RESET);
+			t_outfile *current_outfile = command->outfile;
+			int i = 0;
+			while (current_outfile)
+			{
+				printf(YELLOW "  outfile[%d]: " RESET "Filename: %s, Append: %d\n",
+					   i, current_outfile->filename, current_outfile->is_append);
+				current_outfile = current_outfile->next;
+				i++;
+			}
+		}
     else
         printf(MAGENTA "Output redirects: " RESET "(none)\n");
 
     printf(MAGENTA "Heredoc delimiter: " RESET "%s\n", command->heredoc_delimiter ? command->heredoc_delimiter : "(none)");
     printf(MAGENTA "Is heredoc: " RESET "%d\n", command->is_heredoc);
-    printf(MAGENTA "Append output: " RESET "%d\n", command->append_output);
     printf(MAGENTA "Is pipe: " RESET "%d\n", command->is_pipe);
     printf("\n");
 }
