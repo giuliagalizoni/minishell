@@ -42,8 +42,8 @@ typedef struct	s_command
 
 typedef struct s_msh
 {
-	t_vars **env;
-	t_command **command;
+	t_vars *myenv;
+	t_command *command;
 } t_msh;
 
 // path_utils
@@ -63,20 +63,20 @@ int	count_commands(t_command *command);
 // TODO parent_process has too many args
 void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
 void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
-void	process(t_command *cmd, int num_cmds, t_vars **exp_vars);
+void	process(t_msh *msh, int num_cmds);
 // parser
-t_command	*parser(char *line, t_command *command, char **envp);
+t_command	*parser(char *line, t_msh *msh, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
-void	builtin_router(t_command *cmd, t_vars **exp_vars);
+void	builtin_router(t_msh *msg);
 
 void	exit_shell(t_command *command);
 void	echo(t_command *cmd);
-void	export(t_command *cmd, t_vars **exp_vars);
+void	export(t_msh *msh);
 
-//list_utils - maybe rename to redirection_utils or sthg like that later 
+//list_utils - maybe rename to redirection_utils or sthg like that later
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
 //general_utils
 int	is_equal(char *str1, char *str2);

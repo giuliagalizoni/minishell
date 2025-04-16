@@ -75,13 +75,13 @@ t_command	*analyser(char **tokens, int index, char **envp)
 }
 
 
-t_command	*parser(char *line, t_command *command, char **envp)
+t_command	*parser(char *line, t_msh *msh, char **envp)
 {
 	char	**tokens;
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
-	command = analyser(tokens, 0, envp);
+	msh->command = analyser(tokens, 0, envp);
 	free_arr((void **)tokens);
-	return (command);
+	return (msh->command);
 }
