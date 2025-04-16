@@ -9,6 +9,7 @@ int	main(int argc, char **argv, char **envp) {
 
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
+	msh.exit_status = 0;
 	using_history();
 	while (1)
 	{
@@ -16,7 +17,7 @@ int	main(int argc, char **argv, char **envp) {
 		msh.command = parser(line, &msh, envp);
 		// set_command_paths(command, envp);
 		num_cmds = count_commands(msh.command);
-		process(&msh, num_cmds);
+		msh.exit_status = process(&msh, num_cmds);
 		clear_command_chain(msh.command);
 		if (!line)
 		      printf("\nExiting minishell\n");
