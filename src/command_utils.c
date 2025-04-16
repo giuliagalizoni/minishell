@@ -10,8 +10,11 @@ void	command_init(t_command *command)
 	command->input_redirect = NULL;
 	command->is_heredoc = 0;
 	command->heredoc_delimiter = NULL;
+	/*
 	command->output_redirect = NULL;
 	command->append_output = 0;
+	*/
+	command->outfile = NULL;
 	command->is_pipe = 0;
 	command->pipe_next = NULL;
 	command->index = 0;
@@ -50,8 +53,16 @@ void	clear_command_chain(t_command *command)
 			free(command->input_redirect);
 		if (command->heredoc_delimiter)
 			free(command->heredoc_delimiter);
+		/* TODO change this to the outfile thing
 		if (command->output_redirect)
 			free(command->output_redirect);
+			*/
+		if (command->outfile)
+		{
+			free(command->outfile->filename);
+			free(command->outfile);
+			command->outfile = NULL;
+		}
 		free(command);
 		command = tmp;
 	}
