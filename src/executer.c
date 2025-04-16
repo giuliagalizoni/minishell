@@ -10,13 +10,17 @@ int	wait_for_children(pid_t *pids, int num_cmds)
 {
 	int	i;
 	int	status;
+	pid_t	waited_pid;
 
 	i = 0;
 	while (i < num_cmds)
 	{
-		waitpid(pids[i], &status, 0);
+		// TODO need to check if waitpid returns -1?
+		// https://g.co/gemini/share/fdc126ab4f98
+		waited_pid = waitpid(pids[i], &status, 0);
 		i++;
 	}
+	status = WEXITSTATUS(status);
 	return (status);
 }
 
@@ -159,6 +163,7 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 		}
 	}
 	status = wait_for_children(pids, num_cmds);
+	printf("exit status: %d\n", status);
 	free(pids);
 	close(fd[0]);
 	close(fd[1]);
