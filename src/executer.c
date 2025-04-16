@@ -6,7 +6,7 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
-void	wait_for_children(pid_t *pids, int num_cmds)
+int	wait_for_children(pid_t *pids, int num_cmds)
 {
 	int	i;
 	int	status;
@@ -17,6 +17,7 @@ void	wait_for_children(pid_t *pids, int num_cmds)
 		waitpid(pids[i], &status, 0);
 		i++;
 	}
+	return (status);
 }
 
 static void	input_redirection(t_command *cmd)
@@ -107,6 +108,7 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
 	pid_t	*pids;
+	int	status;
 	int	prev_pipe_read_fd;
 
 	prev_pipe_read_fd = STDIN_FILENO;
@@ -156,7 +158,7 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 			cmd = cmd->pipe_next;
 		}
 	}
-	wait_for_children(pids, num_cmds);
+	status = wait_for_children(pids, num_cmds);
 	free(pids);
 	close(fd[0]);
 	close(fd[1]);
