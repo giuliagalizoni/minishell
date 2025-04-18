@@ -9,6 +9,9 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <fcntl.h>
+# define BANNER_FILE_PATH "./cfg/banner.txt"
+
+
 
 typedef struct s_vars
 {
@@ -81,6 +84,9 @@ void	export(t_msh *msh);
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
 //general_utils
 int	is_equal(char *str1, char *str2);
+
+//startup
+void	print_banner();
 
 t_vars *init_envp(char **envp);
 
