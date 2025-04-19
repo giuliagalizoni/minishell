@@ -47,7 +47,6 @@ void	set_name(t_command *command, char **tokens, char **envp)
 t_command	*analyser(char **tokens, int index, char **envp)
 {
 	t_command	*command;
-	t_outfile	*outfile;
 	int i;
 
 	command = malloc(sizeof(t_command));

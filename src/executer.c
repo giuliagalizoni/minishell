@@ -18,6 +18,10 @@ int	wait_for_children(pid_t *pids, int num_cmds)
 		// TODO need to check if waitpid returns -1?
 		// https://g.co/gemini/share/fdc126ab4f98
 		waited_pid = waitpid(pids[i], &status, 0);
+		if (waited_pid == -1)
+			perror("I don't know what this error ir supposed to be"); // TODO
+																	  // Review
+																	  // this
 		i++;
 	}
 	status = WEXITSTATUS(status);
