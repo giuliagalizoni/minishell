@@ -22,6 +22,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   builtin_utils.c\
 	   general_utils.c\
 	   list_utils.c\
+	   startup.c\
 	   exit.c\
 	   echo.c\
 	   export.c)
