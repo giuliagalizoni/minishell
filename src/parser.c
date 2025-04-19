@@ -50,7 +50,6 @@ t_command	*analyser(char **tokens, int index, char **envp)
 	int i;
 
 	command = malloc(sizeof(t_command));
-	outfile = NULL;
 	if (!command)
 		return (NULL);
 	command_init(command);
