@@ -42,11 +42,17 @@ void	print_vars(t_vars *vars)
 }
 int	validate_key(char	*key)
 {
-	// loop the whole key
-	// check if the beggining is alpha or underscore
-	// check if the rest is alnum
-	// if not, return error
-	// bash: export: `123adifh=jfis': not a valid identifier
+	int i;
+
+	i = 0;
+	if (!ft_isalpha(key[i]) && !(key[i] == '_'))
+		return 1;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && !(key[i] == '_'))
+			return 1;
+		i++;
+	}
 	return 0;
 }
 t_vars *parse_var(const char *arg)
@@ -74,6 +80,13 @@ t_vars *parse_var(const char *arg)
             value = temp;
         }
     }
+
+	if (validate_key(key))
+	{
+		// check error code thingy
+		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
+		return (NULL);
+	}
 	// TODO: Add more robust key validation (alphanumeric + underscore, not starting with digit)
     new_var = malloc(sizeof(t_vars));
 	if (!new_var) // Check malloc result
