@@ -55,6 +55,31 @@ int	validate_key(char	*key)
 	}
 	return 0;
 }
+
+void	init_value(char **key, char **value, const char *arg, char *eq)
+{
+	char *temp;
+
+	*key = ft_substr(arg, 0, eq - arg);
+	*value = ft_strdup(eq + 1);
+	if (*value && (*value[0] == '\'' || *value[0] == '\"') && *value[ft_strlen(*value) - 1] == *value[0])
+	{
+		temp = ft_substr(*value, 1, ft_strlen(*value) - 2);
+		free(*value);
+		*value = temp;
+	}
+}
+
+void *handle_malloc_error(char **key, char **value, char *str)
+{
+	if (key)
+		free(key);
+	if (value)
+		free(value);
+	perror(str);
+	return (NULL);
+}
+
 t_vars *parse_var(const char *arg)
 {
 	t_vars *new_var;
@@ -67,35 +92,17 @@ t_vars *parse_var(const char *arg)
 	{
 		key = ft_strdup(arg);
 		value = NULL;
-    }
-    else
-    {
-        key = ft_substr(arg, 0, eq - arg);
-        value = ft_strdup(eq + 1);
-		// keep or not keep quotes?
-		if (value && (value[0] == '\'' || value[0] == '\"') && value[ft_strlen(value) - 1] == value[0])
-        {
-            char *temp = ft_substr(value, 1, ft_strlen(value) - 2);
-            free(value);
-            value = temp;
-        }
-    }
-
+	}
+	else
+		init_value(&key, &value, arg, eq);
 	if (validate_key(key))
 	{
-		// check error code thingy
-		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
+		printf("conchinha: export: `%s\': not a valid identifier\n", arg); // check error code thingy
 		return (NULL);
 	}
-	// TODO: Add more robust key validation (alphanumeric + underscore, not starting with digit)
-    new_var = malloc(sizeof(t_vars));
-	if (!new_var) // Check malloc result
-    {
-		free(key);
-		free(value);
-		perror("malloc failed in parse_var");
-		return (NULL);
-    }
+	new_var = malloc(sizeof(t_vars));
+	if (!new_var)
+		return handle_malloc_error(&key, &value, "malloc failed in parse_var");
 	new_var->key = key;
 	new_var->value = value;
 	new_var->next = NULL;
@@ -128,8 +135,7 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	{
 		if (is_equal(current->key, key))
 		{
-			free(current->value);
-			// maybe I need to init ft_strdup in a variable so I can free // it's not working so I'll leave it for later
+			free(current->value); // maybe I need to init ft_strdup in a variable so I can free // it's not working so I'll leave it for later
 			if (value)
 				current->value = ft_strdup(value);
 			else
@@ -138,11 +144,12 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 		}
 		current = current->next;
 	}
-
 	new_var = malloc(sizeof(t_vars));
 	new_var->key = ft_strdup(key);
-	new_var->value = ft_strdup(value);
-	// TODO: Check ft_strdup results
+	if (value)
+		new_var->value = ft_strdup(value);
+	else
+		new_var->value = NULL;// TODO: Check ft_strdup results
 	new_var->next = NULL;
 	push_list(head, new_var);
 }
@@ -178,9 +185,9 @@ int	ft_strcmp(char *s1, char *s2)
 
 void	sort_vars_list(t_vars *head)
 {
-    int		swapped;
-    t_vars	*current;
-    t_vars	*last_ptr;
+	int		swapped;
+	t_vars	*current;
+	t_vars	*last_ptr;
 
 	last_ptr = NULL;
 	if (head == NULL || head->next == NULL)
