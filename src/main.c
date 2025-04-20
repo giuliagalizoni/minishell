@@ -6,14 +6,12 @@ int	main(int argc, char **argv, char **envp) {
 	int	num_cmds;
 	(void)argc;
 	(void)argv;
-	int		i;
 
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
 	msh.exit_status = 0;
 	using_history();
 	print_banner();
-	i = 0;
 	while (1)
 	{
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m");
@@ -26,7 +24,6 @@ int	main(int argc, char **argv, char **envp) {
 		      printf("\nExiting minishell\n");
 		add_history(line);
 		free(line);
-		i++;
 	}
 	// free(command);
 	clear_history();

@@ -22,4 +22,5 @@ void	print_banner()
 	printf("\nGiulia Galizoni Caversan && Mario Campos Castellano 2025\n");
 	printf("%s", RESET);
 	printf("\n");
+	close(fd);
 }
