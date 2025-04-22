@@ -28,6 +28,11 @@ static void	check_operators(t_command *command, char **tokens, int i)
 	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
 		arr_push(&command->output_redirect, tokens[i]);
 		*/
+	else if (tokens[i][0] == '$')
+	{
+		char *tempvar = ft_substr(tokens[i], 1, (ft_strlen(tokens[i])) - 1);
+		printf("argument %s will be key %s\n", tokens[i], tempvar);
+	}
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
