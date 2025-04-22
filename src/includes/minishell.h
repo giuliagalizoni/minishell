@@ -95,5 +95,6 @@ void	print_banner();
 t_vars *init_envp(char **envp);
 void	clean_myenv(t_vars *myenv);
 void	print_env(t_vars *myenv);
+void	unset(t_msh *msh);
 
 #endif
