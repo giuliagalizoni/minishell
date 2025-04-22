@@ -1,13 +1,5 @@
 #include "includes/minishell.h"
 
-// void	delete_node(t_vars *current, t_vars *temp)
-// {
-// 	free(current->key);
-// 	if (current->value)
-// 		free(current->value);
-// 	temp->next = current;
-// }
-
 void	find_and_delete(t_vars **head, char *key)
 {
 	t_vars *current;
@@ -31,7 +23,6 @@ void	find_and_delete(t_vars **head, char *key)
 		}
 		prev = current;
 		current = current->next;
-
 	}
 }
 
@@ -47,6 +38,5 @@ void	unset(t_msh *msh)
 		find_and_delete(&msh->myenv, msh->command->arguments[i]);
 		i++;
 	}
-		// TODO: Set exit status? Unset usually returns 0 unless an option is invalid
-		// or a key is invalid. It doesn't fail if the key doesn't exist.
+	// TODO: Set exit status?
 }
