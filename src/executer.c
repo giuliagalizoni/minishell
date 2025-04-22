@@ -6,37 +6,42 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
-int	wait_for_children(pid_t *pids, int num_cmds)
+int	wait_for_children(t_command *first_command)
 {
-	int	i;
+	t_command *command;
 	int	status;
+	int	final_status;
 	pid_t	waited_pid;
 
-	i = 0;
-	while (i < num_cmds)
+	// TODO review this a bit according to this
+	// https://gemini.google.com/app/a5ea8cc40aba5f5e
+	// but maybe it's fine like this
+	command = first_command;
+	while (command)
 	{
-		// TODO need to check if waitpid returns -1?
-		// https://g.co/gemini/share/fdc126ab4f98
-		waited_pid = waitpid(pids[i], &status, 0);
+		waited_pid = waitpid(command->pid, &status, 0);
 		if (waited_pid == -1)
-			perror("I don't know what this error ir supposed to be"); // TODO
-																	  // Review
-																	  // this
-		i++;
+			perror("waitpid failed"); // TODO cleanup?
+		command = command->pipe_next;
 	}
-	status = WEXITSTATUS(status);
-	return (status);
+	if (WIFEXITED(status))
+		final_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		final_status = 128 + WTERMSIG(status);
+	else
+		final_status = -1;
+	return (final_status);
 }
 
-static void	input_redirection(t_command *cmd)
+static void	input_redirection(t_command *command)
 {
 	int	i;
 	int	file;
 
 	i = 0;
-	while(cmd->input_redirect[i])
+	while(command->input_redirect[i])
 	{
-		file = open(cmd->input_redirect[i], O_RDONLY);
+		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 0);
@@ -63,7 +68,7 @@ static void	output_redirection(t_outfile *outfile)
 	}
 }
 
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
+void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
 	// TODO do i really need this prev_pipe_read_fd
@@ -78,7 +83,7 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		close(prev_pipe_read_fd);
 	}
 	// if it's not the last cmd, redirect output
-	if (cmd->index < num_cmds - 1)
+	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -90,86 +95,76 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	}
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
-	if (cmd->input_redirect)
-		input_redirection(cmd);
-	if (cmd->outfile)
-		output_redirection(cmd->outfile);
-	execve(cmd->path, cmd->arguments, NULL);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
+	if (msh->command->input_redirect)
+		input_redirection(msh->command);
+	if (msh->command->outfile)
+		output_redirection(msh->command->outfile);
+	if (is_builtin(msh->command->name))
+		child_builtin(msh);
+	else
+	{
+		execve(msh->command->path, msh->command->arguments, NULL);
+		perror("execve failed");
+		exit(EXIT_FAILURE);
+	}
 }
 
-void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
+void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
 {
-	pids[cmd->index] = pid;
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (cmd->index < num_cmds - 1)
+	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
 	}
 }
 
-int	process(t_msh *msh, int num_cmds)
+int	process(t_msh *msh)
 {
 	int	fd[2];
-	//TODO move the pids to the cmd stuct
-	pid_t	*pids;
 	int	status;
 	int	prev_pipe_read_fd;
+	t_command	*first_command;
 
+	first_command = msh->command;
+	// if only one cmd, check if its a builtin and execute it
+	// TODO narrow this to parent-only processes?
+	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
+	{
+			status = builtin_router(msh);
+			return (status);
+	}
 	status = 0;
 	prev_pipe_read_fd = STDIN_FILENO;
-	pids = malloc(num_cmds * sizeof(int));
-	if (!pids)
-		perror("malloc fail");
-
-
 	if (pipe(fd) == -1)
-		perror("pipe fail");
-
+	perror("pipe fail");
 	while (msh->command)
 	{
 		// if not last cmd, if
-		if (msh->command->index < num_cmds - 1 && num_cmds > 1)
+		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
 				perror("pipe fail");
-				free(pids);
 				exit(EXIT_FAILURE);
 			}
 		}
-		//TODO do we need a case for a single command?
-		//TODO what to do when its more than one cmd?bash seems to just
-		//eat it up
-		if (is_builtin(msh->command->name))
+		pid_t pid = fork();
+		msh->command->pid = pid;
+		if (pid == -1)
 		{
-			// TODO what are we doing with the pipes and everything
-			// here
-			builtin_router(msh);
-			msh->command = msh->command->pipe_next;
-			// include parent process cleanup here?
+			perror("fork fail");
+			//some cleanup, close fds, free pids
 		}
+		else if (pid == 0)
+			child_process(msh, prev_pipe_read_fd, fd);
 		else
-		{
-			pid_t pid = fork();
-			if (pid == -1)
-			{
-				perror("fork fail");
-				//some cleanup, close fds, free pids
-			}
-			else if (pid == 0)
-				child_process(msh->command, prev_pipe_read_fd, fd, num_cmds);
-			else
-				parent_process(msh->command, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
-			msh->command = msh->command->pipe_next;
-		}
+			parent_process(msh, fd, &prev_pipe_read_fd);
+		msh->command = msh->command->pipe_next;
 	}
-	//what if the last command is a builtin
-	status = wait_for_children(pids, num_cmds);
-	free(pids);
+	status = wait_for_children(first_command);
+	//printf("status: %d\n", status);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);

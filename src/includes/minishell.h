@@ -41,12 +41,14 @@ typedef struct	s_command
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;
+	pid_t	pid;
 }	t_command;
 
 typedef struct s_msh
 {
 	t_vars *myenv;
 	t_command *command;
+	int	num_cmds;
 	int	exit_status;
 }	t_msh;
 
@@ -65,20 +67,22 @@ int	count_commands(t_command *command);
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
 // TODO parent_process has too many args
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
-void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
-int	process(t_msh *msh, int num_cmds);
+void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
+void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
+int	process(t_msh *msh);
 // parser
 t_command	*parser(char *line, t_msh *msh, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
-void	builtin_router(t_msh *msg);
+int	builtin_router(t_msh *msg);
+void	child_builtin(t_msh *msh);
 
 void	exit_shell(t_msh *msh);
 void	echo(t_command *cmd);
 void	export(t_msh *msh);
+int	cd(t_command *command);
 
 //list_utils - maybe rename to redirection_utils or sthg like that later
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
