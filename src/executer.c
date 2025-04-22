@@ -99,6 +99,8 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
+	if (is_builtin(msh->command->name))
+		builtin
 	execve(msh->command->path, msh->command->arguments, NULL);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
@@ -129,6 +131,7 @@ int	process(t_msh *msh)
 		perror("pipe fail");
 	first_command = msh->command;
 	// if only one cmd, check if its a builtin and execute it
+	// TODO narrow this to parent-only processes?
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 			builtin_router(msh);
 	while (msh->command)
@@ -145,6 +148,7 @@ int	process(t_msh *msh)
 		//TODO do we need a case for a single command?
 		//TODO what to do when its more than one cmd?bash seems to just
 		//eat it up
+		/*
 		if (is_builtin(msh->command->name))
 		{
 			// TODO what are we doing with the pipes and everything
@@ -154,20 +158,19 @@ int	process(t_msh *msh)
 			// include parent process cleanup here?
 		}
 		else
+		*/
+		pid_t pid = fork();
+		msh->command->pid = pid;
+		if (pid == -1)
 		{
-			pid_t pid = fork();
-			msh->command->pid = pid;
-			if (pid == -1)
-			{
-				perror("fork fail");
-				//some cleanup, close fds, free pids
-			}
-			else if (pid == 0)
-				child_process(msh, prev_pipe_read_fd, fd);
-			else
-				parent_process(msh, fd, &prev_pipe_read_fd);
-			msh->command = msh->command->pipe_next;
+			perror("fork fail");
+			//some cleanup, close fds, free pids
 		}
+		else if (pid == 0)
+			child_process(msh, prev_pipe_read_fd, fd);
+		else
+			parent_process(msh, fd, &prev_pipe_read_fd);
+		msh->command = msh->command->pipe_next;
 	}
 	//what if the last command is a builtin
 	status = wait_for_children(first_command);
