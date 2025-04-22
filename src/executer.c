@@ -6,17 +6,26 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
-void	wait_for_children(pid_t *pids, int num_cmds)
+int	wait_for_children(pid_t *pids, int num_cmds)
 {
 	int	i;
 	int	status;
+	pid_t	waited_pid;
 
 	i = 0;
 	while (i < num_cmds)
 	{
-		waitpid(pids[i], &status, 0);
+		// TODO need to check if waitpid returns -1?
+		// https://g.co/gemini/share/fdc126ab4f98
+		waited_pid = waitpid(pids[i], &status, 0);
+		if (waited_pid == -1)
+			perror("I don't know what this error ir supposed to be"); // TODO
+																	  // Review
+																	  // this
 		i++;
 	}
+	status = WEXITSTATUS(status);
+	return (status);
 }
 
 static void	input_redirection(t_command *cmd)
@@ -43,9 +52,9 @@ static void	output_redirection(t_outfile *outfile)
 	while(outfile)
 	{
 		if (outfile->is_append)
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644); 
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
 		else
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644); 
+			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 1);
@@ -102,13 +111,15 @@ void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pip
 	}
 }
 
-void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
+int	process(t_msh *msh, int num_cmds)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
 	pid_t	*pids;
+	int	status;
 	int	prev_pipe_read_fd;
 
+	status = 0;
 	prev_pipe_read_fd = STDIN_FILENO;
 	pids = malloc(num_cmds * sizeof(int));
 	if (!pids)
@@ -118,10 +129,10 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 	if (pipe(fd) == -1)
 		perror("pipe fail");
 
-	while (cmd)
+	while (msh->command)
 	{
 		// if not last cmd, if
-		if (cmd->index < num_cmds - 1 && num_cmds > 1)
+		if (msh->command->index < num_cmds - 1 && num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -133,12 +144,12 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 		//TODO do we need a case for a single command?
 		//TODO what to do when its more than one cmd?bash seems to just
 		//eat it up
-		if (is_builtin(cmd->name))
+		if (is_builtin(msh->command->name))
 		{
 			// TODO what are we doing with the pipes and everything
 			// here
-			builtin_router(cmd, exp_vars);
-			cmd = cmd->pipe_next;
+			builtin_router(msh);
+			msh->command = msh->command->pipe_next;
 			// include parent process cleanup here?
 		}
 		else
@@ -150,14 +161,16 @@ void	process(t_command *cmd, int num_cmds, t_vars **exp_vars)
 				//some cleanup, close fds, free pids
 			}
 			else if (pid == 0)
-				child_process(cmd, prev_pipe_read_fd, fd, num_cmds);
+				child_process(msh->command, prev_pipe_read_fd, fd, num_cmds);
 			else
-				parent_process(cmd, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
-			cmd = cmd->pipe_next;
+				parent_process(msh->command, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
+			msh->command = msh->command->pipe_next;
 		}
 	}
-	wait_for_children(pids, num_cmds);
+	//what if the last command is a builtin
+	status = wait_for_children(pids, num_cmds);
 	free(pids);
 	close(fd[0]);
 	close(fd[1]);
+	return (status);
 }

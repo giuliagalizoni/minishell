@@ -47,11 +47,9 @@ void	set_name(t_command *command, char **tokens, char **envp)
 t_command	*analyser(char **tokens, int index, char **envp)
 {
 	t_command	*command;
-	t_outfile	*outfile;
 	int i;
 
 	command = malloc(sizeof(t_command));
-	outfile = NULL;
 	if (!command)
 		return (NULL);
 	command_init(command);
@@ -75,15 +73,15 @@ t_command	*analyser(char **tokens, int index, char **envp)
 }
 
 
-t_command	*parser(char *line, t_command *command, char **envp)
+t_command	*parser(char *line, t_msh *msh, char **envp)
 {
 	char	**tokens;
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
 	print_tokens(tokens);
-	command = analyser(tokens, 0, envp);
-	print_command_list(command);
+	msh->command = analyser(tokens, 0, envp);
+	print_command_list(msh->command);
 	free_arr((void **)tokens);
-	return (command);
+	return (msh->command);
 }

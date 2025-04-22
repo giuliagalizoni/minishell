@@ -69,7 +69,6 @@ static void	handle_operators(char *line, char ***tokens, char *result, int *i)
 	}
 	else
 		result[1] = '\0';
-
 	push_token(tokens, result);
 	(*i)++;
 }

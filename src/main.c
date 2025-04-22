@@ -2,24 +2,24 @@
 
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
-	t_command	*command;
+	t_msh	msh;
 	int	num_cmds;
-	t_vars *exp_vars;
 	(void)argc;
 	(void)argv;
 
-
-	command = NULL;
-	exp_vars = init_envp(envp);
+	msh.command = NULL;
+	msh.myenv = init_envp(envp);
+	msh.exit_status = 0;
 	using_history();
+	print_banner();
 	while (1)
 	{
-		line = readline("minishell> ");
-		command = parser(line, command, envp);
+		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m");
+		msh.command = parser(line, &msh, envp);
 		// set_command_paths(command, envp);
-		num_cmds = count_commands(command);
-		process(command, num_cmds, &exp_vars);
-		clear_command_chain(command);
+		num_cmds = count_commands(msh.command);
+		msh.exit_status = process(&msh, num_cmds);
+		clear_command_chain(msh.command);
 		if (!line)
 		      printf("\nExiting minishell\n");
 		add_history(line);

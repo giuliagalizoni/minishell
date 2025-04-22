@@ -36,7 +36,6 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	}
 	tmp = filelast(*outfiles);
 	tmp->next = outfile;
-
 }
 
 

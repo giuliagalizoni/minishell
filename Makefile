@@ -22,10 +22,14 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   builtin_utils.c\
 	   general_utils.c\
 	   list_utils.c\
+	   startup.c\
 	   exit.c\
 	   echo.c\
 	   tests.c\
-	   export.c)
+	   export.c\
+	   cleanup.c\
+	   env.c\
+	   unset.c)
 
 SRCFILES := $(MODULES) $(SRCDIR)/main.c
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
