@@ -63,7 +63,7 @@ static void	output_redirection(t_outfile *outfile)
 	}
 }
 
-void	child_process(t_msh *msh, t_command *cmd, int prev_pipe_read_fd, int *fd)
+void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
 	// TODO do i really need this prev_pipe_read_fd
@@ -78,7 +78,7 @@ void	child_process(t_msh *msh, t_command *cmd, int prev_pipe_read_fd, int *fd)
 		close(prev_pipe_read_fd);
 	}
 	// if it's not the last cmd, redirect output
-	if (cmd->index < msh->num_cmds - 1)
+	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -90,21 +90,21 @@ void	child_process(t_msh *msh, t_command *cmd, int prev_pipe_read_fd, int *fd)
 	}
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
-	if (cmd->input_redirect)
-		input_redirection(cmd);
-	if (cmd->outfile)
-		output_redirection(cmd->outfile);
-	execve(cmd->path, cmd->arguments, NULL);
+	if (msh->command->input_redirect)
+		input_redirection(msh->command);
+	if (msh->command->outfile)
+		output_redirection(msh->command->outfile);
+	execve(msh->command->path, msh->command->arguments, NULL);
 	perror("execve failed");
 	exit(EXIT_FAILURE);
 }
 
-void	parent_process(t_msh *msh, t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd)
+void	parent_process(t_msh *msh, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd)
 {
-	pids[cmd->index] = pid;
+	pids[msh->command->index] = pid;
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (cmd->index < msh->num_cmds - 1)
+	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
@@ -158,9 +158,9 @@ int	process(t_msh *msh)
 				//some cleanup, close fds, free pids
 			}
 			else if (pid == 0)
-				child_process(msh, msh->command, prev_pipe_read_fd, fd);
+				child_process(msh, prev_pipe_read_fd, fd);
 			else
-				parent_process(msh, msh->command, pids, pid, fd, &prev_pipe_read_fd);
+				parent_process(msh, pids, pid, fd, &prev_pipe_read_fd);
 			msh->command = msh->command->pipe_next;
 		}
 	}
