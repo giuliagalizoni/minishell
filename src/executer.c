@@ -6,14 +6,14 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
-int	wait_for_children(pid_t *pids, int num_cmds)
+int	wait_for_children(t_msh *msh, pid_t *pids)
 {
 	int	i;
 	int	status;
 	pid_t	waited_pid;
 
 	i = 0;
-	while (i < num_cmds)
+	while (i < msh->num_cmds)
 	{
 		// TODO need to check if waitpid returns -1?
 		// https://g.co/gemini/share/fdc126ab4f98
@@ -63,7 +63,7 @@ static void	output_redirection(t_outfile *outfile)
 	}
 }
 
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
+void	child_process(t_msh *msh, t_command *cmd, int prev_pipe_read_fd, int *fd)
 {
 
 	// TODO do i really need this prev_pipe_read_fd
@@ -78,7 +78,7 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 		close(prev_pipe_read_fd);
 	}
 	// if it's not the last cmd, redirect output
-	if (cmd->index < num_cmds - 1)
+	if (cmd->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -99,19 +99,19 @@ void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds)
 	exit(EXIT_FAILURE);
 }
 
-void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds)
+void	parent_process(t_msh *msh, t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd)
 {
 	pids[cmd->index] = pid;
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (cmd->index < num_cmds - 1)
+	if (cmd->index < msh->num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
 	}
 }
 
-int	process(t_msh *msh, int num_cmds)
+int	process(t_msh *msh)
 {
 	int	fd[2];
 	//TODO move the pids to the cmd stuct
@@ -121,18 +121,15 @@ int	process(t_msh *msh, int num_cmds)
 
 	status = 0;
 	prev_pipe_read_fd = STDIN_FILENO;
-	pids = malloc(num_cmds * sizeof(int));
+	pids = malloc(msh->num_cmds * sizeof(int));
 	if (!pids)
 		perror("malloc fail");
-
-
 	if (pipe(fd) == -1)
 		perror("pipe fail");
-
 	while (msh->command)
 	{
 		// if not last cmd, if
-		if (msh->command->index < num_cmds - 1 && num_cmds > 1)
+		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -161,14 +158,14 @@ int	process(t_msh *msh, int num_cmds)
 				//some cleanup, close fds, free pids
 			}
 			else if (pid == 0)
-				child_process(msh->command, prev_pipe_read_fd, fd, num_cmds);
+				child_process(msh, msh->command, prev_pipe_read_fd, fd);
 			else
-				parent_process(msh->command, pids, pid, fd, &prev_pipe_read_fd, num_cmds);
+				parent_process(msh, msh->command, pids, pid, fd, &prev_pipe_read_fd);
 			msh->command = msh->command->pipe_next;
 		}
 	}
 	//what if the last command is a builtin
-	status = wait_for_children(pids, num_cmds);
+	status = wait_for_children(msh, pids);
 	free(pids);
 	close(fd[0]);
 	close(fd[1]);

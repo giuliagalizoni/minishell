@@ -47,6 +47,7 @@ typedef struct s_msh
 {
 	t_vars *myenv;
 	t_command *command;
+	int	num_cmds;
 	int	exit_status;
 }	t_msh;
 
@@ -65,9 +66,9 @@ int	count_commands(t_command *command);
 // TODO Maybe move the cmd_count to the t_command struct
 //void	child_process(t_command *cmd, int cmd_count);
 // TODO parent_process has too many args
-void	child_process(t_command *cmd, int prev_pipe_read_fd, int *fd, int num_cmds);
-void	parent_process(t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd, int num_cmds);
-int	process(t_msh *msh, int num_cmds);
+void	child_process(t_msh *msh, t_command *cmd, int prev_pipe_read_fd, int *fd);
+void	parent_process(t_msh *msh, t_command *cmd, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd);
+int	process(t_msh *msh);
 // parser
 t_command	*parser(char *line, t_msh *msh, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp);
