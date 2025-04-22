@@ -11,8 +11,8 @@ void	find_and_delete(t_vars **head, char *key)
 	{
 		if (is_equal(current->key, key))
 		{
-			if (prev = NULL)
-				head = current->next;
+			if (prev == NULL)
+				*head = current->next;
 			else
 				prev->next = current->next;
 			free(current->key);
