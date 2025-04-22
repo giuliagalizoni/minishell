@@ -128,6 +128,9 @@ int	process(t_msh *msh)
 	if (pipe(fd) == -1)
 		perror("pipe fail");
 	first_command = msh->command;
+	// if only one cmd, check if its a builtin and execute it
+	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
+			builtin_router(msh);
 	while (msh->command)
 	{
 		// if not last cmd, if
