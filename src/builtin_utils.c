@@ -19,4 +19,6 @@ void	builtin_router(t_msh *msh)
 		echo(msh->command);
 	else if (is_equal(msh->command->name, "export"))
 		export(msh);
+	else if (is_equal(msh->command->name, "env"))
+		print_env(msh->myenv);
 }
