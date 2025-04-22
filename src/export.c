@@ -1,8 +1,5 @@
 #include "includes/minishell.h"
 
-// TODO
-// deal with syntax errors *= bash: export: `*=': not a valid identifier
-// cleanup before exiting
 t_vars	*find_last(t_vars *lst)
 {
 	if (!lst)

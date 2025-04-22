@@ -14,7 +14,7 @@ int	is_builtin(char *name)
 void	builtin_router(t_msh *msh)
 {
 	if (is_equal(msh->command->name, "exit"))
-		exit_shell(msh->command);
+		exit_shell(msh);
 	else if (is_equal(msh->command->name, "echo"))
 		echo(msh->command);
 	else if (is_equal(msh->command->name, "export"))
