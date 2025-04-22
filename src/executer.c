@@ -28,15 +28,15 @@ int	wait_for_children(t_msh *msh, pid_t *pids)
 	return (status);
 }
 
-static void	input_redirection(t_command *cmd)
+static void	input_redirection(t_command *command)
 {
 	int	i;
 	int	file;
 
 	i = 0;
-	while(cmd->input_redirect[i])
+	while(command->input_redirect[i])
 	{
-		file = open(cmd->input_redirect[i], O_RDONLY);
+		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
 			perror("Bad file descriptor");// cleanup routine here
 		dup2(file, 0);
