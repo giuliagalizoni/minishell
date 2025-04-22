@@ -21,4 +21,6 @@ void	builtin_router(t_msh *msh)
 		export(msh);
 	else if (is_equal(msh->command->name, "env"))
 		print_env(msh->myenv);
+	else if (is_equal(msh->command->name, "unset"))
+		unset(msh);
 }
