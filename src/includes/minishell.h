@@ -76,7 +76,7 @@ char	**lexer(char *line, char ***tokens);
 int	is_builtin(char *name);
 void	builtin_router(t_msh *msg);
 
-void	exit_shell(t_command *command);
+void	exit_shell(t_msh *msh);
 void	echo(t_command *cmd);
 void	export(t_msh *msh);
 
@@ -89,5 +89,6 @@ int	is_equal(char *str1, char *str2);
 void	print_banner();
 
 t_vars *init_envp(char **envp);
+void	clean_myenv(t_vars *myenv);
 
 #endif
