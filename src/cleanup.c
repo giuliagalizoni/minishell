@@ -12,6 +12,6 @@ void	clean_myenv(t_vars *myenv)
 		if (myenv->value)
 			free(myenv->value);
 		free(myenv);
-		myenv = myenv->next;
+		myenv = tmp;
 	}
 }
