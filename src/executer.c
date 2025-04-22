@@ -100,10 +100,13 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	if (is_builtin(msh->command->name))
-		builtin
-	execve(msh->command->path, msh->command->arguments, NULL);
-	perror("execve failed");
-	exit(EXIT_FAILURE);
+		child_builtin(msh);
+	else
+	{
+		execve(msh->command->path, msh->command->arguments, NULL);
+		perror("execve failed");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
@@ -120,20 +123,22 @@ void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
 int	process(t_msh *msh)
 {
 	int	fd[2];
-	//TODO move the pids to the cmd stuct
 	int	status;
 	int	prev_pipe_read_fd;
 	t_command	*first_command;
 
-	status = 0;
-	prev_pipe_read_fd = STDIN_FILENO;
-	if (pipe(fd) == -1)
-		perror("pipe fail");
 	first_command = msh->command;
 	// if only one cmd, check if its a builtin and execute it
 	// TODO narrow this to parent-only processes?
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
-			builtin_router(msh);
+	{
+			status = builtin_router(msh);
+			return (status);
+	}
+	status = 0;
+	prev_pipe_read_fd = STDIN_FILENO;
+	if (pipe(fd) == -1)
+	perror("pipe fail");
 	while (msh->command)
 	{
 		// if not last cmd, if
@@ -145,20 +150,6 @@ int	process(t_msh *msh)
 				exit(EXIT_FAILURE);
 			}
 		}
-		//TODO do we need a case for a single command?
-		//TODO what to do when its more than one cmd?bash seems to just
-		//eat it up
-		/*
-		if (is_builtin(msh->command->name))
-		{
-			// TODO what are we doing with the pipes and everything
-			// here
-			builtin_router(msh);
-			msh->command = msh->command->pipe_next;
-			// include parent process cleanup here?
-		}
-		else
-		*/
 		pid_t pid = fork();
 		msh->command->pid = pid;
 		if (pid == -1)
@@ -172,9 +163,8 @@ int	process(t_msh *msh)
 			parent_process(msh, fd, &prev_pipe_read_fd);
 		msh->command = msh->command->pipe_next;
 	}
-	//what if the last command is a builtin
 	status = wait_for_children(first_command);
-	printf("status: %d\n", status);
+	//printf("status: %d\n", status);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);

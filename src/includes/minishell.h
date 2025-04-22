@@ -76,11 +76,13 @@ t_command	*analyser(char **tokens, int index, char **envp);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
-void	builtin_router(t_msh *msg);
+int	builtin_router(t_msh *msg);
+void	child_builtin(t_msh *msh);
 
 void	exit_shell(t_msh *msh);
 void	echo(t_command *cmd);
 void	export(t_msh *msh);
+int	cd(t_command *command);
 
 //list_utils - maybe rename to redirection_utils or sthg like that later
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
