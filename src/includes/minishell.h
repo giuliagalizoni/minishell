@@ -41,6 +41,7 @@ typedef struct	s_command
 	int	is_pipe;                 // Boolean: Is this command part of a pipe?
 	struct	s_command *pipe_next; // |
 	int	index;
+	pid_t	pid;
 }	t_command;
 
 typedef struct s_msh
@@ -67,7 +68,7 @@ int	count_commands(t_command *command);
 //void	child_process(t_command *cmd, int cmd_count);
 // TODO parent_process has too many args
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
-void	parent_process(t_msh *msh, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd);
+void	parent_process(t_msh *msh, pid_t *pids, int *fd, int *prev_pipe_read_fd);
 int	process(t_msh *msh);
 // parser
 t_command	*parser(char *line, t_msh *msh, char **envp);

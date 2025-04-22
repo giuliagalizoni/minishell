@@ -99,9 +99,9 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	exit(EXIT_FAILURE);
 }
 
-void	parent_process(t_msh *msh, pid_t *pids, int pid, int *fd, int *prev_pipe_read_fd)
+void	parent_process(t_msh *msh, pid_t *pids, int *fd, int *prev_pipe_read_fd)
 {
-	pids[msh->command->index] = pid;
+	pids[msh->command->index] = msh->command->pid;
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
 	if (msh->command->index < msh->num_cmds - 1)
@@ -152,6 +152,7 @@ int	process(t_msh *msh)
 		else
 		{
 			pid_t pid = fork();
+			msh->command->pid = pid;
 			if (pid == -1)
 			{
 				perror("fork fail");
@@ -160,7 +161,7 @@ int	process(t_msh *msh)
 			else if (pid == 0)
 				child_process(msh, prev_pipe_read_fd, fd);
 			else
-				parent_process(msh, pids, pid, fd, &prev_pipe_read_fd);
+				parent_process(msh, pids, fd, &prev_pipe_read_fd);
 			msh->command = msh->command->pipe_next;
 		}
 	}
