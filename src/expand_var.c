@@ -35,11 +35,37 @@ static int	handle_exit_stauts(t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+static int	retokenize(char ***new_tokens, char *value)
+{
+	char	**temp_tokens;
+	int	i;
+	int success;
+
+	temp_tokens = NULL;
+	// maybe I shuold make lexer return int for success check
+	lexer(value, &temp_tokens);
+	if (!temp_tokens)
+		return (1);
+	i = 0;
+
+	while ((temp_tokens[i]) && success)
+	{
+		success = safe_arr_push(new_tokens, temp_tokens[i]);
+		i++;
+	}
+	free_arr((void **)temp_tokens);
+	if (!success)
+		return (0);
+	return (1);
+}
+
 static int	handle_regular_var(const char *token, t_msh *msh, char ***new_tokens)
 {
 	char *key;
 	char *value;
+	int	success;
 
+	success = 1;
 	key = ft_substr(token, 1, ft_strlen(token) - 1);
 	if (!key) {
 		perror("ft_substr failed for key");
@@ -48,12 +74,8 @@ static int	handle_regular_var(const char *token, t_msh *msh, char ***new_tokens)
 	value = get_var_value(msh->myenv, key);
 	free(key);
 	if (value)
-	{
-		// Retokenize logic goes here
-		if (!safe_arr_push(new_tokens, value))
-			return (0);
-	}
-	return (1);
+		success = retokenize(new_tokens, value);
+	return (success);
 }
 
 static int	handle_non_var(char *token, char ***new_tokens)
