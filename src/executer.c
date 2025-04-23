@@ -147,7 +147,7 @@ int	process(t_msh *msh)
 	t_command	*first_command;
 
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
-		single_parent_process(msh);
+		return (single_parent_process(msh));
 	status = 0;
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
