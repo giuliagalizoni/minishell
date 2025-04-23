@@ -18,7 +18,6 @@ int	main(int argc, char **argv, char **envp) {
 		// set_command_paths(command, envp);
 		msh.num_cmds = count_commands(msh.command);
 		msh.exit_status = process(&msh);
-		printf("exited with status %d\n", msh.exit_status);
 		clear_command_chain(msh.command);
 		if (!line)
 		      printf("\nExiting minishell\n");
