@@ -93,5 +93,6 @@ void	clean_myenv(t_vars *myenv);
 void	print_env(t_vars *myenv);
 void	unset(t_msh *msh);
 char	*get_var_value(t_vars *head, char *key);
+char **expand_and_retokenize(char **tokens, t_msh *msh);
 
 #endif
