@@ -18,6 +18,7 @@ int	main(int argc, char **argv, char **envp) {
 		// set_command_paths(command, envp);
 		msh.num_cmds = count_commands(msh.command);
 		msh.exit_status = process(&msh);
+		printf("exited with status %d\n", msh.exit_status);
 		clear_command_chain(msh.command);
 		if (!line)
 		      printf("\nExiting minishell\n");
@@ -28,3 +29,21 @@ int	main(int argc, char **argv, char **envp) {
 	clear_history();
 	return (0);
 }
+
+/*
+void	output_test()
+{
+	int	file;
+
+	file = open("testytest", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	dup2(file, 1);
+	close(file);
+}
+
+int	main()
+{
+	output_test();
+	printf("testy\n");
+	return (0);
+}
+*/

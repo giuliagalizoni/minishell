@@ -104,6 +104,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	else
 	{
 		execve(msh->command->path, msh->command->arguments, NULL);
+		// better command not found error here
 		perror("execve failed");
 		exit(EXIT_FAILURE);
 	}
@@ -124,21 +125,28 @@ int	process(t_msh *msh)
 {
 	int	fd[2];
 	int	status;
+	int	saved_stdout_fd;
 	int	prev_pipe_read_fd;
 	t_command	*first_command;
 
-	first_command = msh->command;
 	// if only one cmd, check if its a builtin and execute it
 	// TODO narrow this to parent-only processes?
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 	{
-			status = builtin_router(msh);
-			return (status);
+		saved_stdout_fd = dup(STDOUT_FILENO);
+		if (msh->command->input_redirect)
+			input_redirection(msh->command);
+		if (msh->command->outfile)
+			output_redirection(msh->command->outfile);
+		status = builtin_router(msh);
+		dup2(saved_stdout_fd , STDOUT_FILENO);
+		return (status);
 	}
 	status = 0;
+	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
 	if (pipe(fd) == -1)
-	perror("pipe fail");
+		perror("pipe fail");
 	while (msh->command)
 	{
 		// if not last cmd, if
