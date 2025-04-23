@@ -68,6 +68,24 @@ static void	output_redirection(t_outfile *outfile)
 	}
 }
 
+int	single_parent_process(t_msh *msh)
+{
+	int	saved_stdout_fd;
+	int	saved_stdin_fd;
+	int	status;
+
+	saved_stdout_fd = dup(STDOUT_FILENO);
+	saved_stdin_fd = dup(STDIN_FILENO);
+	if (msh->command->input_redirect)
+		input_redirection(msh->command);
+	if (msh->command->outfile)
+		output_redirection(msh->command->outfile);
+	status = builtin_router(msh);
+	dup2(saved_stdin_fd , STDIN_FILENO);
+	dup2(saved_stdout_fd , STDOUT_FILENO);
+	return (status);
+}
+
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
@@ -125,23 +143,11 @@ int	process(t_msh *msh)
 {
 	int	fd[2];
 	int	status;
-	int	saved_stdout_fd;
 	int	prev_pipe_read_fd;
 	t_command	*first_command;
 
-	// if only one cmd, check if its a builtin and execute it
-	// TODO narrow this to parent-only processes?
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
-	{
-		saved_stdout_fd = dup(STDOUT_FILENO);
-		if (msh->command->input_redirect)
-			input_redirection(msh->command);
-		if (msh->command->outfile)
-			output_redirection(msh->command->outfile);
-		status = builtin_router(msh);
-		dup2(saved_stdout_fd , STDOUT_FILENO);
-		return (status);
-	}
+		single_parent_process(msh);
 	status = 0;
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
