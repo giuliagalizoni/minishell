@@ -2,7 +2,7 @@
 
 void	clean_myenv(t_vars *myenv)
 {
-	t_vars *tmp;
+	t_vars	*tmp;
 
 	while (myenv)
 	{

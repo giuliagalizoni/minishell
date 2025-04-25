@@ -7,9 +7,9 @@ static void	init_pipe(t_command *command, char **tokens, int *i, int *index, cha
 	command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp, msh);
 }
 
-static void	check_operators(t_command *command, char **tokens, int i, t_msh *msh)
+static void	check_operators(t_command *command,
+	char **tokens, int i, t_msh *msh)
 {
-	// change to isequal
 	if (is_equal(tokens[i], "<<"))
 		command->is_heredoc = 1;
 	else if (is_equal(tokens[i], "<"))
