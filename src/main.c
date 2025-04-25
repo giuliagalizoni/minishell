@@ -3,9 +3,9 @@
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
 	t_msh	msh;
+
 	(void)argc;
 	(void)argv;
-
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
 	msh.exit_status = 0;

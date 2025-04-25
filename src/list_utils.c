@@ -16,8 +16,8 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 {
 	t_outfile	*outfile;
 	t_outfile	*tmp;
-	(void)cmd;
 
+	(void)cmd;
 	outfile = malloc(sizeof(t_outfile));
 	if (outfile == NULL)
 		perror("Error allocating memory"); // TODO the usual, fix

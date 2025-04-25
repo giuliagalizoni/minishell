@@ -13,7 +13,7 @@ int	is_builtin(char *name)
 
 int	builtin_router(t_msh *msh)
 {
-	int status;
+	int	status;
 
 	status = 0;
 	if (is_equal(msh->command->name, "exit"))

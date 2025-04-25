@@ -2,12 +2,12 @@
 
 void	find_and_delete(t_vars **head, char *key)
 {
-	t_vars *current;
-	t_vars *prev;
+	t_vars	*current;
+	t_vars	*prev;
 
 	current = *head;
 	prev = NULL;
-	while(current)
+	while (current)
 	{
 		if (is_equal(current->key, key))
 		{
@@ -28,12 +28,12 @@ void	find_and_delete(t_vars **head, char *key)
 
 void	unset(t_msh *msh)
 {
-	int i;
+	int	i;
 
 	if (!msh->command->arguments[1])
-		return ; //if there's no argument, nothing happens
+		return ;
 	i = 1;
-	while(msh->command->arguments[i])
+	while (msh->command->arguments[i])
 	{
 		find_and_delete(&msh->myenv, msh->command->arguments[i]);
 		i++;

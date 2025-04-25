@@ -3,7 +3,7 @@
 void	echo(t_command *cmd)
 {
 	int	i;
-	int flag = 0;
+	int	flag = 0;
 
 	if (!cmd->arguments[1])
 	{
