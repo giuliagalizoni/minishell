@@ -41,14 +41,15 @@ static int	retokenize(char ***new_tokens, char *value)
 	int	i;
 	int success;
 
-	temp_tokens = NULL;
-	// maybe I shuold make lexer return int for success check
-	lexer(value, &temp_tokens);
+	temp_tokens = ft_split(value, ' ');
 	if (!temp_tokens)
-		return (1);
+	{
+		perror("ft_split failed or returned no words");
+		return (0);
+	}
 	i = 0;
-
-	while ((temp_tokens[i]) && success)
+	success = 1;
+	while (temp_tokens[i] && success)
 	{
 		success = safe_arr_push(new_tokens, temp_tokens[i]);
 		i++;

@@ -92,8 +92,8 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	retokens = expand_and_retokenize(tokens, msh);
 	printf("print RETOKENS:");
 	print_tokens(retokens);
+	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, envp, msh);
-	print_command_list(msh->command);
 	free_arr((void **)tokens);
 	return (msh->command);
 }
