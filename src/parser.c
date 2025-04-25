@@ -90,6 +90,8 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	tokens = lexer(line, &tokens);
 	print_tokens(tokens);
 	retokens = expand_and_retokenize(tokens, msh);
+	printf("print RETOKENS:");
+	print_tokens(retokens);
 	msh->command = analyser(retokens, 0, envp, msh);
 	print_command_list(msh->command);
 	free_arr((void **)tokens);
