@@ -26,8 +26,10 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   exit.c\
 	   echo.c\
 	   export.c\
-	   cleanup.c\
+	   cd.c\
 	   env.c\
+	   pwd.c\
+	   cleanup.c\
 	   unset.c\
 	   expand_var.c)
 
