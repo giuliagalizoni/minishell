@@ -72,7 +72,7 @@ void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
 int	process(t_msh *msh);
 // parser
 t_command	*parser(char *line, t_msh *msh, char **envp);
-t_command	*analyser(char **tokens, int index, char **envp);
+t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh);
 char	**lexer(char *line, char ***tokens);
 // builtin_utils
 int	is_builtin(char *name);
@@ -97,5 +97,7 @@ t_vars *init_envp(char **envp);
 void	clean_myenv(t_vars *myenv);
 void	print_env(t_vars *myenv);
 void	unset(t_msh *msh);
+char	*get_var_value(t_vars *head, char *key);
+char **expand_and_retokenize(char **tokens, t_msh *msh);
 
 #endif
