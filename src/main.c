@@ -1,10 +1,15 @@
 #include "includes/minishell.h"
 
+volatile sig_atomic_t	g_exit_code;
+
+g_exit_code = 0;
+
 void	sigint_handler(int signal)
 {
 	//TODO need to 
 	if (signal == SIGINT)
 	{
+		g_exit_code = 130;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
@@ -22,9 +27,7 @@ void	set_signal_action(void)
 	sa_int.sa_flags = SA_RESTART;
 	// TODO wrap up in a in if sigaction == -1 for error check
 	sigaction(SIGINT, &sa_int, NULL);
-
 	signal(SIGQUIT, SIG_IGN);
-
 }
 
 int	main(int argc, char **argv, char **envp) {

@@ -91,6 +91,7 @@ void	sigquit_handler(int signal)
 	//TODO need to 
 	if (signal == SIGQUIT)
 	{
+		g_global_status = 131;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
