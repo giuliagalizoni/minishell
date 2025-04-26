@@ -96,6 +96,13 @@ int	is_equal(char *str1, char *str2);
 //startup
 void	print_banner();
 
+//signals
+void	sigquit_handler(int signal);
+void	set_quit_action(void);
+struct sigaction	sigignore(int signal);
+void	sigint_handler(int signal);
+void	set_signal_action(void);
+
 t_vars *init_envp(char **envp);
 void	clean_myenv(t_vars *myenv);
 void	print_env(t_vars *myenv);

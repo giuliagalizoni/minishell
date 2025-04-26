@@ -14,6 +14,7 @@ SRCDIR	:= src
 OBJDIR	:= obj
 MODULES := $(addprefix $(SRCDIR)/,\
 	   main.c\
+	   signals.c\
 	   parser.c\
 	   lexer.c\
 	   executer.c\
