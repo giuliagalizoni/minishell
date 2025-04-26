@@ -6,10 +6,12 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
+
 int	wait_for_children(t_command *first_command)
 {
 	t_command *command;
 	int	status;
+	// we don't need this final_status no more cos it's global now
 	int	final_status;
 	pid_t	waited_pid;
 
@@ -25,9 +27,15 @@ int	wait_for_children(t_command *first_command)
 		command = command->pipe_next;
 	}
 	if (WIFEXITED(status))
+	{
+		g_exit_code = WEXITSTATUS(status);
 		final_status = WEXITSTATUS(status);
+	}
 	else if (WIFSIGNALED(status))
+	{
 		final_status = 128 + WTERMSIG(status);
+		g_exit_code = 128 + WTERMSIG(status);
+	}
 	else
 		final_status = -1;
 	return (final_status);
@@ -91,7 +99,7 @@ void	sigquit_handler(int signal)
 	//TODO need to 
 	if (signal == SIGQUIT)
 	{
-		g_global_status = 131;
+		g_exit_code = 131;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);

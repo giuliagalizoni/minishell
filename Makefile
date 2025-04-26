@@ -13,6 +13,7 @@ LDFLAGS := -lreadline -Llibft $(LIBFT)
 SRCDIR	:= src
 OBJDIR	:= obj
 MODULES := $(addprefix $(SRCDIR)/,\
+	   main.c\
 	   parser.c\
 	   lexer.c\
 	   executer.c\
@@ -33,7 +34,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   unset.c\
 	   expand_var.c)
 
-SRCFILES := $(MODULES) $(SRCDIR)/main.c
+SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
 LEXERTESTS := $(MODULES) $(SRCDIR)/tests/tests_lexer.c
 

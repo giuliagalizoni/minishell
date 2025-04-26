@@ -2,8 +2,6 @@
 
 volatile sig_atomic_t	g_exit_code;
 
-g_exit_code = 0;
-
 void	sigint_handler(int signal)
 {
 	//TODO need to 
@@ -37,6 +35,7 @@ int	main(int argc, char **argv, char **envp) {
 	(void)argc;
 	(void)argv;
 
+	g_exit_code = 0;
 	set_signal_action();
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
@@ -53,6 +52,7 @@ int	main(int argc, char **argv, char **envp) {
 		}
 		if (ft_strlen(line) != 0)
 		{
+			g_exit_code = 0;
 			msh.command = parser(line, &msh, envp);
 			// set_command_paths(command, envp);
 			msh.num_cmds = count_commands(msh.command);
