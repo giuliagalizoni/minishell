@@ -20,7 +20,7 @@ static int	safe_arr_push(char ***arr, const char *str)
 	return (1);
 }
 
-static int	handle_exit_stauts(t_msh *msh, char ***new_tokens)
+static int	handle_exit_status(t_msh *msh, char ***new_tokens)
 {
 	char	*exit_status_str;
 	int		success;
@@ -103,7 +103,7 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 		if (tokens[i][0] == '$' && tokens[i][1] != '\0')
 		{
 			if (tokens[i][1] == '?')
-				success = handle_exit_stauts(msh, &new_tokens);
+				success = handle_exit_status(msh, &new_tokens);
 			else
 				success = handle_regular_var(tokens[i], msh, &new_tokens);
 		}
