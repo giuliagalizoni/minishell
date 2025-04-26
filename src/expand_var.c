@@ -96,6 +96,8 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 
 	new_tokens = NULL;
 	i = 0;
+	// TODO i get a segfault here if the line input to the shell is empty
+	// I imagine that has to be caught further upstream tho
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '$' && tokens[i][1] != '\0')

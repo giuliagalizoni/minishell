@@ -91,6 +91,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 
 	// TODO do i really need this prev_pipe_read_fd
 	// if it's not the first cmd, redirect input
+	printf("I'm a child and my pid is %d\n", getpid());
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
