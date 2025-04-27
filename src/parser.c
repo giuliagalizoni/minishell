@@ -86,6 +86,8 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	char	**tokens;
 	char	**retokens;
 
+	if (!line)
+		return NULL;
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
 	// should the parser return an int so we can check the status code?
