@@ -88,6 +88,9 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
+	// should the parser return an int so we can check the status code?
+	if (!tokens)
+		return NULL;
 	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, envp, msh);
 	free_arr((void **)tokens);
