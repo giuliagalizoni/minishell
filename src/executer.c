@@ -20,16 +20,19 @@ void	wait_for_children(t_command *first_command)
 	while (command)
 	{
 		waited_pid = waitpid(command->pid, &status, 0);
+		/*
 		if (waited_pid == -1)
+		{
+			printf("status: %d\n", status);
 			perror("waitpid failed"); // TODO cleanup?
+		}
+		*/
 		command = command->pipe_next;
 	}
-	if (WIFEXITED(status))
-		g_exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
+	if (WIFSIGNALED(status))
 		g_exit_status = 128 + WTERMSIG(status);
 	else
-		g_exit_status = -1;
+		g_exit_status = WEXITSTATUS(status);
 }
 
 static void	input_redirection(t_command *command)
@@ -124,7 +127,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		execve(msh->command->path, msh->command->arguments, NULL);
 		// better command not found error here
 		perror("execve failed");
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
 	}
 }
 
@@ -150,7 +153,10 @@ int	process(t_msh *msh)
 	struct sigaction	sa_quit_old;
 
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
+	{
 		return (single_parent_process(msh));
+	}
+
 	status = 0;
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;

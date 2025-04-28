@@ -31,6 +31,7 @@ int	builtin_router(t_msh *msh)
 	else if (is_equal(msh->command->name, "unset"))
 		unset(msh);
 	// TODO need to change builtins to send me their exit codes
+	g_exit_status = status;
 	return (status);
 }
 
