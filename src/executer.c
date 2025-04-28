@@ -190,6 +190,7 @@ int	process(t_msh *msh)
 		msh->command = msh->command->pipe_next;
 	}
 	wait_for_children(first_command);
+	printf("we must restore the old behaviour?");
 	sigaction(SIGINT, &sa_int_old, NULL);
 	sigaction(SIGQUIT, &sa_quit_old, NULL);
 	close(fd[0]);

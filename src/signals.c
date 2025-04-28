@@ -42,6 +42,7 @@ struct sigaction	sigignore(int signal)
 void	sigint_handler(int signal)
 {
 	//TODO need to 
+	printf("siging");
 	if (signal == SIGINT)
 	{
 		g_exit_status = 130;
