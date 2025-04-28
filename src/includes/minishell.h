@@ -51,6 +51,7 @@ typedef struct s_msh
 	t_command *command;
 	int	num_cmds;
 //	int	exit_status;
+	int	exit;
 }	t_msh;
 
 extern volatile sig_atomic_t g_exit_status;

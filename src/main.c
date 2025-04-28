@@ -13,17 +13,15 @@ int	main(int argc, char **argv, char **envp) {
 	set_signal_action();
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
+	msh.exit = 0;
 	using_history();
 	print_banner();
-	while (1)
+	while (!msh.exit)
 	{
 		//g_exit_status = 0;
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
 		if (!line)
-		{
-			printf("bye\n");
 			exit_shell(&msh);
-		}
 		if (ft_strlen(line) != 0)
 		{
 			msh.command = parser(line, &msh, envp);
@@ -34,7 +32,6 @@ int	main(int argc, char **argv, char **envp) {
 			free(line);
 		}
 	}
-	// free(command);
-	clear_history();
+	exit_shell(&msh);
 	return (0);
 }

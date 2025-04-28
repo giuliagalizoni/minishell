@@ -52,10 +52,6 @@ void	clear_command_chain(t_command *command)
 			free(command->input_redirect);
 		if (command->heredoc_delimiter)
 			free(command->heredoc_delimiter);
-		/* TODO change this to the outfile thing
-		if (command->output_redirect)
-			free(command->output_redirect);
-			*/
 		if (command->outfile)
 		{
 			free(command->outfile->filename);

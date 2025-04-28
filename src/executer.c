@@ -88,7 +88,6 @@ int	single_parent_process(t_msh *msh)
 	return (status);
 }
 
-
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
