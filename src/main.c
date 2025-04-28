@@ -29,7 +29,6 @@ int	main(int argc, char **argv, char **envp) {
 			msh.command = parser(line, &msh, envp);
 			msh.num_cmds = count_commands(msh.command);
 			process(&msh);
-			printf("wtf is up with %d\n", g_exit_status);
 			clear_command_chain(msh.command);
 			add_history(line);
 			free(line);
