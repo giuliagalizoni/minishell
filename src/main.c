@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-volatile sig_atomic_t	g_exit_code;
+volatile sig_atomic_t	g_exit_status;
 
 int	main(int argc, char **argv, char **envp) {
 	char	*line;
@@ -9,15 +9,15 @@ int	main(int argc, char **argv, char **envp) {
 	(void)argc;
 	(void)argv;
 
-	g_exit_code = 0;
+	g_exit_status = 0;
 	set_signal_action();
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
-	msh.exit_status = 0;
 	using_history();
 	print_banner();
 	while (1)
 	{
+		//g_exit_status = 0;
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
 		if (!line)
 		{
@@ -26,11 +26,9 @@ int	main(int argc, char **argv, char **envp) {
 		}
 		if (ft_strlen(line) != 0)
 		{
-			g_exit_code = 0;
 			msh.command = parser(line, &msh, envp);
-			// set_command_paths(command, envp);
 			msh.num_cmds = count_commands(msh.command);
-			msh.exit_status = process(&msh);
+			g_exit_status = process(&msh);
 			clear_command_chain(msh.command);
 			add_history(line);
 			free(line);

@@ -7,12 +7,10 @@
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
 
-int	wait_for_children(t_command *first_command)
+void	wait_for_children(t_command *first_command)
 {
 	t_command *command;
 	int	status;
-	// we don't need this final_status no more cos it's global now
-	int	final_status;
 	pid_t	waited_pid;
 
 	// TODO review this a bit according to this
@@ -27,18 +25,11 @@ int	wait_for_children(t_command *first_command)
 		command = command->pipe_next;
 	}
 	if (WIFEXITED(status))
-	{
-		g_exit_code = WEXITSTATUS(status);
-		final_status = WEXITSTATUS(status);
-	}
+		g_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-	{
-		final_status = 128 + WTERMSIG(status);
-		g_exit_code = 128 + WTERMSIG(status);
-	}
+		g_exit_status = 128 + WTERMSIG(status);
 	else
-		final_status = -1;
-	return (final_status);
+		g_exit_status = -1;
 }
 
 static void	input_redirection(t_command *command)
@@ -98,9 +89,8 @@ int	single_parent_process(t_msh *msh)
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
-	// TODO do i really need this prev_pipe_read_fd
-	// if it's not the first cmd, redirect input
 	set_quit_action();
+	// if it's not the first cmd, redirect input
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
@@ -195,7 +185,6 @@ int	process(t_msh *msh)
 		msh->command = msh->command->pipe_next;
 	}
 	wait_for_children(first_command);
-	//printf("status: %d\n", status);
 	sigaction(SIGINT, &sa_int_old, NULL);
 	sigaction(SIGQUIT, &sa_quit_old, NULL);
 	close(fd[0]);

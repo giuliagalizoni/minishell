@@ -24,8 +24,9 @@ static int	handle_exit_status(t_msh *msh, char ***new_tokens)
 {
 	char	*exit_status_str;
 	int		success;
+	(void)msh;
 
-	exit_status_str = ft_itoa(msh->exit_status);
+	exit_status_str = ft_itoa(g_exit_status);
 	if (!exit_status_str)
 	{
 		perror("ft_itoa failed for exit status");

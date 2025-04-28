@@ -5,8 +5,8 @@ void	sigquit_handler(int signal)
 	//TODO need to 
 	if (signal == SIGQUIT)
 	{
-		g_exit_code = 131;
-		write(1, "\n", 1);
+		g_exit_status = 131;
+		write(1, "\nbooo", 8);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -44,7 +44,7 @@ void	sigint_handler(int signal)
 	//TODO need to 
 	if (signal == SIGINT)
 	{
-		g_exit_code = 130;
+		g_exit_status = 130;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
