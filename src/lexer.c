@@ -1,24 +1,5 @@
 #include "includes/minishell.h"
 
-//this could be later moved to another file
-char *ft_strncat(char *dest, const char *src, size_t n)
-{
-	size_t i;
-	size_t dest_len;
-
-	i = 0;
-	dest_len = 0;
-	while (dest[dest_len])
-		dest_len++;
-	while (i < n && src[i])
-	{
-		dest[dest_len + i] = src[i];
-		i++;
-	}
-	dest[dest_len + i] = '\0';
-	return (dest);
-}
-
 static void	push_token(char ***tokens, char *result)
 {
 	char	*token;
@@ -116,7 +97,6 @@ char	**lexer(char *line, char ***tokens)
 			if (!handle_operators(line, tokens, result, &i))
 				return NULL;
 		}
-
 		else
 			handle_combined_token(line, &i, result);
 	}

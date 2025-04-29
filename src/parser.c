@@ -18,22 +18,9 @@ static void	check_operators(t_command *command,
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && is_equal(tokens[i-1], "<<"))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
-	/*
-	else if (!ft_strncmp(tokens[i], ">>", 2))
-		command->append_output = 1;
-	else if (!ft_strncmp(tokens[i], ">", 1))
-		command->append_output = 0;
-	else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
-		arr_push(&command->output_redirect, tokens[i]);
-	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
-		arr_push(&command->output_redirect, tokens[i]);
-		*/
 	else if (tokens[i][0] == '$')
 	{
 		char *key = ft_substr(tokens[i], 1, (ft_strlen(tokens[i])) - 1);
-		// if key is ? do smth else
-		// printf("argument %s will be key %s\n", tokens[i], key);
-		// printf("key %s has value \"%s\"\n", key, get_var_value(msh->myenv, key));
 		arr_push(&command->arguments, get_var_value(msh->myenv, key));
 	}
 	else
@@ -104,36 +91,24 @@ static int check_invalid_syntax(char **tokens)
 	if (!tokens || !tokens[0])
 		return (1);
 	if (is_operator(tokens[0]) && is_pipe(tokens[0]))
-	{
-		printf("minishell: syntax error near unexpected token `%s'\n", tokens[0]);
-		return (0);
-	}
+		return (p_syntax_error(tokens[0]));
 	last = -1;
 	while (tokens[last + 1])
 		last++;
 	if (last >= 0 && is_operator(tokens[last]))
-	{
-		printf("minishell: syntax error near unexpected token `newline'\n");
-		return (0);
-	}
+		return (p_syntax_error(NULL));
 	i = 0;
 	while (tokens[i])
 	{
 		if (is_redirection(tokens[i]))
 		{
 			if (!tokens[i+1] || is_operator(tokens[i+1]))
-			{
-				printf("minishell: syntax error near unexpected token `%s'\n", tokens[i]);
-				return (0);
-			}
+				return (p_syntax_error(tokens[i+1]));
 		}
 		else if (is_pipe(tokens[i]))
 		{
 			if (!tokens[i+1] || is_pipe(tokens[i+1]))
-			{
-				printf("minishell: syntax error near unexpected token `%s'\n", tokens[i]);
-				return (1);
-			}
+				return (p_syntax_error(tokens[i+1]));
 		}
 		i++;
 	}

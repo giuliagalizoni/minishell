@@ -89,6 +89,8 @@ int	pwd();
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
 //general_utils
 int	is_equal(char *str1, char *str2);
+char *ft_strncat(char *dest, const char *src, size_t n);
+int	p_syntax_error(char *token);
 
 //startup
 void	print_banner();
