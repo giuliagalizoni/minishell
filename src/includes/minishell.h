@@ -95,11 +95,19 @@ int	p_syntax_error(char *token);
 //startup
 void	print_banner();
 
+//env
 t_vars *init_envp(char **envp);
 void	clean_myenv(t_vars *myenv);
 void	print_env(t_vars *myenv);
+
+//unset
 void	unset(t_msh *msh);
+
+//expand var
 char	*get_var_value(t_vars *head, char *key);
 char **expand_and_retokenize(char **tokens, t_msh *msh);
+
+//check syntax
+int check_invalid_syntax(char **tokens);
 
 #endif
