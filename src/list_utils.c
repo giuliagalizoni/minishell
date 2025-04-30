@@ -54,3 +54,43 @@ void	filelistclear(t_outfile **outfiles)
 	outfiles = NULL;
 }
 */
+
+static void	swap_vars(t_vars *a, t_vars *b)
+{
+	char	*temp_key;
+	char	*temp_value;
+
+	temp_key = a->key;
+	temp_value = a->value;
+	a->key = b->key;
+	a->value = b->value;
+	b->key = temp_key;
+	b->value = temp_value;
+}
+
+void	sort_vars_list(t_vars *head)
+{
+	int		swapped;
+	t_vars	*current;
+	t_vars	*last_ptr;
+
+	last_ptr = NULL;
+	if (head == NULL || head->next == NULL)
+		return ;
+	swapped = 1;
+	while (swapped)
+	{
+		swapped = 0;
+		current = head;
+		while (current->next != last_ptr)
+		{
+			if (ft_strcmp(current->key, current->next->key) > 0)
+			{
+				swap_vars(current, current->next);
+				swapped = 1;
+			}
+			current = current->next;
+		}
+		last_ptr = current;
+	}
+}
