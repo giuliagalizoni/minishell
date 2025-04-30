@@ -29,7 +29,7 @@ static void	check_operators(t_command *command,
 
 void	set_name(t_command *command, char **tokens, char **envp)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while(tokens[i][0] == '<')
@@ -85,5 +85,11 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, envp, msh);
 	free_arr((void **)tokens);
+
+	if (!msh->command)
+	{
+		free_arr((void **)retokens);
+	}
+	free_arr((void **)retokens);
 	return (msh->command);
 }
