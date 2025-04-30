@@ -27,11 +27,27 @@ char *ft_strncat(char *dest, const char *src, size_t n)
 	return (dest);
 }
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] != '\0' || s2[i] != '\0')
+	{
+		if (s1[i] > s2[i])
+			return (1);
+		else if (s1[i] < s2[i])
+			return (-1);
+		i++;
+	}
+	return (0);
+}
+
 int	p_syntax_error(char *token)
 {
-	char *prefix;
-	char *sufix;
-	char *actual_token;
+	char	*prefix;
+	char	*sufix;
+	char	*actual_token;
 
 	prefix = "minishell: syntax error near unexpected token `";
 	sufix = "'\n";

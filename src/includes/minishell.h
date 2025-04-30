@@ -87,10 +87,13 @@ int	pwd();
 
 //list_utils - maybe rename to redirection_utils or sthg like that later
 void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i);
+void	sort_vars_list(t_vars *head);
+
 //general_utils
 int	is_equal(char *str1, char *str2);
 char *ft_strncat(char *dest, const char *src, size_t n);
 int	p_syntax_error(char *token);
+int	ft_strcmp(char *s1, char *s2);
 
 //startup
 void	print_banner();
@@ -109,5 +112,12 @@ char **expand_and_retokenize(char **tokens, t_msh *msh);
 
 //check syntax
 int check_invalid_syntax(char **tokens);
+
+// export
+t_vars	*find_last(t_vars *lst);
+void	push_list(t_vars **exp_vars, t_vars *new);
+void	print_vars(t_vars *vars);
+void	*handle_malloc_error(char **key, char **value, char *str);
+int	validate_key(char	*key);
 
 #endif

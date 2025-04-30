@@ -45,6 +45,8 @@ static void	handle_combined_token(char *line, int *i, char *result)
 
 static int	handle_operators(char *line, char ***tokens, char *result, int *i)
 {
+	char	*err_str;
+
 	push_token(tokens, result);
 	result[0] = line[*i];
 	if ((line[*i] == '<' && line[*i + 1] == '<')
@@ -52,7 +54,9 @@ static int	handle_operators(char *line, char ***tokens, char *result, int *i)
 	{
 		if (line[*i + 2] == '<' || line[*i + 2] == '>')
 		{
-			printf("minishell: syntax error near unexpected token `%c'\n", line[*i + 2]);
+			err_str = ft_substr(line, *i + 2, 1);
+			p_syntax_error(err_str);
+			free(err_str);
 			return (0);
 		}
 		result[1] = line[(*i)++];
@@ -62,7 +66,7 @@ static int	handle_operators(char *line, char ***tokens, char *result, int *i)
 		result[1] = '\0';
 	push_token(tokens, result);
 	(*i)++;
-	return 1;
+	return (1);
 }
 
 static void	init_buff(char *line, char **result)
@@ -95,7 +99,7 @@ char	**lexer(char *line, char ***tokens)
 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
 		{
 			if (!handle_operators(line, tokens, result, &i))
-				return NULL;
+				return (NULL);
 		}
 		else
 			handle_combined_token(line, &i, result);
