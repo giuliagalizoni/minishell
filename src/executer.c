@@ -16,23 +16,34 @@ void	wait_for_children(t_command *first_command)
 	// TODO review this a bit according to this
 	// https://gemini.google.com/app/a5ea8cc40aba5f5e
 	// but maybe it's fine like this
+	status = 0;
 	command = first_command;
 	while (command)
 	{
 		waited_pid = waitpid(command->pid, &status, 0);
-		/*
+		/* optional stuff?if we can't use errno, just check that it's
+		 * not the last command
 		if (waited_pid == -1)
 		{
-			printf("status: %d\n", status);
-			perror("waitpid failed"); // TODO cleanup?
-		}
-		*/
+				if (command->index < msh->num_commands - 1) // or
+									// something
+				{
+					fprintf(stderr, "Warning: waitpid() failed with ECHILD, but expected more children.\n");
+					break;
+				}
+                }
+		 */
 		command = command->pipe_next;
 	}
-	if (WIFSIGNALED(status))
+	if (WIFEXITED(status))
+		g_exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
 		g_exit_status = 128 + WTERMSIG(status);
 	else
-		g_exit_status = WEXITSTATUS(status);
+	{
+		perror("Error: failed to get status for the last command");
+		g_exit_status = -1;
+	}
 }
 
 static void	input_redirection(t_command *command)
@@ -91,7 +102,7 @@ int	single_parent_process(t_msh *msh)
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
-	set_quit_action();
+	//set_quit_action();
 	// if it's not the first cmd, redirect input
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
@@ -148,8 +159,6 @@ int	process(t_msh *msh)
 	int	status;
 	int	prev_pipe_read_fd;
 	t_command	*first_command;
-	struct sigaction	sa_int_old;
-	struct sigaction	sa_quit_old;
 
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 	{
@@ -182,17 +191,10 @@ int	process(t_msh *msh)
 		else if (pid == 0)
 			child_process(msh, prev_pipe_read_fd, fd);
 		else
-		{
-			sa_int_old = sigignore(SIGINT);
-			sa_quit_old = sigignore(SIGQUIT);
 			parent_process(msh, fd, &prev_pipe_read_fd);
-		}
 		msh->command = msh->command->pipe_next;
 	}
 	wait_for_children(first_command);
-	printf("we must restore the old behaviour?");
-	sigaction(SIGINT, &sa_int_old, NULL);
-	sigaction(SIGQUIT, &sa_quit_old, NULL);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);

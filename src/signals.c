@@ -1,67 +1,54 @@
 #include "includes/minishell.h"
 
-void	sigquit_handler(int signal)
+void	sigint_reset_prompt(int signal)
 {
-	//TODO need to 
-	if (signal == SIGQUIT)
-	{
+	(void)signal;
+	g_exit_status = 130;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	signal_newline(int signal)
+{
+	if (signal == SIGINT)
+		g_exit_status = 130;
+	else if (signal == SIGQUIT)
 		g_exit_status = 131;
-		write(1, "\nbooo", 8);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
+	rl_on_new_line();
 }
 
-void	set_quit_action(void)
-{
-	struct sigaction sa_quit;
-
-	ft_bzero(&sa_quit, sizeof(sa_quit));
-	sa_quit.sa_handler = &sigquit_handler;
-	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = SA_RESTART;
-	// TODO wrap up in a in if sigaction == -1 for error check
-	sigaction(SIGQUIT, &sa_quit, NULL);
-}
-
-struct sigaction	sigignore(int signal)
+void	sigignore(void)
 {
 	struct sigaction	sa;
-	struct sigaction	sa_old;
 
 	ft_bzero(&sa, sizeof(sa));
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = SIG_IGN;
 	sa.sa_flags = 0;
-	sigaction(signal, &sa, &sa_old);
-
-	return (sa_old);
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
-void	sigint_handler(int signal)
+void	set_signals_child(void)
 {
-	//TODO need to 
-	printf("siging");
-	if (signal == SIGINT)
-	{
-		g_exit_status = 130;
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
+	struct sigaction	sa;
+
+	ft_bzero(&sa, sizeof(sa));
+	sa.sa_handler = &signal_newline;
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
-void	set_signal_action(void)
+void	set_signals_parent(void)
 {
 	struct sigaction sa_int;
 
+	sigignore();
 	ft_bzero(&sa_int, sizeof(sa_int));
-	sa_int.sa_handler = &sigint_handler;
+	sa_int.sa_handler = &sigint_reset_prompt;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
-	// TODO wrap up in a in if sigaction == -1 for error check
 	sigaction(SIGINT, &sa_int, NULL);
-	signal(SIGQUIT, SIG_IGN);
 }

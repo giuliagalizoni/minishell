@@ -10,7 +10,6 @@ int	main(int argc, char **argv, char **envp) {
 	(void)argv;
 
 	g_exit_status = 0;
-	set_signal_action();
 	msh.command = NULL;
 	msh.myenv = init_envp(envp);
 	msh.exit = 0;
@@ -18,8 +17,9 @@ int	main(int argc, char **argv, char **envp) {
 	print_banner();
 	while (!msh.exit)
 	{
-		//g_exit_status = 0;
+		set_signals_parent();
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
+		set_signals_child();
 		if (!line)
 			exit_shell(&msh);
 		if (ft_strlen(line) != 0)

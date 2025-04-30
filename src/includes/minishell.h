@@ -98,11 +98,18 @@ int	is_equal(char *str1, char *str2);
 void	print_banner();
 
 //signals
+void	set_signals_parent(void);
+void	set_signals_child(void);
+void	reset_prompt(int signal);
+void	signal_newline(int signal);
+void	sigignore();
+/*
 void	sigquit_handler(int signal);
 void	set_quit_action(void);
-struct sigaction	sigignore(int signal);
+void	sigignore(int signal, struct sigaction *sa_old);
 void	sigint_handler(int signal);
 void	set_signal_action(void);
+*/
 
 t_vars *init_envp(char **envp);
 void	clean_myenv(t_vars *myenv);
