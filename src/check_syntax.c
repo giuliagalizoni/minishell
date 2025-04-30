@@ -1,43 +1,47 @@
 #include "includes/minishell.h"
 
-static int is_redirection(char *token) {
+static int	is_redirection(char *token)
+{
 	if (!token)
 		return (0);
-	return (is_equal(token, ">") || is_equal(token, "<") ||
-			is_equal(token, ">>") || is_equal(token, "<<"));
+	return (is_equal(token, ">") || is_equal(token, "<")
+		|| is_equal(token, ">>") || is_equal(token, "<<"));
 }
 
-static int is_pipe(char *token) {
+static int	is_pipe(char *token)
+{
 	if (!token)
 		return (0);
 	return (is_equal(token, "|"));
 }
 
-static int is_operator(char *token) {
+static int	is_operator(char *token)
+{
 	if (!token)
 		return (0);
 	return (is_pipe(token) || is_redirection(token));
 }
 
-static int tokens_check(char **tokens, int i)
+static int	tokens_check(char **tokens, int i)
 {
 	if (is_redirection(tokens[i]))
-		{
-			if (!tokens[i+1] || is_operator(tokens[i+1]))
-				return (p_syntax_error(tokens[i+1]));
-		}
+	{
+		if (!tokens[i + 1] || is_operator(tokens[i + 1]))
+			return (p_syntax_error(tokens[i + 1]));
+	}
 	else if (is_pipe(tokens[i]))
 	{
-		if (!tokens[i+1] || is_pipe(tokens[i+1]))
-			return (p_syntax_error(tokens[i+1]));
+		if (!tokens[i + 1] || is_pipe(tokens[i + 1]))
+			return (p_syntax_error(tokens[i + 1]));
 	}
 	return (1);
 }
 
-int check_invalid_syntax(char **tokens)
+	//syntax error code 2
+int	check_invalid_syntax(char **tokens)
 {
-	int i;
-	int last;
+	int	i;
+	int	last;
 
 	if (!tokens || !tokens[0])
 		return (1);

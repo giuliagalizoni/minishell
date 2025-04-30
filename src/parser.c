@@ -30,9 +30,8 @@ static void	check_operators(t_command *command,
 void	set_name(t_command *command, char **tokens, char **envp)
 {
 	int i;
-	// errors "unexpected token" like <<< or < < < > or
+
 	i = 0;
-	// need to also account for > and >>
 	while(tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
@@ -42,7 +41,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 {
 	t_command	*command;
-	int i;
+	int	i;
 
 	command = malloc(sizeof(t_command));
 	if (!command)
@@ -53,12 +52,12 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 	i = 0;
 	while (tokens[i])
 	{
-		if (!ft_strncmp(tokens[i], "|", 1))
+		if (is_equal(tokens[i], "|"))
 		{
 			init_pipe(command, tokens, &i, &index, envp, msh);
 			break ;
 		}
-		else if (!ft_strncmp(tokens[i], ">", 1) || !(ft_strncmp(tokens[i], ">>", 2)))
+		else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
 			add_outfile(command, tokens, &command->outfile, &i);
 		else
 			check_operators(command, tokens, i, msh);
@@ -73,12 +72,11 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	char	**retokens;
 
 	if (!line)
-		return NULL;
+		return (NULL);
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
-	//syntax error code 2
 	if (!tokens)
-		return NULL;
+		return (NULL);
 	if (tokens && !check_invalid_syntax(tokens))
 	{
 		free_arr((void **)tokens);
