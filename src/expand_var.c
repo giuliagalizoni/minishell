@@ -1,8 +1,8 @@
 #include "includes/minishell.h"
 
-static int safe_arr_push(char ***arr, const char *str)
+static int	safe_arr_push(char ***arr, const char *str)
 {
-	char *copy;
+	char	*copy;
 
 	copy = ft_strdup(str);
 	if (!copy)
@@ -22,11 +22,12 @@ static int safe_arr_push(char ***arr, const char *str)
 
 static int	handle_exit_stauts(t_msh *msh, char ***new_tokens)
 {
-	char *exit_status_str;
-	int success;
+	char	*exit_status_str;
+	int		success;
 
 	exit_status_str = ft_itoa(msh->exit_status);
-	if (!exit_status_str) {
+	if (!exit_status_str)
+	{
 		perror("ft_itoa failed for exit status");
 		return (0);
 	}
@@ -38,8 +39,8 @@ static int	handle_exit_stauts(t_msh *msh, char ***new_tokens)
 static int	retokenize(char ***new_tokens, char *value)
 {
 	char	**temp_tokens;
-	int	i;
-	int success;
+	int		i;
+	int		success;
 
 	temp_tokens = ft_split(value, ' ');
 	if (!temp_tokens)
@@ -60,15 +61,16 @@ static int	retokenize(char ***new_tokens, char *value)
 	return (1);
 }
 
-static int	handle_regular_var(const char *token, t_msh *msh, char ***new_tokens)
+static int	handle_regular_var(char *token, t_msh *msh, char ***new_tokens)
 {
-	char *key;
-	char *value;
-	int	success;
+	char	*key;
+	char	*value;
+	int		success;
 
 	success = 1;
 	key = ft_substr(token, 1, ft_strlen(token) - 1);
-	if (!key) {
+	if (!key)
+	{
 		perror("ft_substr failed for key");
 		return (0);
 	}
@@ -86,11 +88,11 @@ static int	handle_non_var(char *token, char ***new_tokens)
 	return (1);
 }
 
-char **expand_and_retokenize(char **tokens, t_msh *msh)
+char	**expand_and_retokenize(char **tokens, t_msh *msh)
 {
-	char **new_tokens;
-	int i;
-	int success;
+	char	**new_tokens;
+	int		i;
+	int		success;
 
 	new_tokens = NULL;
 	i = 0;

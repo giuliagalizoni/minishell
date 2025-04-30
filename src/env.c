@@ -14,14 +14,14 @@ void	print_env(t_vars *myenv)
 
 char	*get_var_value(t_vars *head, char *key)
 {
-	t_vars *current;
+	t_vars	*current;
 
 	current = head;
-	while(current)
+	while (current)
 	{
 		if (is_equal(current->key, key))
-			return current->value;
+			return (current->value);
 		current = current->next;
 	}
-	return NULL;
+	return (NULL);
 }

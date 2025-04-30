@@ -4,7 +4,6 @@
 // move command_init here
 void	command_init(t_command *command)
 {
-
 	command->name = NULL;
 	command->arguments = NULL;
 	command->input_redirect = NULL;
