@@ -33,35 +33,68 @@ void	set_command_paths(t_command *command, char **envp)
 	}
 }
 
+// void	clear_command_chain(t_command *command)
+// {
+// 	t_command	*tmp;
+
+// 	if (!command)
+// 		return ;
+// 	while (command)
+// 	{
+// 		tmp = command->pipe_next;
+// 		if (command->name)
+// 			free(command->name);
+// 		if (command->path)
+// 			free(command->path);
+// 		if (command->arguments)
+// 			free_arr((void **)command->arguments);
+// 		if (command->input_redirect)
+// 			free(command->input_redirect);
+// 		if (command->heredoc_delimiter)
+// 			free(command->heredoc_delimiter);
+// 		/* TODO change this to the outfile thing
+// 		if (command->output_redirect)
+// 			free(command->output_redirect);
+// 			*/
+// 		if (command->outfile)
+// 		{
+// 			free(command->outfile->filename);
+// 			free(command->outfile);
+// 			command->outfile = NULL;
+// 		}
+// 		free(command);
+// 		command = tmp;
+// 	}
+// 	free(tmp);
+// 	free(command);
+// }
+
 void	clear_command_chain(t_command *command)
 {
-	t_command	*tmp;
-
 	if (!command)
 		return ;
-	while (command)
+	if (command->pipe_next)
 	{
-		tmp = command->pipe_next;
-		if (command->name)
-			free(command->name);
-		if (command->path)
-			free(command->path);
-		if (command->arguments)
-			free_arr((void **)command->arguments);
-		if (command->input_redirect)
-			free(command->input_redirect);
-		if (command->heredoc_delimiter)
-			free(command->heredoc_delimiter);
-		if (command->outfile)
-		{
-			free(command->outfile->filename);
-			free(command->outfile);
-			command->outfile = NULL;
-		}
-		free(command);
-		command = tmp;
+		clear_command_chain(command->pipe_next);
+		command->pipe_next = NULL;
 	}
-	free(tmp);
+	if (command->name)
+		free(command->name);
+	if (command->path)
+		free(command->path);
+	if (command->arguments)
+		free_arr((void **)command->arguments);
+	if (command->input_redirect)
+		free_arr((void **)command->input_redirect);
+	if (command->heredoc_delimiter)
+		free(command->heredoc_delimiter);
+	if (command->outfile)
+	{
+		if (command->outfile->filename)
+			free(command->outfile->filename);
+		free(command->outfile);
+		command->outfile = NULL;
+	}
 	free(command);
 }
 

@@ -18,22 +18,9 @@ static void	check_operators(t_command *command,
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && is_equal(tokens[i-1], "<<"))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
-	/*
-	else if (!ft_strncmp(tokens[i], ">>", 2))
-		command->append_output = 1;
-	else if (!ft_strncmp(tokens[i], ">", 1))
-		command->append_output = 0;
-	else if (i > 0 && !ft_strncmp((tokens[i-1]), ">>", 2))
-		arr_push(&command->output_redirect, tokens[i]);
-	else if (i > 0 && !ft_strncmp(tokens[i-1], ">", 1))
-		arr_push(&command->output_redirect, tokens[i]);
-		*/
 	else if (tokens[i][0] == '$')
 	{
 		char *key = ft_substr(tokens[i], 1, (ft_strlen(tokens[i])) - 1);
-		// if key is ? do smth else
-		// printf("argument %s will be key %s\n", tokens[i], key);
-		// printf("key %s has value \"%s\"\n", key, get_var_value(msh->myenv, key));
 		arr_push(&command->arguments, get_var_value(msh->myenv, key));
 	}
 	else
@@ -42,10 +29,9 @@ static void	check_operators(t_command *command,
 
 void	set_name(t_command *command, char **tokens, char **envp)
 {
-	int i;
-	// errors "unexpected token" like <<< or < < < > or
+	int	i;
+
 	i = 0;
-	// need to also account for > and >>
 	while(tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
@@ -55,7 +41,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 {
 	t_command	*command;
-	int i;
+	int	i;
 
 	command = malloc(sizeof(t_command));
 	if (!command)
@@ -66,12 +52,12 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 	i = 0;
 	while (tokens[i])
 	{
-		if (!ft_strncmp(tokens[i], "|", 1))
+		if (is_equal(tokens[i], "|"))
 		{
 			init_pipe(command, tokens, &i, &index, envp, msh);
 			break ;
 		}
-		else if (!ft_strncmp(tokens[i], ">", 1) || !(ft_strncmp(tokens[i], ">>", 2)))
+		else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
 			add_outfile(command, tokens, &command->outfile, &i);
 		else
 			check_operators(command, tokens, i, msh);
@@ -80,16 +66,30 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 	return (command);
 }
 
-
 t_command	*parser(char *line, t_msh *msh, char **envp)
 {
 	char	**tokens;
 	char	**retokens;
 
+	if (!line)
+		return (NULL);
 	tokens = NULL;
 	tokens = lexer(line, &tokens);
+	if (!tokens)
+		return (NULL);
+	if (tokens && !check_invalid_syntax(tokens))
+	{
+		free_arr((void **)tokens);
+		return (NULL);
+	}
 	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, envp, msh);
 	free_arr((void **)tokens);
+
+	if (!msh->command)
+	{
+		free_arr((void **)retokens);
+	}
+	free_arr((void **)retokens);
 	return (msh->command);
 }
