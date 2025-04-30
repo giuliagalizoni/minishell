@@ -4,6 +4,7 @@
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
@@ -45,8 +46,10 @@ typedef struct s_msh
 	t_vars		*myenv;
 	t_command	*command;
 	int			num_cmds;
-	int			exit_status;
+	int			exit;
 }	t_msh;
+
+extern volatile sig_atomic_t g_exit_status;
 
 // path_utils
 char		**get_paths(char **envp);
@@ -94,6 +97,13 @@ int			ft_strcmp(char *s1, char *s2);
 
 //startup
 void		print_banner(void);
+
+//signals
+void	set_signals_parent(void);
+void	set_signals_child(void);
+void	reset_prompt(int signal);
+void	signal_newline(int signal);
+void	sigignore();
 
 //env
 t_vars		*init_envp(char **envp);

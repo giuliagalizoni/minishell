@@ -6,31 +6,44 @@
 // error?)
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
-int	wait_for_children(t_command *first_command)
+
+void	wait_for_children(t_command *first_command)
 {
 	t_command *command;
 	int	status;
-	int	final_status;
 	pid_t	waited_pid;
 
 	// TODO review this a bit according to this
 	// https://gemini.google.com/app/a5ea8cc40aba5f5e
 	// but maybe it's fine like this
+	status = 0;
 	command = first_command;
 	while (command)
 	{
 		waited_pid = waitpid(command->pid, &status, 0);
+		/* optional stuff?if we can't use errno, just check that it's
+		 * not the last command
 		if (waited_pid == -1)
-			perror("waitpid failed"); // TODO cleanup?
+		{
+				if (command->index < msh->num_commands - 1) // or
+									// something
+				{
+					fprintf(stderr, "Warning: waitpid() failed with ECHILD, but expected more children.\n");
+					break;
+				}
+                }
+		 */
 		command = command->pipe_next;
 	}
 	if (WIFEXITED(status))
-		final_status = WEXITSTATUS(status);
+		g_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		final_status = 128 + WTERMSIG(status);
+		g_exit_status = 128 + WTERMSIG(status);
 	else
-		final_status = -1;
-	return (final_status);
+	{
+		perror("Error: failed to get status for the last command");
+		g_exit_status = -1;
+	}
 }
 
 static void	input_redirection(t_command *command)
@@ -89,7 +102,7 @@ int	single_parent_process(t_msh *msh)
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 
-	// TODO do i really need this prev_pipe_read_fd
+	//set_quit_action();
 	// if it's not the first cmd, redirect input
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
@@ -123,13 +136,14 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	{
 		execve(msh->command->path, msh->command->arguments, NULL);
 		// better command not found error here
-		perror("execve failed");
-		exit(EXIT_FAILURE);
+		perror("command not found");
+		exit(127);
 	}
 }
 
 void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
 {
+
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
 	if (msh->command->index < msh->num_cmds - 1)
@@ -147,7 +161,10 @@ int	process(t_msh *msh)
 	t_command	*first_command;
 
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
+	{
 		return (single_parent_process(msh));
+	}
+
 	status = 0;
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
@@ -177,8 +194,7 @@ int	process(t_msh *msh)
 			parent_process(msh, fd, &prev_pipe_read_fd);
 		msh->command = msh->command->pipe_next;
 	}
-	status = wait_for_children(first_command);
-	//printf("status: %d\n", status);
+	wait_for_children(first_command);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);
