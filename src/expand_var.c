@@ -20,12 +20,13 @@ static int	safe_arr_push(char ***arr, const char *str)
 	return (1);
 }
 
-static int	handle_exit_stauts(t_msh *msh, char ***new_tokens)
+static int	handle_exit_status(t_msh *msh, char ***new_tokens)
 {
 	char	*exit_status_str;
 	int		success;
+	(void)msh;
 
-	exit_status_str = ft_itoa(msh->exit_status);
+	exit_status_str = ft_itoa(g_exit_status);
 	if (!exit_status_str)
 	{
 		perror("ft_itoa failed for exit status");
@@ -96,12 +97,14 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 
 	new_tokens = NULL;
 	i = 0;
+	// TODO i get a segfault here if the line input to the shell is empty
+	// I imagine that has to be caught further upstream tho
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '$' && tokens[i][1] != '\0')
 		{
 			if (tokens[i][1] == '?')
-				success = handle_exit_stauts(msh, &new_tokens);
+				success = handle_exit_status(msh, &new_tokens);
 			else
 				success = handle_regular_var(tokens[i], msh, &new_tokens);
 		}

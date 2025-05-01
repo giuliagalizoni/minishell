@@ -31,13 +31,12 @@ int	builtin_router(t_msh *msh)
 	else if (is_equal(msh->command->name, "unset"))
 		unset(msh);
 	// TODO need to change builtins to send me their exit codes
+	g_exit_status = status;
 	return (status);
 }
 
 void	child_builtin(t_msh *msh)
 {
-	int	status;
-
-	status = builtin_router(msh);
-	exit(status);
+	g_exit_status = builtin_router(msh);
+	exit(g_exit_status);
 }

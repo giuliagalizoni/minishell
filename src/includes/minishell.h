@@ -4,6 +4,7 @@
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
@@ -33,6 +34,7 @@ typedef struct s_command
 	char				**input_redirect;
 	int					is_heredoc;
 	char				*heredoc_delimiter;
+	int					heredoc_fd;
 	t_outfile			*outfile;
 	int					is_pipe;
 	struct s_command	*pipe_next;
@@ -45,8 +47,10 @@ typedef struct s_msh
 	t_vars		*myenv;
 	t_command	*command;
 	int			num_cmds;
-	int			exit_status;
+	int			exit;
 }	t_msh;
+
+extern volatile sig_atomic_t g_exit_status;
 
 // path_utils
 char		**get_paths(char **envp);
@@ -95,6 +99,13 @@ int			ft_strcmp(char *s1, char *s2);
 //startup
 void		print_banner(void);
 
+//signals
+void	set_signals_parent(void);
+void	set_signals_child(void);
+void	reset_prompt(int signal);
+void	signal_newline(int signal);
+void	sig_ignore();
+
 //env
 t_vars		*init_envp(char **envp);
 void		clean_myenv(t_vars *myenv);
@@ -123,5 +134,9 @@ char **expand_and_retokenize(char **tokens, t_msh *msh);
 void print_tokens(char **tokens);
 void print_command(t_command *command);
 void print_command_list(t_command *command);
+
+// heredoc
+void		handle_heredoc(t_command *command);
+void		process_heredocs(t_msh *msh);
 
 #endif
