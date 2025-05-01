@@ -103,7 +103,7 @@ void	set_signals_parent(void);
 void	set_signals_child(void);
 void	reset_prompt(int signal);
 void	signal_newline(int signal);
-void	sigignore();
+void	sig_ignore();
 
 //env
 t_vars		*init_envp(char **envp);

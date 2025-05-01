@@ -44,6 +44,7 @@ void	wait_for_children(t_command *first_command)
 		perror("Error: failed to get status for the last command");
 		g_exit_status = -1;
 	}
+	// (void)waited_pid;
 }
 
 static void	input_redirection(t_command *command)

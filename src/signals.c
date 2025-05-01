@@ -19,7 +19,7 @@ void	signal_newline(int signal)
 	rl_on_new_line();
 }
 
-void	sigignore(void)
+void	sig_ignore(void)
 {
 	struct sigaction	sa;
 
@@ -45,7 +45,7 @@ void	set_signals_parent(void)
 {
 	struct sigaction sa_int;
 
-	sigignore();
+	sig_ignore();
 	ft_bzero(&sa_int, sizeof(sa_int));
 	sa_int.sa_handler = &sigint_reset_prompt;
 	sigemptyset(&sa_int.sa_mask);
