@@ -13,23 +13,35 @@ static void	push_token(char ***tokens, char *result)
 	}
 }
 
-static void	handle_quotes(char *line, int *i, char *result)
+static int handle_quotes(char *line, int *i, char *result)
 {
-	char	quote;
-	int		start;
+    char	quote;
+    int		start;
 
-	quote = line[*i];
-	(*i)++;
-	start = *i;
-	while (line[*i] && (line[*i] != quote))
-		(*i)++;
-	if (!line[*i])
-	{
-		perror("Invalid quotes");
-		return ;
-	}
-	ft_strncat(result, &line[start], *i - start);
-	(*i)++;
+    start = *i; // Remember the position of the opening quote
+    quote = line[*i];
+    (*i)++; // Move past the opening quote
+
+    // Find the matching closing quote
+    while (line[*i] && (line[*i] != quote))
+        (*i)++;
+
+    // Check for unclosed quote
+    if (!line[*i])
+    {
+        // Use your error function (assuming p_syntax_error exists and works like ft_syntax_error)
+        // You might need a different error message for unclosed quotes
+        // For now, using a generic message:
+        p_syntax_error(&quote); // Or pass a specific message string
+        return (0); // Signal error
+    }
+
+    (*i)++; // Move past the closing quote
+
+    // Append the entire segment (including start and end quotes) to result
+    ft_strncat(result, &line[start], *i - start);
+
+    return (1); // Signal success
 }
 
 static void	handle_combined_token(char *line, int *i, char *result)
@@ -80,34 +92,84 @@ static void	init_buff(char *line, char **result)
 	*result[0] = '\0';
 }
 
-char	**lexer(char *line, char ***tokens)
+int	lexer(char *line, char ***tokens) // Return int
 {
-	int		i;
-	char	*result;
+    int		i;
+    char	*result;
+    int     success = 1; // Track success
 
-	init_buff(line, &result);
-	i = 0;
-	while (line[i])
-	{
-		while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13)))
-		{
-			push_token(tokens, result);
-			i++;
-		}
-		if (line[i] == 34 || line[i] == 39)
-			handle_quotes(line, &i, result);
-		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-		{
-			if (!handle_operators(line, tokens, result, &i))
-				return (NULL);
-		}
-		else
-			handle_combined_token(line, &i, result);
-	}
-	push_token(tokens, result);
-	free(result);
-	return (*tokens);
+    *tokens = NULL; // Initialize for safety
+    // init_buff should ideally return int too
+    init_buff(line, &result); // Assuming it handles malloc failure internally for now
+    if (!result) return 0; // Check if init_buff failed
+
+    i = 0;
+    while (line[i] && success)
+    {
+        while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13)))
+        {
+            push_token(tokens, result);
+            i++;
+        }
+        if (!line[i]) break; // End of line check
+
+        if (line[i] == 34 || line[i] == 39)
+        {
+            if (!handle_quotes(line, &i, result)) // Check return value
+                success = 0; // Set flag on error
+        }
+        else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+        {
+            if (!handle_operators(line, tokens, result, &i))
+                success = 0; // Set flag on error
+        }
+        else
+            handle_combined_token(line, &i, result);
+    }
+    // Push final token only if successful
+    if (success)
+        push_token(tokens, result);
+
+    free(result);
+
+    if (!success) {
+        if (tokens && *tokens) {
+            free_arr((void **)*tokens);
+            *tokens = NULL;
+        }
+        return (0); // Return 0 on failure
+    }
+    return (1); // Return 1 on success
 }
+
+// char	**lexer(char *line, char ***tokens)
+// {
+// 	int		i;
+// 	char	*result;
+
+// 	init_buff(line, &result);
+// 	i = 0;
+// 	while (line[i])
+// 	{
+// 		while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13)))
+// 		{
+// 			push_token(tokens, result);
+// 			i++;
+// 		}
+// 		if (line[i] == 34 || line[i] == 39)
+// 			handle_quotes(line, &i, result);
+// 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+// 		{
+// 			if (!handle_operators(line, tokens, result, &i))
+// 				return (NULL);
+// 		}
+// 		else
+// 			handle_combined_token(line, &i, result);
+// 	}
+// 	push_token(tokens, result);
+// 	free(result);
+// 	return (*tokens);
+// }
 // char **lexer(char *line, char ***tokens)
 // {
 // 	int i;

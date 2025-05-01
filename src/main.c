@@ -26,6 +26,7 @@ int	main(int argc, char **argv, char **envp) {
 		{
 			msh.command = parser(line, &msh, envp);
 			msh.num_cmds = count_commands(msh.command);
+			print_command_list(msh.command);
 			process(&msh);
 			clear_command_chain(msh.command);
 			msh.command = NULL;
