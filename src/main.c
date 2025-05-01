@@ -28,6 +28,7 @@ int	main(int argc, char **argv, char **envp) {
 			msh.num_cmds = count_commands(msh.command);
 			process(&msh);
 			clear_command_chain(msh.command);
+			msh.command = NULL;
 			add_history(line);
 			free(line);
 		}
