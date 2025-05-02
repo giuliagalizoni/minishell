@@ -62,31 +62,85 @@ static int	retokenize(char ***new_tokens, char *value)
 	return (1);
 }
 
-static int	handle_regular_var(char *token, t_msh *msh, char ***new_tokens)
+// static int	handle_regular_var(char *token, t_msh *msh, char ***new_tokens)
+// {
+// 	char	*key;
+// 	char	*value;
+// 	int		success;
+
+// 	success = 1;
+// 	key = ft_substr(token, 1, ft_strlen(token) - 1);
+// 	if (!key)
+// 	{
+// 		perror("ft_substr failed for key");
+// 		return (0);
+// 	}
+// 	value = get_var_value(msh->myenv, key);
+// 	free(key);
+// 	if (value)
+// 		success = retokenize(new_tokens, value);
+// 	return (success);
+// }
+
+// static int	handle_non_var(char *token, char ***new_tokens)
+// {
+// 	if (!safe_arr_push(new_tokens, token))
+// 		return (0);
+// 	return (1);
+// }
+
+static int	handle_double_quote(char *token, t_msh *msh, char ***new_tokens)
 {
+	char	*inner_content;
 	char	*key;
 	char	*value;
+	char	*exit_status_str;
 	int		success;
+	size_t	len;
 
 	success = 1;
-	key = ft_substr(token, 1, ft_strlen(token) - 1);
-	if (!key)
+	len = ft_strlen(token);
+	inner_content = ft_substr(token, 1, len - 2);
+	if (!inner_content)
 	{
-		perror("ft_substr failed for key");
+		perror("ft_substr failed removing quotes");
 		return (0);
 	}
-	value = get_var_value(msh->myenv, key);
-	free(key);
-	if (value)
-		success = retokenize(new_tokens, value);
+	if (inner_content[0] == '$' && inner_content[1] != '\0')
+	{
+		if (inner_content[1] == '?')
+		{
+			exit_status_str = ft_itoa(g_exit_status);
+			if (!exit_status_str)
+			{
+				perror("ft_itoa failed");
+				success = 0;
+			}
+			else
+			{
+				success = safe_arr_push(new_tokens, exit_status_str);
+				free(exit_status_str);
+			}
+		}
+		else
+		{
+			key = ft_substr(inner_content, 1, ft_strlen(inner_content) - 1);
+			if (!key)
+				perror("failed creating key substring");
+			else
+			{
+				value = get_var_value(msh->myenv, key);
+				free(key);
+				if (value)
+					success = safe_arr_push(new_tokens, value);
+				// check if var without value is working
+			}
+		}
+	}
+	else
+		success = safe_arr_push(new_tokens, inner_content);
+	free(inner_content);
 	return (success);
-}
-
-static int	handle_non_var(char *token, char ***new_tokens)
-{
-	if (!safe_arr_push(new_tokens, token))
-		return (0);
-	return (1);
 }
 
 char	**expand_and_retokenize(char **tokens, t_msh *msh)
