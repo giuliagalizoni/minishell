@@ -18,11 +18,6 @@ static void	check_operators(t_command *command,
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && is_equal(tokens[i-1], "<<"))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
-	else if (tokens[i][0] == '$')
-	{
-		char *key = ft_substr(tokens[i], 1, (ft_strlen(tokens[i])) - 1);
-		arr_push(&command->arguments, get_var_value(msh->myenv, key));
-	}
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
