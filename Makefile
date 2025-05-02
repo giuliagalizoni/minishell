@@ -36,7 +36,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   expand_var.c\
 	   check_syntax.c\
 	   export_utils.c\
-	   expand_var_utils.c)
+	   expand_var_utils.c\
 	   heredoc.c)
 
 SRCFILES := $(MODULES)
