@@ -61,33 +61,6 @@ static int	retokenize(char ***new_tokens, char *value)
 	return (1);
 }
 
-// static int	handle_regular_var(char *token, t_msh *msh, char ***new_tokens)
-// {
-// 	char	*key;
-// 	char	*value;
-// 	int		success;
-
-// 	success = 1;
-// 	key = ft_substr(token, 1, ft_strlen(token) - 1);
-// 	if (!key)
-// 	{
-// 		perror("ft_substr failed for key");
-// 		return (0);
-// 	}
-// 	value = get_var_value(msh->myenv, key);
-// 	free(key);
-// 	if (value)
-// 		success = retokenize(new_tokens, value);
-// 	return (success);
-// }
-
-// static int	handle_non_var(char *token, char ***new_tokens)
-// {
-// 	if (!safe_arr_push(new_tokens, token))
-// 		return (0);
-// 	return (1);
-// }
-
 static int	process_quoted_var(char *content, t_msh *msh, char ***new_tokens)
 {
 	char	*key;
@@ -194,7 +167,6 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 	char	**new_tokens;
 	int		i;
 	int		success;
-	// size_t	len;
 
 	new_tokens = NULL;
 	i = 0;
@@ -210,34 +182,3 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 		return (free_arr((void **)new_tokens), NULL);
 	return (new_tokens);
 }
-
-// char	**expand_and_retokenize(char **tokens, t_msh *msh)
-// {
-// 	char	**new_tokens;
-// 	int		i;
-// 	int		success;
-
-// 	new_tokens = NULL;
-// 	i = 0;
-// 	// TODO i get a segfault here if the line input to the shell is empty
-// 	// I imagine that has to be caught further upstream tho
-// 	while (tokens[i])
-// 	{
-// 		if (tokens[i][0] == '$' && tokens[i][1] != '\0')
-// 		{
-// 			if (tokens[i][1] == '?')
-// 				success = handle_exit_status(msh, &new_tokens);
-// 			else
-// 				success = handle_regular_var(tokens[i], msh, &new_tokens);
-// 		}
-// 		else
-// 			success = handle_non_var(tokens[i], &new_tokens);
-// 		i++;
-// 	}
-// 	if (!success)
-// 	{
-// 		free_arr((void **)new_tokens);
-// 		return (NULL);
-// 	}
-// 	return (new_tokens);
-// }
