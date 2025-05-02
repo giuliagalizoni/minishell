@@ -165,28 +165,78 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 	char	**new_tokens;
 	int		i;
 	int		success;
+	size_t	len;
+	char	*literal;
 
 	new_tokens = NULL;
 	i = 0;
-	// TODO i get a segfault here if the line input to the shell is empty
-	// I imagine that has to be caught further upstream tho
-	while (tokens[i])
+	success = 1;
+	if (!tokens)
+		return (NULL);
+	while (tokens[i] && success)
 	{
-		if (tokens[i][0] == '$' && tokens[i][1] != '\0')
+		len = ft_strlen(tokens[i]);
+		if (len >= 2 && tokens[i][0] == '\'' && tokens[i][len -1] == '\'')
+		{
+			literal = ft_substr(tokens[i], 1, len - 2);
+			if (!literal)
+			{
+				perror("ft_substr failed removing single quotes");
+				success = 0;
+			}
+			else
+			{
+				success = safe_arr_push(&new_tokens, literal);
+				free(literal);
+			}
+		}
+		else if (len >= 2 && tokens[i][0] == '"' && tokens[i][len - 1] == '"')
+			success = handle_double_quote(tokens[i], msh, &new_tokens);
+		else if (tokens[i][0] == '$' && tokens[i][1] != '\0')
 		{
 			if (tokens[i][1] == '?')
 				success = handle_exit_status(msh, &new_tokens);
 			else
-				success = handle_regular_var(tokens[i], msh, &new_tokens);
+				success = handle_unquoted_var(tokens[i], msh, &new_tokens);
 		}
 		else
-			success = handle_non_var(tokens[i], &new_tokens);
+			success = safe_arr_push(new_tokens, tokens[i]);
+		if (!success)
+			break ;
 		i++;
 	}
 	if (!success)
-	{
-		free_arr((void **)new_tokens);
-		return (NULL);
-	}
+		return (free_arr((void **)new_tokens), NULL);
 	return (new_tokens);
 }
+
+// char	**expand_and_retokenize(char **tokens, t_msh *msh)
+// {
+// 	char	**new_tokens;
+// 	int		i;
+// 	int		success;
+
+// 	new_tokens = NULL;
+// 	i = 0;
+// 	// TODO i get a segfault here if the line input to the shell is empty
+// 	// I imagine that has to be caught further upstream tho
+// 	while (tokens[i])
+// 	{
+// 		if (tokens[i][0] == '$' && tokens[i][1] != '\0')
+// 		{
+// 			if (tokens[i][1] == '?')
+// 				success = handle_exit_status(msh, &new_tokens);
+// 			else
+// 				success = handle_regular_var(tokens[i], msh, &new_tokens);
+// 		}
+// 		else
+// 			success = handle_non_var(tokens[i], &new_tokens);
+// 		i++;
+// 	}
+// 	if (!success)
+// 	{
+// 		free_arr((void **)new_tokens);
+// 		return (NULL);
+// 	}
+// 	return (new_tokens);
+// }
