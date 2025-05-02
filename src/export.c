@@ -37,7 +37,7 @@ t_vars	*parse_var(const char *arg)
 	}
 	new_var = malloc(sizeof(t_vars));
 	if (!new_var)
-		return (handle_malloc_error(&key, &value, "malloc failed in parse_var"));
+		return (handle_malloc_error(&key, &value, "malloc failed"));
 	new_var->key = key;
 	new_var->value = value;
 	new_var->next = NULL;
@@ -61,7 +61,7 @@ t_vars	*init_envp(char **envp)
 	}
 	return (head);
 }
-
+// TODO: Check ft_strdup results
 void	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
@@ -72,7 +72,7 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	{
 		if (is_equal(current->key, key))
 		{
-			free(current->value); // maybe I need to init ft_strdup in a variable so I can free // it's not working so I'll leave it for later
+			free(current->value);
 			if (value)
 				current->value = ft_strdup(value);
 			else
@@ -86,7 +86,7 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	if (value)
 		new_var->value = ft_strdup(value);
 	else
-		new_var->value = NULL;// TODO: Check ft_strdup results
+		new_var->value = NULL;
 	new_var->next = NULL;
 	push_list(head, new_var);
 }

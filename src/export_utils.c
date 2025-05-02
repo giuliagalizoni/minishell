@@ -63,5 +63,3 @@ int	validate_key(char	*key)
 	}
 	return (0);
 }
-
-
