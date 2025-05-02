@@ -143,6 +143,23 @@ static int	handle_double_quote(char *token, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
+{
+	char	*key;
+	char	*value;
+	int		success;
+
+	success = 1;
+	key = ft_substr(token, 1, ft_strlen(token) - 1);
+	if (!key)
+		return (perror("failed creating key substring"), 0);
+	value = get_var_value(msh->myenv, key);
+	free(key);
+	if (value)
+		success = retokenize(new_tokens, value);
+	return (success);
+}
+
 char	**expand_and_retokenize(char **tokens, t_msh *msh)
 {
 	char	**new_tokens;
