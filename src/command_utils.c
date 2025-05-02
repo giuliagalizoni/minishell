@@ -1,7 +1,5 @@
 #include "includes/minishell.h"
 
-// TODO delete command lists adapted from list delete fns
-// move command_init here
 void	command_init(t_command *command)
 {
 	command->name = NULL;
@@ -10,10 +8,6 @@ void	command_init(t_command *command)
 	command->is_heredoc = 0;
 	command->heredoc_delimiter = NULL;
 	command->heredoc_fd = -1;
-	/*
-	command->output_redirect = NULL;
-	command->append_output = 0;
-	*/
 	command->outfile = NULL;
 	command->is_pipe = 0;
 	command->pipe_next = NULL;
@@ -24,7 +18,6 @@ void	set_command_paths(t_command *command, char **envp)
 {
 	char	*full_cmd_path;
 
-	// TODO maybe move this to the parser
 	while (command)
 	{
 		full_cmd_path = get_cmd_path(command->name, envp);
@@ -32,6 +25,35 @@ void	set_command_paths(t_command *command, char **envp)
 		command->name = full_cmd_path;
 		command = command->pipe_next;
 	}
+}
+
+void	clear_command_chain(t_command *command)
+{
+	if (!command)
+		return ;
+	if (command->pipe_next)
+	{
+		clear_command_chain(command->pipe_next);
+		command->pipe_next = NULL;
+	}
+	if (command->name)
+		free(command->name);
+	if (command->path)
+		free(command->path);
+	if (command->arguments)
+		free_arr((void **)command->arguments);
+	if (command->input_redirect)
+		free_arr((void **)command->input_redirect);
+	if (command->heredoc_delimiter)
+		free(command->heredoc_delimiter);
+	if (command->outfile)
+	{
+		if (command->outfile->filename)
+			free(command->outfile->filename);
+		free(command->outfile);
+		command->outfile = NULL;
+	}
+	free(command);
 }
 
 // void	clear_command_chain(t_command *command)
@@ -69,35 +91,6 @@ void	set_command_paths(t_command *command, char **envp)
 // 	free(tmp);
 // 	free(command);
 // }
-
-void	clear_command_chain(t_command *command)
-{
-	if (!command)
-		return ;
-	if (command->pipe_next)
-	{
-		clear_command_chain(command->pipe_next);
-		command->pipe_next = NULL;
-	}
-	if (command->name)
-		free(command->name);
-	if (command->path)
-		free(command->path);
-	if (command->arguments)
-		free_arr((void **)command->arguments);
-	if (command->input_redirect)
-		free_arr((void **)command->input_redirect);
-	if (command->heredoc_delimiter)
-		free(command->heredoc_delimiter);
-	if (command->outfile)
-	{
-		if (command->outfile->filename)
-			free(command->outfile->filename);
-		free(command->outfile);
-		command->outfile = NULL;
-	}
-	free(command);
-}
 
 int	count_commands(t_command *command)
 {
