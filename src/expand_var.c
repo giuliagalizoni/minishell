@@ -20,11 +20,10 @@ static int	safe_arr_push(char ***arr, const char *str)
 	return (1);
 }
 
-static int	handle_exit_status(t_msh *msh, char ***new_tokens)
+static int	handle_exit_status(char ***new_tokens)
 {
 	char	*exit_status_str;
 	int		success;
-	(void)msh;
 
 	exit_status_str = ft_itoa(g_exit_status);
 	if (!exit_status_str)
@@ -89,12 +88,42 @@ static int	retokenize(char ***new_tokens, char *value)
 // 	return (1);
 // }
 
+static int	process_quoted_var(char *content, t_msh *msh, char ***new_tokens)
+{
+	char	*key;
+	char	*value;
+	int		success;
+
+	success = 1;
+	key = ft_substr(content, 1, ft_strlen(content) - 1);
+	if(!key)
+		return (perror("ft_substr failed for key"), 0);
+	value = get_var_value(msh->myenv, key);
+	if (value)
+		success = safe_arr_push(new_tokens, value);
+	return (success);
+}
+
+static int	process_inner(char *content, t_msh *msh, char ***new_tokens)
+{
+	int		success;
+
+	success = 1;
+	if (content[0] == '$' && content[1] != '\0')
+	{
+		if (content[1] == '?')
+			success = handle_exit_status(new_tokens);
+		else
+			success = process_quoted_var(content, msh, new_tokens);
+	}
+	else
+		success = safe_arr_push(new_tokens, content);
+	return (success);
+}
+
 static int	handle_double_quote(char *token, t_msh *msh, char ***new_tokens)
 {
 	char	*inner_content;
-	char	*key;
-	char	*value;
-	char	*exit_status_str;
 	int		success;
 	size_t	len;
 
@@ -102,43 +131,8 @@ static int	handle_double_quote(char *token, t_msh *msh, char ***new_tokens)
 	len = ft_strlen(token);
 	inner_content = ft_substr(token, 1, len - 2);
 	if (!inner_content)
-	{
-		perror("ft_substr failed removing quotes");
-		return (0);
-	}
-	if (inner_content[0] == '$' && inner_content[1] != '\0')
-	{
-		if (inner_content[1] == '?')
-		{
-			exit_status_str = ft_itoa(g_exit_status);
-			if (!exit_status_str)
-			{
-				perror("ft_itoa failed");
-				success = 0;
-			}
-			else
-			{
-				success = safe_arr_push(new_tokens, exit_status_str);
-				free(exit_status_str);
-			}
-		}
-		else
-		{
-			key = ft_substr(inner_content, 1, ft_strlen(inner_content) - 1);
-			if (!key)
-				perror("failed creating key substring");
-			else
-			{
-				value = get_var_value(msh->myenv, key);
-				free(key);
-				if (value)
-					success = safe_arr_push(new_tokens, value);
-				// check if var without value is working
-			}
-		}
-	}
-	else
-		success = safe_arr_push(new_tokens, inner_content);
+		return (perror("ft_substr failed removing quotes"), 0);
+	success = process_inner(inner_content, msh, new_tokens);
 	free(inner_content);
 	return (success);
 }
@@ -195,7 +189,7 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 		else if (tokens[i][0] == '$' && tokens[i][1] != '\0')
 		{
 			if (tokens[i][1] == '?')
-				success = handle_exit_status(msh, &new_tokens);
+				success = handle_exit_status(&new_tokens);
 			else
 				success = handle_unquoted_var(tokens[i], msh, &new_tokens);
 		}
