@@ -44,7 +44,7 @@ void	wait_for_children(t_command *first_command)
 		perror("Error: failed to get status for the last command");
 		g_exit_status = -1;
 	}
-	// (void)waited_pid;
+	(void)waited_pid;
 }
 
 static void	input_redirection(t_command *command)
@@ -125,6 +125,12 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		}
 		close(fd[1]);
 	}
+	// ***	HEREDOC ***
+	if (msh->command->is_heredoc)
+	{
+		dup2(msh->command->heredoc_fd, STDIN_FILENO);
+		close(msh->command->heredoc_fd);
+	}
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
 	if (msh->command->input_redirect)
@@ -161,6 +167,7 @@ int	process(t_msh *msh)
 	int	prev_pipe_read_fd;
 	t_command	*first_command;
 
+	process_heredocs(msh);
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 	{
 		return (single_parent_process(msh));

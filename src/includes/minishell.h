@@ -34,6 +34,7 @@ typedef struct s_command
 	char				**input_redirect;
 	int					is_heredoc;
 	char				*heredoc_delimiter;
+	int					heredoc_fd;
 	t_outfile			*outfile;
 	int					is_pipe;
 	struct s_command	*pipe_next;
@@ -132,5 +133,9 @@ void		push_list(t_vars **exp_vars, t_vars *new);
 void		print_vars(t_vars *vars);
 void		*handle_malloc_error(char **key, char **value, char *str);
 int			validate_key(char	*key);
+
+// heredoc
+void		handle_heredoc(t_command *command);
+void		process_heredocs(t_msh *msh);
 
 #endif
