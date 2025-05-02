@@ -75,6 +75,7 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	if (tokens && !check_invalid_syntax(tokens))
 	{
 		free_arr((void **)tokens);
+		tokens = NULL;
 		return (NULL);
 	}
 	retokens = expand_and_retokenize(tokens, msh);

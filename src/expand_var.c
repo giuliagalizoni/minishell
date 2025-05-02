@@ -153,48 +153,55 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 		success = retokenize(new_tokens, value);
 	return (success);
 }
+static int	handle_single_quote(char *token, char ***new_tokens, size_t len)
+{
+	char	*literal;
+	int		success;
+
+	literal = ft_substr(token, 1, len - 2);
+	if (!literal)
+		return (perror("ft_substr failed removing single quotes"), 0);
+	success = safe_arr_push(new_tokens, literal);
+	free(literal);
+	return (success);
+}
+
+static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
+{
+	size_t	len;
+	int		success;
+
+	len = ft_strlen(token);
+	success = 1;
+	if (len >= 2 && token[0] == '\'' && token[len -1] == '\'')
+		success = handle_single_quote(token, new_tokens, len);
+	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
+		success = handle_double_quote(token, msh, new_tokens);
+	else if (token[0] == '$' && token[1] != '\0')
+	{
+		if (token[1] == '?')
+			success = handle_exit_status(new_tokens);
+		else
+			success = handle_unquoted_var(token, msh, new_tokens);
+	}
+	else
+		success = safe_arr_push(new_tokens, token);
+	return (success);
+}
 
 char	**expand_and_retokenize(char **tokens, t_msh *msh)
 {
 	char	**new_tokens;
 	int		i;
 	int		success;
-	size_t	len;
-	char	*literal;
+	// size_t	len;
 
 	new_tokens = NULL;
 	i = 0;
 	success = 1;
-	if (!tokens)
-		return (NULL);
 	while (tokens[i] && success)
 	{
-		len = ft_strlen(tokens[i]);
-		if (len >= 2 && tokens[i][0] == '\'' && tokens[i][len -1] == '\'')
-		{
-			literal = ft_substr(tokens[i], 1, len - 2);
-			if (!literal)
-			{
-				perror("ft_substr failed removing single quotes");
-				success = 0;
-			}
-			else
-			{
-				success = safe_arr_push(&new_tokens, literal);
-				free(literal);
-			}
-		}
-		else if (len >= 2 && tokens[i][0] == '"' && tokens[i][len - 1] == '"')
-			success = handle_double_quote(tokens[i], msh, &new_tokens);
-		else if (tokens[i][0] == '$' && tokens[i][1] != '\0')
-		{
-			if (tokens[i][1] == '?')
-				success = handle_exit_status(&new_tokens);
-			else
-				success = handle_unquoted_var(tokens[i], msh, &new_tokens);
-		}
-		else
-			success = safe_arr_push(&new_tokens, tokens[i]);
+		success = process_one_token(tokens[i], msh, &new_tokens);
 		if (!success)
 			break ;
 		i++;
