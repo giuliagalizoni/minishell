@@ -73,7 +73,8 @@ int			process(t_msh *msh);
 // parser
 t_command	*parser(char *line, t_msh *msh, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh);
-char		**lexer(char *line, char ***tokens);
+// char		**lexer(char *line, char ***tokens);
+int			lexer(char *line, char ***tokens);
 // builtin_utils
 int			is_builtin(char *name);
 int			builtin_router(t_msh *msg);
@@ -117,7 +118,12 @@ void		unset(t_msh *msh);
 //expand var
 char		*get_var_value(t_vars *head, char *key);
 char		**expand_and_retokenize(char **tokens, t_msh *msh);
-
+//expand var utils
+int	safe_arr_push(char ***arr, const char *str);
+int	handle_exit_status(char ***new_tokens);
+int	process_quoted_var(char *content, t_msh *msh, char ***new_tokens);
+int	process_inner(char *content, t_msh *msh, char ***new_tokens);
+int	handle_single_quote(char *token, char ***new_tokens, size_t len);
 //check syntax
 int			check_invalid_syntax(char **tokens);
 
