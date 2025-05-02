@@ -81,6 +81,33 @@ static void	init_buff(char *line, char **result)
 	*result[0] = '\0';
 }
 
+static int	process_token(char *line, int *i, char ***tokens, char *result)
+{
+	int	success;
+
+	success = 1;
+	while (line[*i] && (line[*i] == 32 || (line[*i] >= 9 && line[*i] <= 13)))
+	{
+		push_token(tokens, result);
+		(*i)++;
+	}
+	if (!line[*i])
+		return (success);
+	if (line[*i] == 34 || line[*i] == 39)
+	{
+		if (!handle_quotes(line, i, result))
+			success = 0;
+	}
+	else if (line[*i] == '|' || line[*i] == '<' || line[*i] == '>')
+	{
+		if (!handle_operators(line, tokens, result, i))
+			success = 0;
+	}
+	else
+		handle_combined_token(line, i, result);
+	return (success);
+}
+
 int	lexer(char *line, char ***tokens)
 {
 	int		i;
@@ -93,27 +120,7 @@ int	lexer(char *line, char ***tokens)
 	i = 0;
 	success = 1;
 	while (line[i] && success)
-	{
-		while (line[i] && (line[i] == 32 || (line[i] >= 9 && line[i] <= 13)))
-		{
-			push_token(tokens, result);
-			i++;
-		}
-		if (!line[i])
-			break;
-		if (line[i] == 34 || line[i] == 39)
-		{
-			if (!handle_quotes(line, &i, result))
-				success = 0;
-		}
-		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-		{
-			if (!handle_operators(line, tokens, result, &i))
-				success = 0;
-		}
-		else
-			handle_combined_token(line, &i, result);
-	}
+		success = process_token(line, &i, tokens, result);
 	if (success)
 		push_token(tokens, result);
 	free(result);
