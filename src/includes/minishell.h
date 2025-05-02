@@ -73,7 +73,7 @@ int			process(t_msh *msh);
 t_command	*parser(char *line, t_msh *msh, char **envp);
 t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh);
 // char		**lexer(char *line, char ***tokens);
-int			**lexer(char *line, char ***tokens);
+int			lexer(char *line, char ***tokens);
 // builtin_utils
 int			is_builtin(char *name);
 int			builtin_router(t_msh *msg);

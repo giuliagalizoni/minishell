@@ -200,7 +200,7 @@ char	**expand_and_retokenize(char **tokens, t_msh *msh)
 				success = handle_unquoted_var(tokens[i], msh, &new_tokens);
 		}
 		else
-			success = safe_arr_push(new_tokens, tokens[i]);
+			success = safe_arr_push(&new_tokens, tokens[i]);
 		if (!success)
 			break ;
 		i++;

@@ -81,7 +81,7 @@ static void	init_buff(char *line, char **result)
 	*result[0] = '\0';
 }
 
-int	**lexer(char *line, char ***tokens)
+int	lexer(char *line, char ***tokens)
 {
 	int		i;
 	int		success;
