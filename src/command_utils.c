@@ -9,6 +9,7 @@ void	command_init(t_command *command)
 	command->input_redirect = NULL;
 	command->is_heredoc = 0;
 	command->heredoc_delimiter = NULL;
+	command->heredoc_fd = -1;
 	/*
 	command->output_redirect = NULL;
 	command->append_output = 0;
