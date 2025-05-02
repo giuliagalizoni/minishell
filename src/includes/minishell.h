@@ -49,9 +49,10 @@ typedef struct s_msh
 	t_command	*command;
 	int			num_cmds;
 	int			exit;
+	int			exit_status;
 }	t_msh;
 
-extern volatile sig_atomic_t g_exit_status;
+//extern volatile sig_atomic_t g_exit_status;
 
 // path_utils
 char		**get_paths(char **envp);

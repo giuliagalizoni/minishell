@@ -7,7 +7,7 @@
 // see if we can get rid of the prev_pipe_read_fd, i don't like it
 
 
-void	wait_for_children(t_command *first_command)
+void	wait_for_children(t_msh *msh, t_command *first_command)
 {
 	t_command *command;
 	int	status;
@@ -36,13 +36,13 @@ void	wait_for_children(t_command *first_command)
 		command = command->pipe_next;
 	}
 	if (WIFEXITED(status))
-		g_exit_status = WEXITSTATUS(status);
+		msh->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		g_exit_status = 128 + WTERMSIG(status);
+		msh->exit_status = 128 + WTERMSIG(status);
 	else
 	{
 		perror("Error: failed to get status for the last command");
-		g_exit_status = -1;
+		msh->exit_status = -1;
 	}
 	(void)waited_pid;
 }
@@ -202,7 +202,7 @@ int	process(t_msh *msh)
 			parent_process(msh, fd, &prev_pipe_read_fd);
 		msh->command = msh->command->pipe_next;
 	}
-	wait_for_children(first_command);
+	wait_for_children(msh, first_command);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);

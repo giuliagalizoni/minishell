@@ -3,7 +3,7 @@
 void	sigint_reset_prompt(int signal)
 {
 	(void)signal;
-	g_exit_status = 130;
+//	g_exit_status = 130;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -12,10 +12,12 @@ void	sigint_reset_prompt(int signal)
 
 void	signal_newline(int signal)
 {
+	/*
 	if (signal == SIGINT)
 		g_exit_status = 130;
 	else if (signal == SIGQUIT)
 		g_exit_status = 131;
+	*/
 	rl_on_new_line();
 }
 
