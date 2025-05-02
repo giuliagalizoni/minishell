@@ -7,6 +7,7 @@ static void	msh_init(t_msh *msh, char **envp)
 	g_exit_status = 0;
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
+	msh->env = envp;
 	msh->exit = 0;
 	using_history();
 	print_banner();
@@ -29,7 +30,7 @@ int	main(int argc, char **argv, char **envp)
 			exit_shell(&msh);
 		if (ft_strlen(line) != 0)
 		{
-			msh.command = parser(line, &msh, envp);
+			msh.command = parser(line, &msh);
 			msh.num_cmds = count_commands(msh.command);
 			process(&msh);
 			clear_command_chain(msh.command);

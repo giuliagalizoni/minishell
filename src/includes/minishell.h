@@ -45,6 +45,7 @@ typedef struct s_command
 typedef struct s_msh
 {
 	t_vars		*myenv;
+	char		**env;
 	t_command	*command;
 	int			num_cmds;
 	int			exit;
@@ -71,8 +72,8 @@ void		child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // parser
-t_command	*parser(char *line, t_msh *msh, char **envp);
-t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh);
+t_command	*parser(char *line, t_msh *msh);
+t_command	*analyser(char **tokens, int index, t_msh *msh);
 // lexer
 int			lexer(char *line, char ***tokens);
 int			process_token(char *line, int *i, char ***tokens, char *result);

@@ -1,10 +1,10 @@
 #include "includes/minishell.h"
 
-static void	init_pipe(t_command *command, char **tokens, int *i, int *index, char **envp, t_msh *msh)
+static void	init_pipe(t_command *command, char **tokens, int *i, t_msh *msh)
 {
 	command->is_pipe = 1;
 	tokens++;
-	command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp, msh);
+	command->pipe_next = analyser(tokens + ((*i)++), (command->index) + 1, msh);
 }
 
 static void	check_operators(t_command *command, char **tokens, int i)
@@ -32,7 +32,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	command->path = get_cmd_path(tokens[i], envp);
 }
 
-t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
+t_command	*analyser(char **tokens, int index, t_msh *msh)
 {
 	t_command	*command;
 	int			i;
@@ -42,13 +42,13 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 		return (NULL);
 	command_init(command);
 	command->index = index;
-	set_name(command, tokens, envp);
+	set_name(command, tokens, msh->env);
 	i = 0;
 	while (tokens[i])
 	{
 		if (is_equal(tokens[i], "|"))
 		{
-			init_pipe(command, tokens, &i, &index, envp, msh);
+			init_pipe(command, tokens, &i, msh);
 			break ;
 		}
 		else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
@@ -60,7 +60,7 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 	return (command);
 }
 
-t_command	*parser(char *line, t_msh *msh, char **envp)
+t_command	*parser(char *line, t_msh *msh)
 {
 	char	**tokens;
 	char	**retokens;
@@ -79,7 +79,7 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 		return (NULL);
 	}
 	retokens = expand_and_retokenize(tokens, msh);
-	msh->command = analyser(retokens, 0, envp, msh);
+	msh->command = analyser(retokens, 0, msh);
 	free_arr((void **)tokens);
 	if (!msh->command)
 	{
