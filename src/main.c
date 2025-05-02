@@ -2,19 +2,24 @@
 
 volatile sig_atomic_t	g_exit_status;
 
-int	main(int argc, char **argv, char **envp) {
+static void	msh_init(t_msh *msh, char **envp)
+{
+	g_exit_status = 0;
+	msh->command = NULL;
+	msh->myenv = init_envp(envp);
+	msh->exit = 0;
+	using_history();
+	print_banner();
+}
+
+int	main(int argc, char **argv, char **envp)
+{
 	char	*line;
 	t_msh	msh;
 
 	(void)argc;
 	(void)argv;
-
-	g_exit_status = 0;
-	msh.command = NULL;
-	msh.myenv = init_envp(envp);
-	msh.exit = 0;
-	using_history();
-	print_banner();
+	msh_init(&msh, envp);
 	while (!msh.exit)
 	{
 		set_signals_parent();
@@ -33,6 +38,5 @@ int	main(int argc, char **argv, char **envp) {
 			free(line);
 		}
 	}
-	exit_shell(&msh);
-	return (0);
+	return (exit_shell(&msh), 0);
 }

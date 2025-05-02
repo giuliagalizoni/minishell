@@ -4,9 +4,9 @@
 
 void	print_banner()
 {
-	int	fd;
+	int		fd;
 	char	*line;
-	int i;
+	int 	i;
 
 	i = 0;
 	fd = open(BANNER_FILE_PATH, O_RDONLY);

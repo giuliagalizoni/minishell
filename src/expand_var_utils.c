@@ -44,7 +44,7 @@ int	process_quoted_var(char *content, t_msh *msh, char ***new_tokens)
 
 	success = 1;
 	key = ft_substr(content, 1, ft_strlen(content) - 1);
-	if(!key)
+	if (!key)
 		return (perror("ft_substr failed for key"), 0);
 	value = get_var_value(msh->myenv, key);
 	if (value)

@@ -37,7 +37,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   check_syntax.c\
 	   export_utils.c\
 	   expand_var_utils.c\
-	   heredoc.c)
+	   heredoc.c\
+	   lexer_utils.c)
 
 SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))

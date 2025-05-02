@@ -3,8 +3,9 @@
 void	echo(t_command *cmd)
 {
 	int	i;
-	int	flag = 0;
+	int	flag;
 
+	flag = 0;
 	if (!cmd->arguments[1])
 	{
 		printf("\n");

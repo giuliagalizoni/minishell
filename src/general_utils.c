@@ -9,10 +9,10 @@ int	is_equal(char *str1, char *str2)
 	return (0);
 }
 
-char *ft_strncat(char *dest, const char *src, size_t n)
+char	*ft_strncat(char *dest, const char *src, size_t n)
 {
-	size_t i;
-	size_t dest_len;
+	size_t	i;
+	size_t	dest_len;
 
 	i = 0;
 	dest_len = 0;

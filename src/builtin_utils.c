@@ -4,7 +4,8 @@ int	is_builtin(char *name)
 {
 	if (is_equal(name, "echo") || is_equal(name, "cd") || is_equal(name, "pwd"))
 		return (1);
-	if (is_equal(name, "export") || is_equal(name, "unset") || is_equal(name, "env"))
+	if (is_equal(name, "export") || is_equal(name, "unset")
+		|| is_equal(name, "env"))
 		return (1);
 	if (is_equal(name, "exit") || is_equal(name, "cd") || is_equal(name, "pwd"))
 		return (1);
@@ -30,7 +31,6 @@ int	builtin_router(t_msh *msh)
 		status = pwd();
 	else if (is_equal(msh->command->name, "unset"))
 		unset(msh);
-	// TODO need to change builtins to send me their exit codes
 	g_exit_status = status;
 	return (status);
 }
