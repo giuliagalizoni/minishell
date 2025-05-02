@@ -13,9 +13,9 @@ static void	check_operators(t_command *command, char **tokens, int i)
 		command->is_heredoc = 1;
 	else if (is_equal(tokens[i], "<"))
 		command->is_heredoc = 0;
-	else if (i > 0 && is_equal(tokens[i-1], "<"))
+	else if (i > 0 && is_equal(tokens[i - 1], "<"))
 		arr_push(&command->input_redirect, tokens[i]);
-	else if (i > 0 && is_equal(tokens[i-1], "<<"))
+	else if (i > 0 && is_equal(tokens[i - 1], "<<"))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
 	else
 		arr_push(&command->arguments, tokens[i]);
@@ -26,16 +26,16 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	int	i;
 
 	i = 0;
-	while(tokens[i][0] == '<')
+	while (tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
-	command->path =	get_cmd_path(tokens[i], envp);
+	command->path = get_cmd_path(tokens[i], envp);
 }
 
 t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 {
 	t_command	*command;
-	int	i;
+	int			i;
 
 	command = malloc(sizeof(t_command));
 	if (!command)
@@ -81,7 +81,6 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, envp, msh);
 	free_arr((void **)tokens);
-
 	if (!msh->command)
 	{
 		free_arr((void **)retokens);
