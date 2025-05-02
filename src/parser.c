@@ -7,8 +7,7 @@ static void	init_pipe(t_command *command, char **tokens, int *i, int *index, cha
 	command->pipe_next = analyser(tokens + ((*i)++), (*index) + 1, envp, msh);
 }
 
-static void	check_operators(t_command *command,
-	char **tokens, int i, t_msh *msh)
+static void	check_operators(t_command *command, char **tokens, int i)
 {
 	if (is_equal(tokens[i], "<<"))
 		command->is_heredoc = 1;
@@ -55,7 +54,7 @@ t_command	*analyser(char **tokens, int index, char **envp, t_msh *msh)
 		else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
 			add_outfile(command, tokens, &command->outfile, &i);
 		else
-			check_operators(command, tokens, i, msh);
+			check_operators(command, tokens, i);
 		i++;
 	}
 	return (command);
@@ -69,7 +68,8 @@ t_command	*parser(char *line, t_msh *msh, char **envp)
 	if (!line)
 		return (NULL);
 	tokens = NULL;
-	tokens = lexer(line, &tokens);
+	if (!lexer(line, &tokens))
+		return (NULL);
 	if (!tokens)
 		return (NULL);
 	if (tokens && !check_invalid_syntax(tokens))
