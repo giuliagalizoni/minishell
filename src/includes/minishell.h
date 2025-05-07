@@ -126,7 +126,7 @@ char		*get_var_value(t_vars *head, char *key);
 char		**expand_and_retokenize(char **tokens, t_msh *msh);
 //expand var utils
 int			safe_arr_push(char ***arr, const char *str);
-int			handle_exit_status(char ***new_tokens);
+int			handle_exit_status(t_msh *msh, char ***new_tokens);
 int			process_quoted_var(char *content, t_msh *msh, char ***new_tokens);
 int			process_inner(char *content, t_msh *msh, char ***new_tokens);
 int			handle_single_quote(char *token, char ***new_tokens, size_t len);

@@ -4,11 +4,11 @@ volatile sig_atomic_t g_signal_code;
 
 static void	msh_init(t_msh *msh, char **envp)
 {
-	g_exit_status = -1;
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
 	msh->env = envp;
 	msh->exit = 0;
+	msh->exit_status = 0;
 	using_history();
 	print_banner();
 }
