@@ -12,6 +12,7 @@ void	sigint_reset_prompt(int signal)
 
 void	signal_newline(int signal)
 {
+	(void)signal;
 	/*
 	if (signal == SIGINT)
 		g_exit_status = 130;
@@ -48,6 +49,7 @@ void	set_signals_parent(void)
 	struct sigaction sa_int;
 
 	sig_ignore();
+	g_signal_code = SIGINT;
 	ft_bzero(&sa_int, sizeof(sa_int));
 	sa_int.sa_handler = &sigint_reset_prompt;
 	sigemptyset(&sa_int.sa_mask);

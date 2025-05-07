@@ -53,6 +53,7 @@ typedef struct s_msh
 }	t_msh;
 
 //extern volatile sig_atomic_t g_exit_status;
+extern volatile sig_atomic_t g_signal_code;
 
 // path_utils
 char		**get_paths(char **envp);
