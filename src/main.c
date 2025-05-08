@@ -1,14 +1,14 @@
 #include "includes/minishell.h"
 
-volatile sig_atomic_t	g_exit_status;
+volatile sig_atomic_t g_signal_code;
 
 static void	msh_init(t_msh *msh, char **envp)
 {
-	g_exit_status = 0;
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
 	msh->env = envp;
 	msh->exit = 0;
+	msh->exit_status = 0;
 	using_history();
 	print_banner();
 }
@@ -17,14 +17,19 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_msh	msh;
-
 	(void)argc;
 	(void)argv;
 	msh_init(&msh, envp);
+
 	while (!msh.exit)
 	{
 		set_signals_parent();
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
+		if (g_signal_code == SIGINT)
+			msh.exit_status = 130;
+		else if (g_signal_code == SIGQUIT)
+			msh.exit_status = 131;
+		g_signal_code = -1;
 		set_signals_child();
 		if (!line)
 			exit_shell(&msh);

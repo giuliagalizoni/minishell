@@ -72,7 +72,7 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 	else if (token[0] == '$' && token[1] != '\0')
 	{
 		if (token[1] == '?')
-			success = handle_exit_status(new_tokens);
+			success = handle_exit_status(msh, new_tokens);
 		else
 			success = handle_unquoted_var(token, msh, new_tokens);
 	}
