@@ -2,9 +2,9 @@
 
 void	wait_for_children(t_msh *msh, t_command *first_command)
 {
-	t_command *command;
-	int	status;
-	pid_t	waited_pid;
+	t_command	*command;
+	int			status;
+	pid_t		waited_pid;
 
 	status = 0;
 	command = first_command;
@@ -25,7 +25,6 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	(void)waited_pid;
 }
 
-
 int	single_parent_process(t_msh *msh)
 {
 	int	saved_stdout_fd;
@@ -39,8 +38,8 @@ int	single_parent_process(t_msh *msh)
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
-	dup2(saved_stdin_fd , STDIN_FILENO);
-	dup2(saved_stdout_fd , STDOUT_FILENO);
+	dup2(saved_stdin_fd, STDIN_FILENO);
+	dup2(saved_stdout_fd, STDOUT_FILENO);
 	return (status);
 }
 
@@ -100,9 +99,10 @@ void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
 
 int	process(t_msh *msh)
 {
-	int	fd[2];
-	int	status;
-	int	prev_pipe_read_fd;
+	int			fd[2];
+	int			status;
+	int			prev_pipe_read_fd;
+	pid_t		pid;
 	t_command	*first_command;
 
 	process_heredocs(msh);
@@ -123,7 +123,7 @@ int	process(t_msh *msh)
 				exit(EXIT_FAILURE);
 			}
 		}
-		pid_t pid = fork();
+		pid = fork();
 		msh->command->pid = pid;
 		if (pid == -1)
 		{

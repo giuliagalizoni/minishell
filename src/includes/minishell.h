@@ -53,7 +53,7 @@ typedef struct s_msh
 }	t_msh;
 
 //extern volatile sig_atomic_t g_exit_status;
-extern volatile sig_atomic_t g_signal_code;
+extern volatile sig_atomic_t	g_signal_code;
 
 // path_utils
 char		**get_paths(char **envp);
@@ -71,8 +71,8 @@ void		child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // redirection
-void	input_redirection(t_command *command);
-void	output_redirection(t_outfile *outfile);
+void		input_redirection(t_command *command);
+void		output_redirection(t_outfile *outfile);
 
 // parser
 t_command	*parser(char *line, t_msh *msh);
@@ -95,7 +95,7 @@ int			pwd(void);
 
 //list_utils
 void		add_outfile(t_command *cmd, char **tokens,
-					t_outfile **outfiles, int *i);
+				t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
 
 //general_utils

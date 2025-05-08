@@ -20,8 +20,7 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	(void)cmd;
 	outfile = malloc(sizeof(t_outfile));
 	if (outfile == NULL)
-		perror("Error allocating memory"); // TODO the usual, fix
-						   // cleanup
+		perror("Error allocating memory"); // TODO fix cleanup
 	if (is_equal(tokens[*i], ">"))
 		outfile->is_append = 0;
 	else if (is_equal(tokens[*i], ">>"))
@@ -37,23 +36,6 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	tmp = filelast(*outfiles);
 	tmp->next = outfile;
 }
-
-
-/*
- * TODO need to clear up that lsit of files but this is not it
-void	filelistclear(t_outfile **outfiles)
-{
-	if ((*outfiles)->next)
-		filelistclear(&(*outfiles)->next);
-	if (*outfiles)
-	{
-		free(&(*outfiles)->filename);
-		free(*outfiles);
-	}
-
-	outfiles = NULL;
-}
-*/
 
 static void	swap_vars(t_vars *a, t_vars *b)
 {

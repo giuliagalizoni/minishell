@@ -41,7 +41,7 @@ void	set_signals_child(void)
 
 void	set_signals_parent(void)
 {
-	struct sigaction sa_int;
+	struct sigaction	sa_int;
 
 	sig_ignore();
 	ft_bzero(&sa_int, sizeof(sa_int));

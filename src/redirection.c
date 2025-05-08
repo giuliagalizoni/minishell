@@ -6,7 +6,7 @@ void	input_redirection(t_command *command)
 	int	file;
 
 	i = 0;
-	while(command->input_redirect[i])
+	while (command->input_redirect[i])
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
@@ -21,7 +21,7 @@ void	output_redirection(t_outfile *outfile)
 {
 	int	file;
 
-	while(outfile)
+	while (outfile)
 	{
 		if (outfile->is_append)
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644);

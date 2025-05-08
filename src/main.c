@@ -1,6 +1,6 @@
 #include "includes/minishell.h"
 
-volatile sig_atomic_t g_signal_code;
+volatile sig_atomic_t	g_signal_code;
 
 static void	msh_init(t_msh *msh, char **envp)
 {
@@ -27,9 +27,9 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_msh	msh;
+
 	(void)argc;
 	(void)argv;
-	
 	msh_init(&msh, envp);
 	while (!msh.exit)
 	{

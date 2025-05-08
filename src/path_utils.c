@@ -34,6 +34,8 @@ char	*get_cmd_path(char *cmd, char **envp)
 	paths = get_paths(envp);
 	while (paths[++i])
 	{
+		//TODO make a strjoin for 3 strings then we can shorten it
+		//enough
 		basepath = ft_strjoin(paths[i], "/");
 		fullpath = ft_strjoin(basepath, cmd);
 		free(basepath);
