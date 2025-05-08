@@ -1,11 +1,4 @@
 #include "includes/minishell.h"
-// TODO
-// split the function into process / child, see what needs to be passed around
-// put the pids in the command struct
-// flesh out error handling a bit more (free the command object at every
-// error?)
-// see if we can get rid of the prev_pipe_read_fd, i don't like it
-
 
 void	wait_for_children(t_msh *msh, t_command *first_command)
 {
@@ -13,26 +6,11 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	int	status;
 	pid_t	waited_pid;
 
-	// TODO review this a bit according to this
-	// https://gemini.google.com/app/a5ea8cc40aba5f5e
-	// but maybe it's fine like this
 	status = 0;
 	command = first_command;
 	while (command)
 	{
 		waited_pid = waitpid(command->pid, &status, 0);
-		/* optional stuff?if we can't use errno, just check that it's
-		 * not the last command
-		if (waited_pid == -1)
-		{
-				if (command->index < msh->num_commands - 1) // or
-									// something
-				{
-					fprintf(stderr, "Warning: waitpid() failed with ECHILD, but expected more children.\n");
-					break;
-				}
-                }
-		 */
 		command = command->pipe_next;
 	}
 	if (WIFEXITED(status))
@@ -47,40 +25,6 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	(void)waited_pid;
 }
 
-static void	input_redirection(t_command *command)
-{
-	int	i;
-	int	file;
-
-	i = 0;
-	while(command->input_redirect[i])
-	{
-		file = open(command->input_redirect[i], O_RDONLY);
-		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
-		dup2(file, 0);
-		close(file);
-		i++;
-	}
-}
-
-static void	output_redirection(t_outfile *outfile)
-{
-	int	file;
-
-	while(outfile)
-	{
-		if (outfile->is_append)
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
-		else
-			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
-		dup2(file, 1);
-		close(file);
-		outfile = outfile->next;
-	}
-}
 
 int	single_parent_process(t_msh *msh)
 {
@@ -102,9 +46,6 @@ int	single_parent_process(t_msh *msh)
 
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
-
-	//set_quit_action();
-	// if it's not the first cmd, redirect input
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
@@ -114,7 +55,6 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		}
 		close(prev_pipe_read_fd);
 	}
-	// if it's not the last cmd, redirect output
 	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
@@ -149,7 +89,6 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 
 void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
 {
-
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
 	if (msh->command->index < msh->num_cmds - 1)
@@ -168,10 +107,7 @@ int	process(t_msh *msh)
 
 	process_heredocs(msh);
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
-	{
 		return (single_parent_process(msh));
-	}
-
 	status = 0;
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
@@ -179,7 +115,6 @@ int	process(t_msh *msh)
 		perror("pipe fail");
 	while (msh->command)
 	{
-		// if not last cmd, if
 		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
