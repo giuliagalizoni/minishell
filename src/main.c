@@ -13,14 +13,24 @@ static void	msh_init(t_msh *msh, char **envp)
 	print_banner();
 }
 
+static void	parse_and_execute(t_msh *msh, char *line)
+{
+	msh->command = parser(line, msh);
+	msh->num_cmds = count_commands(msh->command);
+	process(msh);
+	clear_command_chain(msh->command);
+	msh->command = NULL;
+	add_history(line);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_msh	msh;
 	(void)argc;
 	(void)argv;
+	
 	msh_init(&msh, envp);
-
 	while (!msh.exit)
 	{
 		set_signals_parent();
@@ -34,15 +44,8 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 			exit_shell(&msh);
 		if (ft_strlen(line) != 0)
-		{
-			msh.command = parser(line, &msh);
-			msh.num_cmds = count_commands(msh.command);
-			process(&msh);
-			clear_command_chain(msh.command);
-			msh.command = NULL;
-			add_history(line);
-			free(line);
-		}
+			parse_and_execute(&msh, line);
+		free(line);
 	}
 	return (exit_shell(&msh), 0);
 }
