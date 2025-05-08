@@ -28,6 +28,8 @@ char	*get_cmd_path(char *cmd, char **envp)
 	char	*fullpath;
 	int		i;
 
+	if (access(cmd, X_OK) == 0)
+		return (ft_strdup(cmd));
 	i = -1;
 	paths = get_paths(envp);
 	while (paths[++i])

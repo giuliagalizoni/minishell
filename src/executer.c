@@ -142,7 +142,6 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	else
 	{
 		execve(msh->command->path, msh->command->arguments, NULL);
-		// better command not found error here
 		perror("command not found");
 		exit(127);
 	}
