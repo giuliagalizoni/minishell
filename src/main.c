@@ -26,14 +26,10 @@ int	main(int argc, char **argv, char **envp)
 		set_signals_parent();
 		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
 		if (g_signal_code == SIGINT)
-		{
-			printf("poop");
 			msh.exit_status = 130;
-		}
-		else
-			msh.exit_status = 0;
+		else if (g_signal_code == SIGQUIT)
+			msh.exit_status = 131;
 		g_signal_code = -1;
-		printf("signal code: %d\n", g_signal_code);
 		set_signals_child();
 		if (!line)
 			exit_shell(&msh);
