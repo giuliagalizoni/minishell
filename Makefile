@@ -14,31 +14,32 @@ SRCDIR	:= src
 OBJDIR	:= obj
 MODULES := $(addprefix $(SRCDIR)/,\
 	   main.c\
-	   signals.c\
-	   parser.c\
-	   lexer.c\
-	   executer.c\
-	   array_utils.c\
-	   command_utils.c\
-	   path_utils.c\
-	   builtin_utils.c\
-	   general_utils.c\
-	   list_utils.c\
-	   startup.c\
-	   exit.c\
-	   echo.c\
-	   export.c\
-	   cd.c\
-	   env.c\
-	   pwd.c\
-	   cleanup.c\
-	   unset.c\
-	   expand_var.c\
-	   check_syntax.c\
-	   export_utils.c\
-	   expand_var_utils.c\
-	   heredoc.c\
-	   lexer_utils.c)
+	   startup/startup.c\
+	   signals/signals.c\
+	   parser/parser.c\
+	   parser/lexer.c\
+	   parser/check_syntax.c\
+	   parser/expand_var.c\
+	   executer/executer.c\
+	   utils/array_utils.c\
+	   utils/command_utils.c\
+	   utils/path_utils.c\
+	   utils/builtin_utils.c\
+	   utils/general_utils.c\
+	   utils/list_utils.c\
+	   utils/cleanup_utils.c\
+	   utils/expand_var_utils.c\
+	   utils/export_utils.c\
+	   utils/lexer_utils.c\
+	   builtins/exit.c\
+	   builtins/echo.c\
+	   builtins/export.c\
+	   builtins/cd.c\
+	   builtins/env.c\
+	   builtins/pwd.c\
+	   builtins/unset.c\
+	   redirections/redirection.c\
+	   redirections/heredoc.c)
 
 SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
@@ -59,6 +60,7 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c | $(OBJDIR)
 $(OBJDIR):
 	@echo "Creating directory $@..."
 	@mkdir -p $@
+	@mkdir -p $@/utils $@/startup $@/signals $@/builtins $@/redirections $@/parser $@/executer
 
 $(LIBFT):
 	make -C ./libft

@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 int	safe_arr_push(char ***arr, const char *str)
 {
@@ -26,7 +26,6 @@ int	handle_exit_status(t_msh *msh, char ***new_tokens)
 	int		success;
 
 	exit_status_str = ft_itoa(msh->exit_status);
-
 	if (!exit_status_str)
 	{
 		perror("ft_itoa failed for exit status");

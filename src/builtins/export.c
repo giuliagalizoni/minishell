@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	init_value(char **key, char **value, const char *arg, char *eq)
 {

@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 char	**get_paths(char **envp)
 {
@@ -28,10 +28,14 @@ char	*get_cmd_path(char *cmd, char **envp)
 	char	*fullpath;
 	int		i;
 
+	if (access(cmd, X_OK) == 0)
+		return (ft_strdup(cmd));
 	i = -1;
 	paths = get_paths(envp);
 	while (paths[++i])
 	{
+		//TODO make a strjoin for 3 strings then we can shorten it
+		//enough
 		basepath = ft_strjoin(paths[i], "/");
 		fullpath = ft_strjoin(basepath, cmd);
 		free(basepath);

@@ -53,7 +53,7 @@ typedef struct s_msh
 }	t_msh;
 
 //extern volatile sig_atomic_t g_exit_status;
-extern volatile sig_atomic_t g_signal_code;
+extern volatile sig_atomic_t	g_signal_code;
 
 // path_utils
 char		**get_paths(char **envp);
@@ -67,12 +67,13 @@ void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
 // executer
-// TODO Maybe move the cmd_count to the t_command struct
-//void	child_process(t_command *cmd, int cmd_count);
-// TODO parent_process has too many args
 void		child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
+// redirection
+void		input_redirection(t_command *command);
+void		output_redirection(t_outfile *outfile);
+
 // parser
 t_command	*parser(char *line, t_msh *msh);
 t_command	*analyser(char **tokens, int index, t_msh *msh);
@@ -92,9 +93,9 @@ void		export(t_msh *msh);
 int			cd(t_command *command);
 int			pwd(void);
 
-//list_utils - maybe rename to redirection_utils or sthg like that later
+//list_utils
 void		add_outfile(t_command *cmd, char **tokens,
-					t_outfile **outfiles, int *i);
+				t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
 
 //general_utils
