@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	clean_myenv(t_vars *myenv)
 {

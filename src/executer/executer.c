@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	wait_for_children(t_msh *msh, t_command *first_command)
 {

@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 static int	retokenize(char ***new_tokens, char *value)
 {

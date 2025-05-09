@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 int	safe_arr_push(char ***arr, const char *str)
 {

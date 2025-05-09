@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 t_outfile	*filelast(t_outfile *outfile)
 {

@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 static void	init_pipe(t_command *command, char **tokens, int *i, t_msh *msh)
 {

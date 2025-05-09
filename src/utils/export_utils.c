@@ -1,4 +1,4 @@
-#include "includes/minishell.h"
+#include "../includes/minishell.h"
 
 t_vars	*find_last(t_vars *lst)
 {
