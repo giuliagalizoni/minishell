@@ -18,6 +18,7 @@ void	print_banner(void)
 	{
 		printf("\033[38;5;%dm", 130 + i);
 		printf("%s", line);
+		free(line);
 		line = get_next_line(fd);
 		i++;
 	}

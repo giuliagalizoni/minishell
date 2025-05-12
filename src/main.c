@@ -34,7 +34,7 @@ int	main(int argc, char **argv, char **envp)
 	while (!msh.exit)
 	{
 		set_signals_parent();
-		line = readline("\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
+		line = readline("🐚\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
 		if (g_signal_code == SIGINT)
 			msh.exit_status = 130;
 		else if (g_signal_code == SIGQUIT)
