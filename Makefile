@@ -39,7 +39,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   builtins/pwd.c\
 	   builtins/unset.c\
 	   redirections/redirection.c\
-	   redirections/heredoc.c)
+	   redirections/heredoc.c\
+	   tests.c)
 
 SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))

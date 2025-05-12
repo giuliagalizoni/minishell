@@ -78,8 +78,12 @@ t_command	*parser(char *line, t_msh *msh)
 		tokens = NULL;
 		return (NULL);
 	}
+	print_tokens(tokens);
 	retokens = expand_and_retokenize(tokens, msh);
+	printf("retokens:\n");
+	print_tokens(retokens);
 	msh->command = analyser(retokens, 0, msh);
+	print_command_list(msh->command);
 	free_arr((void **)tokens);
 	if (!msh->command)
 	{

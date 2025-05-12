@@ -145,4 +145,9 @@ int			validate_key(char	*key);
 void		handle_heredoc(t_command *command);
 void		process_heredocs(t_msh *msh);
 
+
+// tests
+void print_tokens(char **tokens);
+void print_command_list(t_command *command);
+
 #endif
