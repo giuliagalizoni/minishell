@@ -56,8 +56,8 @@ typedef struct s_msh
 extern volatile sig_atomic_t	g_signal_code;
 
 // path_utils
-char		**get_paths(char **envp);
-char		*get_cmd_path(char *cmd, char **envp);
+char		**get_paths(t_vars *myenv);
+char		*get_cmd_path(char *cmd, t_vars *myenv);
 // array_utils
 void		free_arr(void **arr);
 char		**arr_push(char ***arr, char *str);
