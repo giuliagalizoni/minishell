@@ -3,16 +3,19 @@
 void	init_value(char **key, char **value, const char *arg, char *eq)
 {
 	char	*temp;
+	char	*content;
 
 	*key = ft_substr(arg, 0, eq - arg);
-	*value = ft_strdup(eq + 1);
-	if (*value && (*value[0] == '\'' || *value[0] == '\"')
-		&& *value[ft_strlen(*value) - 1] == *value[0])
+	content = ft_strdup(eq + 1);
+
+	if (content && (content[0] == '\'' || content[0] == '\"')
+		&& content[ft_strlen(content) - 1] == content[0])
 	{
-		temp = ft_substr(*value, 1, ft_strlen(*value) - 2);
-		free(*value);
-		*value = temp;
+		temp = ft_substr(content, 1, ft_strlen(content) - 2);
+		free(content);
+		content = temp;
 	}
+	*value = content;
 }
 
 t_vars	*parse_var(const char *arg)
