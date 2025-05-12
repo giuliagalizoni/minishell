@@ -28,8 +28,8 @@ static int	handle_quotes(char *line, int *i, char *result)
 		p_syntax_error(&quote);
 		return (0);
 	}
+	ft_strncat(result, &line[start + 1], *i - start - 1);
 	(*i)++;
-	ft_strncat(result, &line[start], *i - start);
 	return (1);
 }
 

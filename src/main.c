@@ -6,7 +6,6 @@ static void	msh_init(t_msh *msh, char **envp)
 {
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
-	msh->env = envp;
 	msh->exit = 0;
 	msh->exit_status = 0;
 	using_history();
