@@ -19,6 +19,7 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 		msh->exit_status = 128 + WTERMSIG(status);
 	else
 	{
+		// TODO teardown
 		perror("Error: failed to get status for the last command");
 		msh->exit_status = -1;
 	}
@@ -31,6 +32,7 @@ int	single_parent_process(t_msh *msh)
 	int	saved_stdin_fd;
 	int	status;
 
+	// TODO need some error checking somewhere?
 	saved_stdout_fd = dup(STDOUT_FILENO);
 	saved_stdin_fd = dup(STDIN_FILENO);
 	if (msh->command->input_redirect)
@@ -49,6 +51,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
 		{
+			//TODO teardown
 			perror("dup2 fail for stdin redirection");
 			exit(EXIT_FAILURE);
 		}
@@ -59,6 +62,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
 		{
+			//TODO teardown
 			perror("dup2 failed for stdout redirection");
 			exit(EXIT_FAILURE);
 		}
@@ -119,6 +123,8 @@ int	process(t_msh *msh)
 		{
 			if (pipe(fd) == -1)
 			{
+				//TODO cleanup cmd chain, print error, set exit
+				// return 0 or 1 or whatever
 				perror("pipe fail");
 				exit(EXIT_FAILURE);
 			}
@@ -127,8 +133,9 @@ int	process(t_msh *msh)
 		msh->command->pid = pid;
 		if (pid == -1)
 		{
+			//TODO cleanup cmd chain, print error, set exit
+			// return 0 or 1 or whatev
 			perror("fork fail");
-			//some cleanup, close fds, free pids
 		}
 		else if (pid == 0)
 			child_process(msh, prev_pipe_read_fd, fd);

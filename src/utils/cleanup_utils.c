@@ -15,3 +15,12 @@ void	clean_myenv(t_vars *myenv)
 		myenv = tmp;
 	}
 }
+
+//TODO WIP
+int	teardown(t_msh *msh, char *error_msg)
+{
+	clear_command_chain(msh->command);
+	if (error_msg)
+		perror(error_msg);
+	return (1);
+}

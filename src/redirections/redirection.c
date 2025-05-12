@@ -10,7 +10,7 @@ void	input_redirection(t_command *command)
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
+			perror("Bad file descriptor");// TODO cleanup routine here
 		dup2(file, 0);
 		close(file);
 		i++;
@@ -28,7 +28,7 @@ void	output_redirection(t_outfile *outfile)
 		else
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
+			perror("Bad file descriptor");// TODO cleanup routine here
 		dup2(file, 1);
 		close(file);
 		outfile = outfile->next;
