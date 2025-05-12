@@ -82,6 +82,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	{
 		execve(msh->command->path, msh->command->arguments, NULL);
 		perror("command not found");
+		clear_command_chain(msh->command);
 		exit(127);
 	}
 }
@@ -136,6 +137,7 @@ int	process(t_msh *msh)
 			parent_process(msh, fd, &prev_pipe_read_fd);
 		msh->command = msh->command->pipe_next;
 	}
+	msh->command = first_command;
 	wait_for_children(msh, first_command);
 	close(fd[0]);
 	close(fd[1]);
