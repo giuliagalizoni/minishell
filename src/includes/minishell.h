@@ -45,7 +45,6 @@ typedef struct s_command
 typedef struct s_msh
 {
 	t_vars		*myenv;
-	char		**env;
 	t_command	*command;
 	int			num_cmds;
 	int			exit;
