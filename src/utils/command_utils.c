@@ -14,18 +14,18 @@ void	command_init(t_command *command)
 	command->index = 0;
 }
 
-void	set_command_paths(t_command *command, char **envp)
-{
-	char	*full_cmd_path;
+// void	set_command_paths(t_command *command, char **envp)
+// {
+// 	char	*full_cmd_path;
 
-	while (command)
-	{
-		full_cmd_path = get_cmd_path(command->name, envp);
-		free(command->name);
-		command->name = full_cmd_path;
-		command = command->pipe_next;
-	}
-}
+// 	while (command)
+// 	{
+// 		full_cmd_path = get_cmd_path(command->name, envp);
+// 		free(command->name);
+// 		command->name = full_cmd_path;
+// 		command = command->pipe_next;
+// 	}
+// }
 
 void	clear_command_chain(t_command *command)
 {

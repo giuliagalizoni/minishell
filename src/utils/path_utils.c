@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-char	**get_paths(char **envp)
+char	**get_paths(t_vars *myenv)
 {
 	char	*rawpath;
 	char	**paths;
@@ -8,20 +8,22 @@ char	**get_paths(char **envp)
 
 	i = 0;
 	rawpath = NULL;
-	while (*envp[i])
+	paths = NULL;
+	while (myenv)
 	{
-		if (!ft_strncmp(envp[i], "PATH", 4))
+		if (is_equal(myenv->key, "PATH"))
 		{
-			rawpath = ft_strnstr(envp[i], "=", 5) + 1;
+			rawpath = myenv->value;
 			break ;
 		}
-		i++;
+		myenv = myenv->next;
 	}
-	paths = ft_split(rawpath, ':');
+	if (rawpath)
+		paths = ft_split(rawpath, ':');
 	return (paths);
 }
 
-char	*get_cmd_path(char *cmd, char **envp)
+char	*get_cmd_path(char *cmd, t_vars *myenv)
 {
 	char	**paths;
 	char	*basepath;
@@ -31,7 +33,8 @@ char	*get_cmd_path(char *cmd, char **envp)
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	i = -1;
-	paths = get_paths(envp);
+	if (!(paths = get_paths(myenv)))
+		return NULL;
 	while (paths[++i])
 	{
 		//TODO make a strjoin for 3 strings then we can shorten it

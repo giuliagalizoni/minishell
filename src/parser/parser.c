@@ -21,7 +21,7 @@ static void	check_operators(t_command *command, char **tokens, int i)
 		arr_push(&command->arguments, tokens[i]);
 }
 
-void	set_name(t_command *command, char **tokens, char **envp)
+void	set_name(t_command *command, char **tokens, t_vars *myenv)
 {
 	int	i;
 
@@ -29,7 +29,7 @@ void	set_name(t_command *command, char **tokens, char **envp)
 	while (tokens[i][0] == '<')
 		i = i + 2;
 	command->name = ft_strdup(tokens[i]);
-	command->path = get_cmd_path(tokens[i], envp);
+	command->path = get_cmd_path(tokens[i], myenv);
 }
 
 t_command	*analyser(char **tokens, int index, t_msh *msh)
@@ -42,7 +42,7 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 		return (NULL);
 	command_init(command);
 	command->index = index;
-	set_name(command, tokens, msh->env);
+	set_name(command, tokens, msh->myenv);
 	i = 0;
 	while (tokens[i])
 	{
