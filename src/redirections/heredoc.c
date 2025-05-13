@@ -1,9 +1,135 @@
 #include "../includes/minishell.h"
+static char *join_strings(char **arr)
+{
+	char	*result;
+	size_t	total_len;
+	int		i;
 
-void	handle_heredoc(t_command *command)
+	if (!arr || !arr[0])
+		return (ft_strdup(""));
+	total_len = 0;
+	i = 0;
+	while (arr[i])
+	{
+		total_len += ft_strlen(arr[i]);
+		i++;
+	}
+	result = (char *)malloc(sizeof(char) * (total_len + 1));
+	if (!result)
+		return (NULL);
+	result[0] = '\0';
+	i = 0;
+	while (arr[i])
+	{
+		ft_strlcat(result, arr[i], total_len + 1);
+		i++;
+	}
+	return (result);
+}
+
+static int	append_literal(char *line, int start, int end, char ***parts)
+{
+	char *segment;
+
+	if (end > start)
+	{
+		segment = ft_substr(line, start, end - start);
+		if (!segment || !arr_push(parts, segment))
+			return (free(segment), 0);
+		free(segment);
+	}
+	return (1);
+}
+
+static int	append_exit_status(t_msh *msh, char ***parts)
+{
+	char	*value;
+
+	value = ft_itoa(msh->exit_status);
+	if (!value || !arr_push(parts, value))
+		return (free(value), 0);
+	free(value);
+	return (1);
+}
+
+static int	append_variable(char *line, int *i, t_msh *msh, char ***parts)
+{
+	int	start;
+	char *key;
+	char *value;
+
+	start = *i + 1;
+	(*i)++;
+	while (line[*i] && (ft_isalnum(line[*i]) || line[*i] == '_'))
+		(*i)++;
+	key = ft_substr(line, start, *i - start);
+	if (!key)
+		return (0);
+	value = get_var_value(msh->myenv, key);
+	if (value)
+	{
+		if (!arr_push(parts, value))
+			return(0);
+	}
+	return (1);
+}
+
+int	process_expansion(char *line, int *i, t_msh *msh, char ***parts)
+{
+	if (line[*i + 1] == '?')
+	{
+		if (!append_exit_status(msh, parts))
+			return (0);
+	}
+	else if (line[*i + 1] && (ft_isalnum(line[*i + 1]) || line[*i + 1] == '_'))
+	{
+		if (!append_variable(line, i, msh, parts))
+			return (0);
+	}
+	else
+	{
+		if (!arr_push(parts, "$"))
+			return (0);
+		(*i)++;
+	}
+	return (1);
+}
+static char	*expand_heredoc(char *line, t_msh *msh)
+{
+	char	**parts;
+	char	*expanded;
+	int		i;
+	int		j;
+
+	parts = NULL;
+	i = 0;
+	j = 0;
+	while (line[i])
+	{
+		if (line[i] == '$')
+ 		{
+			if (!append_literal(line, j, i, &parts)
+				|| !process_expansion(line, &i, msh, &parts))
+				return (free((void **)parts), ft_strdup(line));
+			j = i;
+		}
+		else
+			i++;
+	}
+	if (!append_literal(line, j, i, &parts))
+		return (free((void **)parts), ft_strdup(line));
+	expanded = join_strings(parts);
+	free_arr((void **)parts);
+	if (!expanded)
+		return (ft_strdup(""));
+	return (expanded);
+}
+
+void	handle_heredoc(t_command *command, t_msh *msh)
 {
 	int		pipe_fd[2];
 	char	*line;
+	char *expanded_line;
 
 	if (pipe(pipe_fd) == -1)
 	{
@@ -19,9 +145,16 @@ void	handle_heredoc(t_command *command)
 			free(line);
 			break ;
 		}
-		write(pipe_fd[1], line, ft_strlen(line));
-		write(pipe_fd[1], "\n", 1);
+
+		expanded_line = expand_heredoc(line, msh);
 		free(line);
+
+		if (expanded_line)
+		{
+			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
+			write(pipe_fd[1], "\n", 1);
+			free(expanded_line);
+		}
 	}
 	close(pipe_fd[1]);
 }
@@ -34,7 +167,7 @@ void	process_heredocs(t_msh *msh)
 	while (command)
 	{
 		if (command->is_heredoc)
-			handle_heredoc(command);
+			handle_heredoc(command, msh);
 		command = command->pipe_next;
 	}
 }
