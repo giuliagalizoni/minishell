@@ -65,6 +65,8 @@ void		command_init(t_command *command);
 void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
+// error_utils
+void	cleanup_on_error(t_msh *msh, char *error, int exit_code);
 // executer
 void		child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
@@ -141,7 +143,7 @@ void		*handle_malloc_error(char **key, char **value, char *str);
 int			validate_key(char	*key);
 
 // heredoc
-void		handle_heredoc(t_command *command);
-void		process_heredocs(t_msh *msh);
+int		handle_heredoc(t_command *command, t_msh *msh);
+int		process_heredocs(t_msh *msh);
 
 #endif

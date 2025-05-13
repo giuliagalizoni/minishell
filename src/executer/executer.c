@@ -41,7 +41,7 @@ int	single_parent_process(t_msh *msh)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
 	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0 || dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
-		cleanup_on_error(msh, "dup2 failed");
+		cleanup_on_error(msh, "dup2 failed", 0);
 	return (status);
 }
 
@@ -50,28 +50,21 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-		{
-			//TODO teardown
-			perror("dup2 fail for stdin redirection");
-			exit(EXIT_FAILURE);
-		}
+			cleanup_on_error(msh, "dup2 fail for stdin redirection", 1);
 		close(prev_pipe_read_fd);
 	}
 	if (msh->command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-		{
-			//TODO teardown
-			perror("dup2 failed for stdout redirection");
-			exit(EXIT_FAILURE);
-		}
+			cleanup_on_error(msh, "dup2 fail for stdout redirection", 1);
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
 	if (msh->command->is_heredoc)
 	{
-		dup2(msh->command->heredoc_fd, STDIN_FILENO);
+		if(dup2(msh->command->heredoc_fd, STDIN_FILENO) == -1)
+			cleanup_on_error(msh, "dup2 fail for stdin heredoc redirection", 1);
 		close(msh->command->heredoc_fd);
 	}
 	//TODO what to do with builtins?if i just move his code to process it
@@ -85,8 +78,16 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	else
 	{
 		execve(msh->command->path, msh->command->arguments, NULL);
+		//TODO stuck here
 		perror("command not found");
+		close(fd[0]);
+		close(fd[1]);
+		close(prev_pipe_read_fd);
+		exit(127);
+//		cleanup_on_error(msh, "command not found", 127);
+		/*
 		exit(127); // TODO CLEANUP !!!!!
+			   // */
 	}
 }
 
