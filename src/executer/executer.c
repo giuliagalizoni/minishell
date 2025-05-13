@@ -40,8 +40,8 @@ int	single_parent_process(t_msh *msh)
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
-	dup2(saved_stdin_fd, STDIN_FILENO);
-	dup2(saved_stdout_fd, STDOUT_FILENO);
+	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0 || dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
+		cleanup_on_error(msh, "dup2 failed");
 	return (status);
 }
 
@@ -109,7 +109,8 @@ int	process(t_msh *msh)
 	pid_t		pid;
 	t_command	*first_command;
 
-	process_heredocs(msh);
+	if (!process_heredocs(msh))
+		return (0);
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 		return (single_parent_process(msh));
 	status = 0;

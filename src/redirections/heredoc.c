@@ -1,15 +1,14 @@
 #include "../includes/minishell.h"
 
-void	handle_heredoc(t_command *command)
+int	handle_heredoc(t_command *command, t_msh *msh)
 {
 	int		pipe_fd[2];
 	char	*line;
 
+//	cleanup_on_error(msh, "pipe error");
+	return (0);
 	if (pipe(pipe_fd) == -1)
-	{
-		perror("pipe error");
-		exit(EXIT_FAILURE);
-	}
+		cleanup_on_error(msh, "pipe error");
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
 	{
@@ -24,9 +23,10 @@ void	handle_heredoc(t_command *command)
 		free(line);
 	}
 	close(pipe_fd[1]);
+	return (1);
 }
 
-void	process_heredocs(t_msh *msh)
+int	process_heredocs(t_msh *msh)
 {
 	t_command	*command;
 
@@ -34,7 +34,9 @@ void	process_heredocs(t_msh *msh)
 	while (command)
 	{
 		if (command->is_heredoc)
-			handle_heredoc(command);
+			if (!handle_heredoc(command, msh))
+				return (0);
 		command = command->pipe_next;
 	}
+	return (1);
 }

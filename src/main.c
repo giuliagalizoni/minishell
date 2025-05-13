@@ -16,7 +16,8 @@ static void	parse_and_execute(t_msh *msh, char *line)
 {
 	msh->command = parser(line, msh);
 	msh->num_cmds = count_commands(msh->command);
-	process(msh);
+	if (!process(msh)) // TODO wrap in if success?
+		return ;
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
@@ -41,10 +42,10 @@ int	main(int argc, char **argv, char **envp)
 		g_signal_code = -1;
 		set_signals_child();
 		if (!line)
-			exit_shell(&msh);
+			exit_shell(&msh); // TODO EXIT POINT
 		if (ft_strlen(line) != 0)
 			parse_and_execute(&msh, line);
 		free(line);
 	}
-	return (exit_shell(&msh), 0);
+	return (exit_shell(&msh), 0); //TODO EXIT POINT
 }

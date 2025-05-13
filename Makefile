@@ -31,6 +31,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   utils/expand_var_utils.c\
 	   utils/export_utils.c\
 	   utils/lexer_utils.c\
+	   utils/error_utils.c\
 	   builtins/exit.c\
 	   builtins/echo.c\
 	   builtins/export.c\
