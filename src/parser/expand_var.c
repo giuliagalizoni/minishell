@@ -25,7 +25,7 @@ static int	retokenize(char ***new_tokens, char *value)
 	return (1);
 }
 
-static int	handle_double_quote(char *token, t_msh *msh, char ***new_tokens)
+static int	handle_single_quote(char *token, t_msh *msh, char ***new_tokens)
 {
 	char	*inner_content;
 	int		success;
@@ -66,9 +66,9 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 	len = ft_strlen(token);
 	success = 1;
 	if (len >= 2 && token[0] == '\'' && token[len -1] == '\'')
-		success = handle_single_quote(token, new_tokens, len);
+		success = handle_single_quote(token, msh, new_tokens);
 	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
-		success = handle_double_quote(token, msh, new_tokens);
+		success = handle_double_quote(token, new_tokens, len);
 	else if (token[0] == '$' && token[1] != '\0')
 	{
 		if (token[1] == '?')

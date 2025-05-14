@@ -40,6 +40,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   builtins/unset.c\
 	   redirections/redirection.c\
 	   redirections/heredoc.c\
+	   utils/heredoc_utils.c\
 	   tests.c)
 
 SRCFILES := $(MODULES)
