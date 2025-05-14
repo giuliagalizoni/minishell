@@ -47,6 +47,9 @@ int	single_parent_process(t_msh *msh)
 
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
+	char **envp;
+
+	envp = myenv_to_envp(msh->myenv);
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
@@ -77,14 +80,22 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		child_builtin(msh);
 	else
 	{
-		execve(msh->command->path, msh->command->arguments, NULL);
-		//TODO stuck here
-		perror("command not found");
-		close(fd[0]);
-		close(fd[1]);
-		close(prev_pipe_read_fd);
-		exit(127);
+		if (execve(msh->command->path, msh->command->arguments, envp) == -1)
+		{
+			//TODO stuck here
+			perror("command not found");
+			close(fd[0]);
+			close(fd[1]);
+			close(prev_pipe_read_fd);
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			free_arr((void **)envp);
+		}
+
+		exit(EXIT_SUCCESS);
+		/*
 //		cleanup_on_error(msh, "command not found", 127);
+*/
 		/*
 		exit(127); // TODO CLEANUP !!!!!
 			   // */
