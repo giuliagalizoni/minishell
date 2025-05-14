@@ -40,28 +40,6 @@ static int	append_literal(char *line, int start, int end, char ***parts)
 	}
 	return (1);
 }
-
-// static int	process_lines(char *line, t_msh *msh, char ***parts)
-// {
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	while (line[i])
-// 	{
-// 		if (line[i] == '$')
-//  		{
-// 			if (!append_literal(line, j, i, parts)
-// 				|| !process_expansion(line, &i, msh, parts))
-// 				return (0);
-// 			j = i;
-// 		}
-// 		else
-// 			i++;
-// 	}
-// 	return (append_literal(line, j, i, parts));
-// }
 static char	*expand_heredoc(char *line, t_msh *msh)
 {
 	char	**parts;
