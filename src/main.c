@@ -16,8 +16,11 @@ static void	parse_and_execute(t_msh *msh, char *line)
 {
 	msh->command = parser(line, msh);
 	msh->num_cmds = count_commands(msh->command);
+	/*
 	if (!process(msh)) // TODO wrap in if success?
 		return ;
+		*/
+	process(msh);
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
@@ -30,6 +33,9 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+	/*
+	 * TODO HANDLE ERROR init_envp - parse_var ->malloc
+	 */
 	msh_init(&msh, envp);
 	while (!msh.exit)
 	{
@@ -44,6 +50,10 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 			exit_shell(&msh); // TODO EXIT POINT
 		if (ft_strlen(line) != 0)
+			/* TODO
+			 * handle mallocs in parser- get_cmd_path - init_pipe
+			 *
+			 */
 			parse_and_execute(&msh, line);
 		free(line);
 	}

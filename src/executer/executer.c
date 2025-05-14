@@ -49,7 +49,6 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
 	char **envp;
 
-	envp = myenv_to_envp(msh->myenv);
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
@@ -78,19 +77,25 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		output_redirection(msh->command->outfile);
 	if (is_builtin(msh->command->name))
 		child_builtin(msh);
+	if (!msh->command->path)	
+		//TODO make it more robust so it can check folders and
+		//permissions?
+		command_path_error(msh);
 	else
 	{
+		envp = myenv_to_envp(msh->myenv);
 		if (execve(msh->command->path, msh->command->arguments, envp) == -1)
 		{
 			//TODO stuck here
 			perror("command not found");
-			close(fd[0]);
-			close(fd[1]);
-			close(prev_pipe_read_fd);
 			clear_command_chain(msh->command);
 			clean_myenv(msh->myenv);
 			free_arr((void **)envp);
+			exit(127);
 		}
+		clear_command_chain(msh->command);
+		clean_myenv(msh->myenv);
+		free_arr((void **)envp);
 
 		exit(EXIT_SUCCESS);
 		/*
@@ -120,6 +125,10 @@ int	process(t_msh *msh)
 	int			prev_pipe_read_fd;
 	pid_t		pid;
 	t_command	*first_command;
+	/* TODO ERROR HANDLING
+	 *
+	 * process_heredoc fds
+	 */
 
 	if (!process_heredocs(msh))
 		return (0);
@@ -129,7 +138,7 @@ int	process(t_msh *msh)
 	first_command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
 	if (pipe(fd) == -1)
-		perror("pipe fail");
+		perror("pipe fail"); // TODO error handling
 	while (msh->command)
 	{
 		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)

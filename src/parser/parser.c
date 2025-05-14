@@ -4,6 +4,7 @@ static void	init_pipe(t_command *command, char **tokens, int *i, t_msh *msh)
 {
 	command->is_pipe = 1;
 	tokens++;
+	// TODO check if this command is NULL
 	command->pipe_next = analyser(tokens + ((*i)++), (command->index) + 1, msh);
 }
 
@@ -16,7 +17,10 @@ static void	check_operators(t_command *command, char **tokens, int i)
 	else if (i > 0 && is_equal(tokens[i - 1], "<"))
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && is_equal(tokens[i - 1], "<<"))
-		command->heredoc_delimiter = ft_strdup(tokens[i]);
+		command->heredoc_delimiter = ft_strdup(tokens[i]); //TODO check
+								   //if this
+								   //strdup
+								   //NULL
 	else
 		arr_push(&command->arguments, tokens[i]);
 }
@@ -28,6 +32,7 @@ void	set_name(t_command *command, char **tokens, t_vars *myenv)
 	i = 0;
 	while (tokens[i][0] == '<')
 		i = i + 2;
+	// TODO handle this malloc
 	command->name = ft_strdup(tokens[i]);
 	command->path = get_cmd_path(tokens[i], myenv);
 }

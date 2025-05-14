@@ -40,6 +40,7 @@ char	*get_cmd_path(char *cmd, t_vars *myenv)
 		//TODO make a strjoin for 3 strings then we can shorten it
 		//enough
 		basepath = ft_strjoin(paths[i], "/");
+		//TODO check if fullpath == NULL
 		fullpath = ft_strjoin(basepath, cmd);
 		free(basepath);
 		basepath = NULL;

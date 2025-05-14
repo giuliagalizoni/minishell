@@ -68,6 +68,7 @@ void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
 // error_utils
 void	cleanup_on_error(t_msh *msh, char *error, int exit_code);
+void	command_path_error(t_msh *msh);
 // executer
 void		child_process(t_msh *msh, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd);
