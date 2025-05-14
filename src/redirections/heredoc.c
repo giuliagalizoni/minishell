@@ -80,7 +80,7 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 	if (pipe(pipe_fd) == -1)
 	{
 		perror("pipe error");
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); // TODO handle exit status e
 	}
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
@@ -91,10 +91,8 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 			free(line);
 			break ;
 		}
-
 		expanded_line = expand_heredoc(line, msh);
 		free(line);
-
 		if (expanded_line)
 		{
 			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
