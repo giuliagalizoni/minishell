@@ -43,3 +43,32 @@ char	**arr_push(char ***arr, char *str)
 	*arr = new_arr;
 	return (new_arr);
 }
+
+char	**myenv_to_envp(t_vars *myenv)
+{
+	t_vars	*envstart;
+	char	**envp;
+	int	size;
+	int	i;
+
+	i = 0;
+	size = 0;
+	envstart = myenv;
+	while (myenv)
+	{
+		size++;
+		myenv = myenv->next;
+	}
+	myenv = envstart;
+	envp = (char **)malloc(sizeof(char *) * (size + 1));
+	if (envp == NULL)
+		return (NULL);
+	while (myenv)
+	{
+		envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
+		i++;
+		myenv = myenv->next;
+	}
+	envp[i] = NULL;
+	return (envp);
+}

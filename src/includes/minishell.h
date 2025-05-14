@@ -60,6 +60,7 @@ char		*get_cmd_path(char *cmd, t_vars *myenv);
 // array_utils
 void		free_arr(void **arr);
 char		**arr_push(char ***arr, char *str);
+char		**myenv_to_envp(t_vars *myenv);
 // command_utils
 void		command_init(t_command *command);
 void		set_command_paths(t_command *command, char **envp);
@@ -104,6 +105,7 @@ int			is_equal(char *str1, char *str2);
 char		*ft_strncat(char *dest, const char *src, size_t n);
 int			p_syntax_error(char *token);
 int			ft_strcmp(char *s1, char *s2);
+char	*ft_triplestrjoin(char *str1, char *str2, char *str3);
 
 //startup
 void		print_banner(void);
