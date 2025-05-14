@@ -2,7 +2,7 @@
 
 static int	append_literal(char *line, int start, int end, char ***parts)
 {
-	char *segment;
+	char	*segment;
 
 	if (end > start)
 	{
@@ -24,7 +24,7 @@ int	process_line(char *line, t_msh *msh, char ***parts)
 	while (line[i])
 	{
 		if (line[i] == '$')
- 		{
+		{
 			if (!append_literal(line, j, i, parts)
 				|| !process_expansion(line, &i, msh, parts))
 				return (0);
@@ -49,9 +49,9 @@ static int	append_exit_status(t_msh *msh, char ***parts)
 
 static int	append_variable(char *line, int *i, t_msh *msh, char ***parts)
 {
-	int	start;
-	char *key;
-	char *value;
+	int		start;
+	char	*key;
+	char	*value;
 
 	start = *i + 1;
 	(*i)++;
@@ -64,7 +64,7 @@ static int	append_variable(char *line, int *i, t_msh *msh, char ***parts)
 	if (value)
 	{
 		if (!arr_push(parts, value))
-			return(0);
+			return (0);
 	}
 	return (1);
 }

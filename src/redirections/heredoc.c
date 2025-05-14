@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-static char *join_strings(char **arr)
+static char	*join_strings(char **arr)
 {
 	char	*result;
 	size_t	total_len;
@@ -58,7 +58,7 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 {
 	int		pipe_fd[2];
 	char	*line;
-	char *expanded_line;
+	char	*expanded_line;
 
 	if (pipe(pipe_fd) == -1)
 	{
