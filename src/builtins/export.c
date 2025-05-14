@@ -7,7 +7,6 @@ void	init_value(char **key, char **value, const char *arg, char *eq)
 
 	*key = ft_substr(arg, 0, eq - arg);
 	content = ft_strdup(eq + 1);
-
 	if (content && (content[0] == '\'' || content[0] == '\"')
 		&& content[ft_strlen(content) - 1] == content[0])
 	{
