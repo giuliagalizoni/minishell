@@ -1,7 +1,40 @@
 #include "../includes/minishell.h"
 
+static int	append_literal(char *line, int start, int end, char ***parts)
+{
+	char *segment;
 
+	if (end > start)
+	{
+		segment = ft_substr(line, start, end - start);
+		if (!segment || !arr_push(parts, segment))
+			return (free(segment), 0);
+		free(segment);
+	}
+	return (1);
+}
 
+int	process_line(char *line, t_msh *msh, char ***parts)
+{
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (line[i])
+	{
+		if (line[i] == '$')
+ 		{
+			if (!append_literal(line, j, i, parts)
+				|| !process_expansion(line, &i, msh, parts))
+				return (0);
+			j = i;
+		}
+		else
+			i++;
+	}
+	return (append_literal(line, j, i, parts));
+}
 
 static int	append_exit_status(t_msh *msh, char ***parts)
 {
