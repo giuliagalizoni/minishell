@@ -27,41 +27,6 @@ static char *join_strings(char **arr)
 	}
 	return (result);
 }
-// static int	append_literal(char *line, int start, int end, char ***parts)
-// {
-// 	char *segment;
-
-// 	if (end > start)
-// 	{
-// 		segment = ft_substr(line, start, end - start);
-// 		if (!segment || !arr_push(parts, segment))
-// 			return (free(segment), 0);
-// 		free(segment);
-// 	}
-// 	return (1);
-// }
-
-// static int	process_line(char *line, t_msh *msh, char ***parts)
-// {
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	while (line[i])
-// 	{
-// 		if (line[i] == '$')
-//  		{
-// 			if (!append_literal(line, j, i, parts)
-// 				|| !process_expansion(line, &i, msh, parts))
-// 				return (0);
-// 			j = i;
-// 		}
-// 		else
-// 			i++;
-// 	}
-// 	return (append_literal(line, j, i, parts));
-// }
 
 static char	*expand_heredoc(char *line, t_msh *msh)
 {
@@ -82,6 +47,13 @@ static char	*expand_heredoc(char *line, t_msh *msh)
 	return (expanded);
 }
 
+static void	write_line(int	*pipe_fd, char *expanded_line)
+{
+	write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
+	write(pipe_fd[1], "\n", 1);
+	free(expanded_line);
+}
+
 void	handle_heredoc(t_command *command, t_msh *msh)
 {
 	int		pipe_fd[2];
@@ -91,7 +63,7 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 	if (pipe(pipe_fd) == -1)
 	{
 		perror("pipe error");
-		exit(EXIT_FAILURE); // TODO handle exit status e
+		exit(EXIT_FAILURE); // TODO handle exit status
 	}
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
@@ -105,11 +77,7 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 		expanded_line = expand_heredoc(line, msh);
 		free(line);
 		if (expanded_line)
-		{
-			write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
-			write(pipe_fd[1], "\n", 1);
-			free(expanded_line);
-		}
+			write_line(pipe_fd, expanded_line);
 	}
 	close(pipe_fd[1]);
 }
