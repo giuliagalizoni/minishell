@@ -16,11 +16,9 @@ void	clean_myenv(t_vars *myenv)
 	}
 }
 
-//TODO WIP
-int	teardown(t_msh *msh, char *error_msg)
+void	cleanup(t_msh *msh)
 {
+	rl_clear_history();
 	clear_command_chain(msh->command);
-	if (error_msg)
-		perror(error_msg);
-	return (1);
+	clean_myenv(msh->myenv);
 }

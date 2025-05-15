@@ -19,8 +19,7 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 		msh->exit_status = 128 + WTERMSIG(status);
 	else
 	{
-		// TODO teardown
-		perror("Error: failed to get status for the last command");
+		error_cleanup(msh, "failed to get status for the last command");
 		msh->exit_status = -1;
 	}
 	(void)waited_pid;
@@ -36,12 +35,12 @@ int	single_parent_process(t_msh *msh)
 	saved_stdout_fd = dup(STDOUT_FILENO);
 	saved_stdin_fd = dup(STDIN_FILENO);
 	if (msh->command->input_redirect)
-		input_redirection(msh->command, msh);
+		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
 	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0 || dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
-		cleanup_on_error(msh, "dup2 failed", 0);
+		exit_process(msh, "dup2 failed", -1);
 	return (status);
 }
 
@@ -52,70 +51,36 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-		{
-			perror("dup 2 fail for stdin redirection");
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
-			exit(EXIT_FAILURE);
-		}
-//			cleanup_on_error(msh, "dup2 fail for stdin redirection", 1);
+			exit_process(msh, "dup 2 fail for stdin redirection", EXIT_FAILURE);
 		close(prev_pipe_read_fd);
 	}
 	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup 2 fail for stdout redirection");
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
-			exit(EXIT_FAILURE);
-		}
-		//	cleanup_on_error(msh, "dup2 fail for stdout redirection", 1);
+			exit_process(msh, "dup 2 fail for stdout redirection", EXIT_FAILURE);
 		close(fd[1]);
 	}
-	// ***	HEREDOC ***
 	if (command->is_heredoc)
 	{
 		if(dup2(command->heredoc_fd, STDIN_FILENO) == -1)
-		{
-			perror("dup 2 fail for heredoc redirection");
-			rl_clear_history();
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
-			exit(EXIT_FAILURE);
-		}
-//			cleanup_on_error(msh, "dup2 fail for stdin heredoc redirection", 1);
+			exit_process(msh, "dup 2 fail for heredoc redirection", EXIT_FAILURE);
 		close(command->heredoc_fd);
 	}
 	if (command->input_redirect)
-		if (!input_redirection(command, msh))
-		{
-			rl_clear_history();
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
-			exit(EXIT_FAILURE);
-		}
+		if (!input_redirection(command))
+			exit_process(msh, NULL, EXIT_FAILURE);
 	if (command->outfile)
 		if (!output_redirection(command->outfile))
-		{
-			rl_clear_history();
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
-			exit(EXIT_FAILURE);
-		}
-
+			exit_process(msh, NULL, EXIT_FAILURE);
 	if (is_builtin(command->name))
 		child_builtin(msh);
+	printf("we have exited you shouldnt be here\n");
 	if (!command->path)	
 	{
-
 		//TODO make it more robust so it can check folders and
 		//permissions?
-		rl_clear_history();
-		clear_command_chain(msh->command);
-		clean_myenv(msh->myenv);
-		exit(EXIT_FAILURE);
+		exit_process(msh, NULL, EXIT_FAILURE);
 	}
 	else
 	{
@@ -123,17 +88,9 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		if (execve(command->path, command->arguments, envp) == -1)
 		{
 			//TODO stuck here
-			perror("command not found");
-			rl_clear_history();
-			clear_command_chain(msh->command);
-			clean_myenv(msh->myenv);
 			free_arr((void **)envp);
-			exit(127);
+			exit_process(msh, "command not found", 127);
 		}
-		clear_command_chain(msh->command);
-		clean_myenv(msh->myenv);
-		free_arr((void **)envp);
-
 		exit(EXIT_SUCCESS);
 	}
 }

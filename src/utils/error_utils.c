@@ -1,23 +1,16 @@
 #include "../includes/minishell.h"
 
-void	cleanup_on_error(t_msh *msh, char *error, int exit_code)
+void	error_cleanup(t_msh *msh, char *error)
 {
+	// TODO Better print format
 	if (error)
 		perror(error);
-	if (msh->command)
-		clear_command_chain(msh->command);
-	if (exit_code)
-		exit(exit_code);
-	// TODO close fds?
+	cleanup(msh);
 }
 
-void	command_path_error(t_msh *msh)
+void	exit_process(t_msh *msh, char *error, int exit_code)
 {
-	// TODO maybe some logic for checking if its a folder or not executable
-	perror("cmd not found");
-	rl_clear_history();
-	clean_myenv(msh->myenv);
-	clear_command_chain(msh->command);
-	// TODO close fds
-	exit(127);
-}	
+	error_cleanup(msh, error);
+	if (exit_code >= 0)
+		exit(exit_code);
+}

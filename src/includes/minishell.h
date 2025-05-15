@@ -67,8 +67,8 @@ void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
 // error_utils
-void	cleanup_on_error(t_msh *msh, char *error, int exit_code);
-void	command_path_error(t_msh *msh);
+void	error_cleanup(t_msh *msh, char *error);
+void	exit_process(t_msh *msh, char *error, int exit_code);
 // executer
 void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
@@ -90,11 +90,16 @@ int			is_builtin(char *name);
 int			builtin_router(t_msh *msg);
 void		child_builtin(t_msh *msh);
 
+// builtins
 void		exit_shell(t_msh *msh);
 void		echo(t_command *cmd);
 void		export(t_msh *msh);
 int			cd(t_command *command);
 int			pwd(void);
+
+//cleanup_utils
+void		cleanup(t_msh *msh);
+void		clean_myenv(t_vars *myenv);
 
 //list_utils
 void		add_outfile(t_command *cmd, char **tokens,
@@ -120,8 +125,8 @@ void		sig_ignore(void);
 
 //env
 t_vars		*init_envp(char **envp);
-void		clean_myenv(t_vars *myenv);
 void		print_env(t_vars *myenv);
+
 
 //unset
 void		unset(t_msh *msh);
