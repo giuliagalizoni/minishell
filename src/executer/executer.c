@@ -47,7 +47,7 @@ int	single_parent_process(t_msh *msh)
 
 void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 {
-	char **envp;
+//	char **envp;
 
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
@@ -83,6 +83,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		command_path_error(msh);
 	else
 	{
+		/*
 		envp = myenv_to_envp(msh->myenv);
 		if (execve(msh->command->path, msh->command->arguments, envp) == -1)
 		{
@@ -98,12 +99,18 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		free_arr((void **)envp);
 
 		exit(EXIT_SUCCESS);
+		*/
 		/*
 //		cleanup_on_error(msh, "command not found", 127);
 */
 		/*
 		exit(127); // TODO CLEANUP !!!!!
 			   // */
+		execve(msh->command->path, msh->command->arguments, NULL);
+		perror("command not found");
+		clear_command_chain(msh->command);
+		exit(127);
+
 	}
 }
 
@@ -165,6 +172,7 @@ int	process(t_msh *msh)
 			parent_process(msh, fd, &prev_pipe_read_fd);
 		msh->command = msh->command->pipe_next;
 	}
+	msh->command = first_command;
 	wait_for_children(msh, first_command);
 	close(fd[0]);
 	close(fd[1]);

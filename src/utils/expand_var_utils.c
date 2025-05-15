@@ -69,7 +69,7 @@ int	process_inner(char *content, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
-int	handle_single_quote(char *token, char ***new_tokens, size_t len)
+int	handle_double_quote(char *token, char ***new_tokens, size_t len)
 {
 	char	*literal;
 	int		success;

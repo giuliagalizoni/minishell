@@ -4,9 +4,7 @@ char	**get_paths(t_vars *myenv)
 {
 	char	*rawpath;
 	char	**paths;
-	int		i;
 
-	i = 0;
 	rawpath = NULL;
 	paths = NULL;
 	while (myenv)

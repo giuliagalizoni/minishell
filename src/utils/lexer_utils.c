@@ -17,6 +17,7 @@ static int	handle_quotes(char *line, int *i, char *result)
 {
 	char	quote;
 	int		start;
+	char	*err_str;
 
 	start = *i;
 	quote = line[*i];
@@ -25,7 +26,9 @@ static int	handle_quotes(char *line, int *i, char *result)
 		(*i)++;
 	if (!line[*i])
 	{
-		p_syntax_error(&quote);
+		err_str = ft_substr(line, (*i) - 1, 1);
+		p_syntax_error(err_str);
+		free(err_str);
 		return (0);
 	}
 	ft_strncat(result, &line[start + 1], *i - start - 1);
