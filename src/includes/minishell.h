@@ -148,5 +148,6 @@ int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
 int			process_line(char *line, t_msh *msh, char ***parts);
 
 char		*expand_inline(char *line, t_msh *msh);
+char		*remove_quotes(const char *str);
 
 #endif

@@ -1,5 +1,31 @@
 #include "../includes/minishell.h"
 
+char	*remove_quotes(const char *str)
+{
+    size_t	i;
+    size_t	j;
+    char	*new_str;
+
+    if (!str)
+        return (NULL);
+    new_str = malloc(ft_strlen(str) + 1);
+    if (!new_str)
+        return (NULL);
+    i = 0;
+    j = 0;
+    while (str[i])
+    {
+        if (str[i] != '\'' && str[i] != '"')
+        {
+            new_str[j] = str[i];
+            j++;
+        }
+        i++;
+    }
+    new_str[j] = '\0';
+    return (new_str);
+}
+
 int	safe_arr_push(char ***arr, const char *str)
 {
 	char	*copy;
@@ -77,7 +103,7 @@ int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 
 	literal = ft_substr(token, 1, len - 2);
 	if (!literal)
-		return (perror("ft_substr failed removing single quotes"), 0);
+		return (perror("ft_substr failed removing quotes"), 0);
 	expanded = expand_inline(literal, msh);
 	free(literal);
 	if (!expanded)
