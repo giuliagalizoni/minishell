@@ -52,40 +52,71 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-			cleanup_on_error(msh, "dup2 fail for stdin redirection", 1);
+		{
+			perror("dup 2 fail for stdin redirection");
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			exit(EXIT_FAILURE);
+		}
+//			cleanup_on_error(msh, "dup2 fail for stdin redirection", 1);
 		close(prev_pipe_read_fd);
 	}
 	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			cleanup_on_error(msh, "dup2 fail for stdout redirection", 1);
+		{
+			perror("dup 2 fail for stdout redirection");
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			exit(EXIT_FAILURE);
+		}
+		//	cleanup_on_error(msh, "dup2 fail for stdout redirection", 1);
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
 	if (command->is_heredoc)
 	{
 		if(dup2(command->heredoc_fd, STDIN_FILENO) == -1)
-			cleanup_on_error(msh, "dup2 fail for stdin heredoc redirection", 1);
+		{
+			perror("dup 2 fail for heredoc redirection");
+			rl_clear_history();
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			exit(EXIT_FAILURE);
+		}
+//			cleanup_on_error(msh, "dup2 fail for stdin heredoc redirection", 1);
 		close(command->heredoc_fd);
 	}
-	//TODO what to do with builtins?if i just move his code to process it
-	//hangs. Mayb just copy it to the builtin router?
 	if (command->input_redirect)
 		if (!input_redirection(command, msh))
 		{
+			rl_clear_history();
 			clear_command_chain(msh->command);
 			clean_myenv(msh->myenv);
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	if (command->outfile)
-		output_redirection(command->outfile);
+		if (!output_redirection(command->outfile))
+		{
+			rl_clear_history();
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			exit(EXIT_FAILURE);
+		}
+
 	if (is_builtin(command->name))
 		child_builtin(msh);
 	if (!command->path)	
+	{
+
 		//TODO make it more robust so it can check folders and
 		//permissions?
-		command_path_error(msh);
+		rl_clear_history();
+		clear_command_chain(msh->command);
+		clean_myenv(msh->myenv);
+		exit(EXIT_FAILURE);
+	}
 	else
 	{
 		envp = myenv_to_envp(msh->myenv);
@@ -93,6 +124,7 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		{
 			//TODO stuck here
 			perror("command not found");
+			rl_clear_history();
 			clear_command_chain(msh->command);
 			clean_myenv(msh->myenv);
 			free_arr((void **)envp);
@@ -103,17 +135,6 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		free_arr((void **)envp);
 
 		exit(EXIT_SUCCESS);
-		/*
-//		cleanup_on_error(msh, "command not found", 127);
-*/
-		/*
-		exit(127); // TODO CLEANUP !!!!!
-		execve(msh->command->path, msh->command->arguments, NULL);
-		perror("command not found");
-		clear_command_chain(msh->command);
-		exit(127);
-		// */
-
 	}
 }
 

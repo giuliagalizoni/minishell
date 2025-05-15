@@ -26,7 +26,7 @@ int	input_redirection(t_command *command)
 	return (1);
 }
 
-void	output_redirection(t_outfile *outfile)
+int	output_redirection(t_outfile *outfile)
 {
 	int	file;
 
@@ -37,9 +37,18 @@ void	output_redirection(t_outfile *outfile)
 		else
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
-			perror("Bad file descriptor");// TODO cleanup routine here
-		dup2(file, 1); // if == -1 bla
+		{
+			perror("Bad file descriptor");
+			return (0);
+		}
+		if (dup2(file, 1) == -1)
+		{
+			perror("dup2 failed");
+			close(file);
+			return (0);
+		}
 		close(file);
 		outfile = outfile->next;
 	}
+	return (1);
 }
