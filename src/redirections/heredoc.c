@@ -28,16 +28,12 @@ static char	*join_strings(char **arr)
 	return (result);
 }
 
-static char	*expand_heredoc(char *line, t_msh *msh)
+char	*expand_inline(char *line, t_msh *msh)
 {
 	char	**parts;
 	char	*expanded;
-	int		i;
-	int		j;
 
 	parts = NULL;
-	i = 0;
-	j = 0;
 	if (!process_line(line, msh, &parts))
 		return (free((void **)parts), ft_strdup(line));
 	expanded = join_strings(parts);
@@ -74,7 +70,7 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 			free(line);
 			break ;
 		}
-		expanded_line = expand_heredoc(line, msh);
+		expanded_line = expand_inline(line, msh);
 		free(line);
 		if (expanded_line)
 			write_line(pipe_fd, expanded_line);

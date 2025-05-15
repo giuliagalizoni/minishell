@@ -69,15 +69,20 @@ int	process_inner(char *content, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
-int	handle_double_quote(char *token, char ***new_tokens, size_t len)
+int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 {
 	char	*literal;
+	char	*expanded;
 	int		success;
 
 	literal = ft_substr(token, 1, len - 2);
 	if (!literal)
 		return (perror("ft_substr failed removing single quotes"), 0);
-	success = safe_arr_push(new_tokens, literal);
+	expanded = expand_inline(literal, msh);
 	free(literal);
+	if (!expanded)
+		 return (perror("expand_variables_in_line failed"), 0);
+	success = safe_arr_push(new_tokens, expanded);
+	free(expanded);
 	return (success);
 }

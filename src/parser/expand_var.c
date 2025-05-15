@@ -68,7 +68,7 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 	if (len >= 2 && token[0] == '\'' && token[len -1] == '\'')
 		success = handle_single_quote(token, msh, new_tokens);
 	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
-		success = handle_double_quote(token, new_tokens, len);
+		success = handle_double_quote(token, new_tokens, len, msh);
 	else if (token[0] == '$' && token[1] != '\0')
 	{
 		if (token[1] == '?')
