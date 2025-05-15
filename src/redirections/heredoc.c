@@ -32,12 +32,8 @@ static char	*expand_heredoc(char *line, t_msh *msh)
 {
 	char	**parts;
 	char	*expanded;
-	int		i;
-	int		j;
 
 	parts = NULL;
-	i = 0;
-	j = 0;
 	if (!process_line(line, msh, &parts))
 		return (free((void **)parts), ft_strdup(line));
 	expanded = join_strings(parts);
