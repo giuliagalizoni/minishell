@@ -74,7 +74,7 @@ void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // redirection
-void		input_redirection(t_command *command, t_msh *msh);
+int		input_redirection(t_command *command, t_msh *msh);
 void		output_redirection(t_outfile *outfile);
 
 // parser

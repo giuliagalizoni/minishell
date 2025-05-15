@@ -1,27 +1,29 @@
 #include "../includes/minishell.h"
 
-void	input_redirection(t_command *command, t_msh *msh)
+int	input_redirection(t_command *command)
 {
 	int	i;
 	int	file;
-	(void)msh;
 
 	i = 0;
-	perror("no input redirection allowed!");
-	printf("index: %d\n", msh->command->index);
-	//
-//	clear_command_chain(msh->command);
-	return ;
 	while (command->input_redirect[i])
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
-			perror("Bad file descriptor");// TODO cleanup routine here
-		if (dup2(file, STDIN_FILENO == -1)) // if == -1 blah
+		{
+			perror("Bad file descriptor");
+			return (0);
+	        }
+		if (dup2(file, STDIN_FILENO == -1))
+		{
 			perror("dup2 fail");
+			close(file);
+			return (0);
+		}
 		close(file);
 		i++;
 	}
+	return (1);
 }
 
 void	output_redirection(t_outfile *outfile)

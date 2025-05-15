@@ -72,7 +72,12 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
 	if (command->input_redirect)
-		input_redirection(command, msh);
+		if (!input_redirection(command, msh))
+		{
+			clear_command_chain(msh->command);
+			clean_myenv(msh->myenv);
+			exit(1);
+		}
 	if (command->outfile)
 		output_redirection(command->outfile);
 	if (is_builtin(command->name))
