@@ -146,8 +146,8 @@ void		*handle_malloc_error(char **key, char **value, char *str);
 int			validate_key(char	*key);
 
 // heredoc
-void		handle_heredoc(t_command *command, t_msh *msh);
-void		process_heredocs(t_msh *msh);
+int		handle_heredoc(t_command *command, t_msh *msh);
+int		process_heredocs(t_msh *msh);
 int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
 int			process_line(char *line, t_msh *msh, char ***parts);
 
