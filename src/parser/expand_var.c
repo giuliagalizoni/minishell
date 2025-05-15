@@ -1,28 +1,60 @@
 #include "../includes/minishell.h"
 
+char	*remove_quotes(const char *str)
+{
+	size_t	i;
+	size_t	j;
+	char	*new_str;
+
+	if (!str)
+		return (NULL);
+	new_str = malloc(ft_strlen(str) + 1);
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '"')
+		{
+			new_str[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
+
 static int	retokenize(char ***new_tokens, char *value)
 {
 	char	**temp_tokens;
+	char	*processed_token;
 	int		i;
 	int		success;
 
 	temp_tokens = ft_split(value, ' ');
 	if (!temp_tokens)
 	{
-		perror("ft_split failed or returned no words");
-		return (0);
+		return (perror("ft_split failed or returned no words"), 0);
 	}
 	i = 0;
 	success = 1;
 	while (temp_tokens[i] && success)
 	{
-		success = safe_arr_push(new_tokens, temp_tokens[i]);
+		processed_token = remove_quotes(temp_tokens[i]);
+		if (!processed_token)
+		{
+			success = 0;
+			break;
+		}
+		success = safe_arr_push(new_tokens, processed_token);
+		free(processed_token);
 		i++;
 	}
 	free_arr((void **)temp_tokens);
-	if (!success)
-		return (0);
-	return (1);
+	return (success);
 }
 
 static int	handle_single_quote(char *token, t_msh *msh, char ***new_tokens)

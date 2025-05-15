@@ -31,7 +31,7 @@ static int	handle_quotes(char *line, int *i, char *result)
 		free(err_str);
 		return (0);
 	}
-	ft_strncat(result, &line[start + 1], *i - start - 1);
+	ft_strncat(result, &line[start], *i - start + 1);
 	(*i)++;
 	return (1);
 }
