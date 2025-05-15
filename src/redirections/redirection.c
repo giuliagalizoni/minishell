@@ -6,12 +6,15 @@ void	input_redirection(t_command *command)
 	int	file;
 
 	i = 0;
+	perror("no input redirection allowed!");
+	exit(0);
 	while (command->input_redirect[i])
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
 			perror("Bad file descriptor");// TODO cleanup routine here
-		dup2(file, 0); // if == -1 blah
+		if (dup2(file, STDIN_FILENO == -1)) // if == -1 blah
+			perror("dup2 fail");
 		close(file);
 		i++;
 	}
