@@ -129,7 +129,8 @@ int			safe_arr_push(char ***arr, const char *str);
 int			handle_exit_status(t_msh *msh, char ***new_tokens);
 int			process_quoted_var(char *content, t_msh *msh, char ***new_tokens);
 int			process_inner(char *content, t_msh *msh, char ***new_tokens);
-int			handle_double_quote(char *token, char ***new_tokens, size_t len);
+int			handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh);
+
 //check syntax
 int			check_invalid_syntax(char **tokens);
 
@@ -145,5 +146,7 @@ void		handle_heredoc(t_command *command, t_msh *msh);
 void		process_heredocs(t_msh *msh);
 int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
 int			process_line(char *line, t_msh *msh, char ***parts);
+
+char		*expand_inline(char *line, t_msh *msh);
 
 #endif
