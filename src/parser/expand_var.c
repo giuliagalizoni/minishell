@@ -39,7 +39,7 @@ static int	handle_single_quote(char *token, char ***new_tokens)
 	free(inner_content);
 	if (!processed)
 		return (perror("remove_quotes failed"), 0);
-	success = safe_arr_push(new_tokens, inner_content);
+	success = safe_arr_push(new_tokens, processed);
 	free(processed);
 	return (success);
 }
