@@ -36,7 +36,7 @@ int	single_parent_process(t_msh *msh)
 	saved_stdout_fd = dup(STDOUT_FILENO);
 	saved_stdin_fd = dup(STDIN_FILENO);
 	if (msh->command->input_redirect)
-		input_redirection(msh->command);
+		input_redirection(msh->command, msh);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
@@ -45,7 +45,7 @@ int	single_parent_process(t_msh *msh)
 	return (status);
 }
 
-void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
+void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd)
 {
 	char **envp;
 
@@ -55,7 +55,7 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 			cleanup_on_error(msh, "dup2 fail for stdin redirection", 1);
 		close(prev_pipe_read_fd);
 	}
-	if (msh->command->index < msh->num_cmds - 1)
+	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -63,28 +63,28 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
-	if (msh->command->is_heredoc)
+	if (command->is_heredoc)
 	{
-		if(dup2(msh->command->heredoc_fd, STDIN_FILENO) == -1)
+		if(dup2(command->heredoc_fd, STDIN_FILENO) == -1)
 			cleanup_on_error(msh, "dup2 fail for stdin heredoc redirection", 1);
-		close(msh->command->heredoc_fd);
+		close(command->heredoc_fd);
 	}
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
-	if (msh->command->input_redirect)
-		input_redirection(msh->command);
-	if (msh->command->outfile)
-		output_redirection(msh->command->outfile);
-	if (is_builtin(msh->command->name))
+	if (command->input_redirect)
+		input_redirection(command, msh);
+	if (command->outfile)
+		output_redirection(command->outfile);
+	if (is_builtin(command->name))
 		child_builtin(msh);
-	if (!msh->command->path)	
+	if (!command->path)	
 		//TODO make it more robust so it can check folders and
 		//permissions?
 		command_path_error(msh);
 	else
 	{
 		envp = myenv_to_envp(msh->myenv);
-		if (execve(msh->command->path, msh->command->arguments, envp) == -1)
+		if (execve(command->path, command->arguments, envp) == -1)
 		{
 			//TODO stuck here
 			perror("command not found");
@@ -112,11 +112,11 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 	}
 }
 
-void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
+void	parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd)
 {
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (msh->command->index < msh->num_cmds - 1)
+	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
@@ -129,7 +129,7 @@ int	process(t_msh *msh)
 	int			status;
 	int			prev_pipe_read_fd;
 	pid_t		pid;
-	t_command	*first_command;
+	t_command	*command;
 	/* TODO ERROR HANDLING
 	 *
 	 * process_heredoc fds
@@ -140,13 +140,13 @@ int	process(t_msh *msh)
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 		return (single_parent_process(msh));
 	status = 0;
-	first_command = msh->command;
+	command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
 	if (pipe(fd) == -1)
 		perror("pipe fail"); // TODO error handling
-	while (msh->command)
+	while (command)
 	{
-		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
+		if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
@@ -157,7 +157,7 @@ int	process(t_msh *msh)
 			}
 		}
 		pid = fork();
-		msh->command->pid = pid;
+		command->pid = pid;
 		if (pid == -1)
 		{
 			//TODO cleanup cmd chain, print error, set exit
@@ -165,13 +165,12 @@ int	process(t_msh *msh)
 			perror("fork fail");
 		}
 		else if (pid == 0)
-			child_process(msh, prev_pipe_read_fd, fd);
+			child_process(msh, command, prev_pipe_read_fd, fd);
 		else
-			parent_process(msh, fd, &prev_pipe_read_fd);
-		msh->command = msh->command->pipe_next;
+			parent_process(msh, command, fd, &prev_pipe_read_fd);
+		command = command->pipe_next;
 	}
-	msh->command = first_command;
-	wait_for_children(msh, first_command);
+	wait_for_children(msh, msh->command);
 	close(fd[0]);
 	close(fd[1]);
 	return (status);

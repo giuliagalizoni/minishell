@@ -1,13 +1,17 @@
 #include "../includes/minishell.h"
 
-void	input_redirection(t_command *command)
+void	input_redirection(t_command *command, t_msh *msh)
 {
 	int	i;
 	int	file;
+	(void)msh;
 
 	i = 0;
 	perror("no input redirection allowed!");
-	exit(0);
+	printf("index: %d\n", msh->command->index);
+	//
+//	clear_command_chain(msh->command);
+	return ;
 	while (command->input_redirect[i])
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
