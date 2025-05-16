@@ -14,16 +14,28 @@ static int	append_literal(char *line, int start, int end, char ***parts)
 	return (1);
 }
 
+static void	toggle_quote(char *quote, char line_char)
+{
+	if (*quote == 0)
+		*quote = line_char;
+	else if (*quote == line_char)
+		*quote = 0;
+}
+
 int	process_line(char *line, t_msh *msh, char ***parts)
 {
 	int		i;
 	int		j;
+	char	quote;
 
 	i = 0;
 	j = 0;
+	quote = 0;
 	while (line[i])
 	{
-		if (line[i] == '$')
+		if ((line[i] == '\'' || line[i] == '\"') && (!quote || quote == line[i]))
+			toggle_quote(&quote, line[i]);
+		if (line[i] == '$' && quote != '\'')
 		{
 			if (!append_literal(line, j, i, parts)
 				|| !process_expansion(line, &i, msh, parts))
