@@ -37,8 +37,9 @@ int	process_line(char *line, t_msh *msh, char ***parts)
 			toggle_quote(&quote, line[i]);
 		if (line[i] == '$' && quote != '\'')
 		{
-			if (!append_literal(line, j, i, parts)
-				|| !process_expansion(line, &i, msh, parts))
+			if (!append_literal(line, j, i, parts))
+				return (0);
+			if (!process_expansion(line, &i, msh, parts))
 				return (0);
 			j = i;
 		}
@@ -87,6 +88,7 @@ int	process_expansion(char *line, int *i, t_msh *msh, char ***parts)
 	{
 		if (!append_exit_status(msh, parts))
 			return (0);
+		(*i) += 2;
 	}
 	else if (line[*i + 1] && (ft_isalnum(line[*i + 1]) || line[*i + 1] == '_'))
 	{
