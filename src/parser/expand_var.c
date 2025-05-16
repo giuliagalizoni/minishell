@@ -61,11 +61,31 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
+{
+	char	*expanded;
+	char	*processed;
+	int		success;
+
+	if (ft_strchr(token, '$'))
+	{
+		expanded = expand_inline(token, msh);
+		if (!expanded)
+			return (perror("variable expansion failed"), 0);
+	}
+	else
+		expanded = token;
+	processed = remove_quotes(expanded);
+	if (!processed)
+		return (perror("remove_quotes failed"), 0);
+	success = safe_arr_push(new_tokens, processed);
+	return (success);
+}
+
 static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 {
 	size_t	len;
 	int		success;
-	char	*processed;
 
 	len = ft_strlen(token);
 	success = 1;
@@ -81,28 +101,7 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 			success = handle_unquoted_var(token, msh, new_tokens);
 	}
 	else
-	{
-		if (ft_strchr(token, '$'))
-		{
-			char **complex_tokens = ft_split(token, '\"');
-			int i = 0;
-			while (complex_tokens[i])
-			{
-				if (complex_tokens[i][0] == '$')
-					success = handle_unquoted_var(complex_tokens[i], msh, new_tokens);
-				else
-					success = safe_arr_push(new_tokens, complex_tokens[i]);
-				i++;
-			}
-		}
-		else
-		{
-			processed = remove_quotes(token);
-			if (!processed)
-				return (perror("remove_quotes failed"), 0);
-			success = safe_arr_push(new_tokens, processed);
-		}
-	}
+		success = handle_mixed_token(token, new_tokens, msh);
 	return (success);
 }
 
