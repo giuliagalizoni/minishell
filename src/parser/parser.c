@@ -11,13 +11,13 @@ static void	check_operators(t_command *command, char **tokens, int i)
 {
 	if (is_equal(tokens[i], "<<"))
 		command->is_heredoc = 1;
-	else if (is_equal(tokens[i], "<"))
-		command->is_heredoc = 0;
+	// else if (is_equal(tokens[i], "<"))
+	// 	command->is_heredoc = 0;
 	else if (i > 0 && is_equal(tokens[i - 1], "<"))
 		arr_push(&command->input_redirect, tokens[i]);
 	else if (i > 0 && is_equal(tokens[i - 1], "<<"))
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
-	else
+	else if (!is_equal(tokens[i], "<"))
 		arr_push(&command->arguments, tokens[i]);
 }
 
