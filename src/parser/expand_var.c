@@ -25,19 +25,22 @@ static int	retokenize(char ***new_tokens, char *value)
 	return (1);
 }
 
-static int	handle_single_quote(char *token, t_msh *msh, char ***new_tokens)
+static int	handle_single_quote(char *token, char ***new_tokens)
 {
 	char	*inner_content;
+	char	*processed;
 	int		success;
-	size_t	len;
 
 	success = 1;
-	len = ft_strlen(token);
-	inner_content = ft_substr(token, 1, len - 2);
+	inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
 	if (!inner_content)
 		return (perror("ft_substr failed removing quotes"), 0);
-	success = process_inner(inner_content, msh, new_tokens);
+	processed = remove_quotes(inner_content);
 	free(inner_content);
+	if (!processed)
+		return (perror("remove_quotes failed"), 0);
+	success = safe_arr_push(new_tokens, processed);
+	free(processed);
 	return (success);
 }
 
@@ -58,6 +61,27 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
+{
+	char	*expanded;
+	char	*processed;
+	int		success;
+
+	if (ft_strchr(token, '$'))
+	{
+		expanded = expand_inline(token, msh);
+		if (!expanded)
+			return (perror("variable expansion failed"), 0);
+	}
+	else
+		expanded = token;
+	processed = remove_quotes(expanded);
+	if (!processed)
+		return (perror("remove_quotes failed"), 0);
+	success = safe_arr_push(new_tokens, processed);
+	return (success);
+}
+
 static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 {
 	size_t	len;
@@ -66,9 +90,9 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 	len = ft_strlen(token);
 	success = 1;
 	if (len >= 2 && token[0] == '\'' && token[len -1] == '\'')
-		success = handle_single_quote(token, msh, new_tokens);
+		success = handle_single_quote(token, new_tokens);
 	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
-		success = handle_double_quote(token, new_tokens, len);
+		success = handle_double_quote(token, new_tokens, len, msh);
 	else if (token[0] == '$' && token[1] != '\0')
 	{
 		if (token[1] == '?')
@@ -77,7 +101,7 @@ static int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 			success = handle_unquoted_var(token, msh, new_tokens);
 	}
 	else
-		success = safe_arr_push(new_tokens, token);
+		success = handle_mixed_token(token, new_tokens, msh);
 	return (success);
 }
 
