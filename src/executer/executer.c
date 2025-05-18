@@ -65,15 +65,23 @@ void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
-	if (msh->command->is_heredoc)
+	if (msh->command->heredoc_is_final)
 	{
-		dup2(msh->command->heredoc_fd, STDIN_FILENO);
-		close(msh->command->heredoc_fd);
+		if (msh->command->is_heredoc && msh->command->heredoc_fd != -1)
+		{
+			if (dup2(msh->command->heredoc_fd, STDIN_FILENO) == -1)
+			{
+				perror("minishell: dup2 heredoc failed");
+				close(msh->command->heredoc_fd);
+				exit(EXIT_FAILURE);
+			}
+			close(msh->command->heredoc_fd);
+		}
 	}
+	else if (msh->command->input_redirect && msh->command->input_redirect[0] != NULL)
+		input_redirection(msh->command);
 	//TODO what to do with builtins?if i just move his code to process it
 	//hangs. Mayb just copy it to the builtin router?
-	if (msh->command->input_redirect)
-		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	if (is_builtin(msh->command->name))
