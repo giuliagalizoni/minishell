@@ -72,3 +72,23 @@ char	**myenv_to_envp(t_vars *myenv)
 	envp[i] = NULL;
 	return (envp);
 }
+
+int	safe_arr_push(char ***arr, const char *str)
+{
+	char	*copy;
+
+	copy = ft_strdup(str);
+	if (!copy)
+	{
+		perror("ft_strdup failed in safe_arr_push");
+		return (0);
+	}
+	if (!arr_push(arr, copy))
+	{
+		perror("arr_push failed in safe_arr_push");
+		free(copy);
+		return (0);
+	}
+	free(copy);
+	return (1);
+}

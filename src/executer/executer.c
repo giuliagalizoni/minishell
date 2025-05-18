@@ -61,13 +61,17 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 			exit_process(msh, "dup 2 fail for stdout redirection", EXIT_FAILURE);
 		close(fd[1]);
 	}
-	if (command->is_heredoc)
+	// ***	HEREDOC ***
+	if (command->heredoc_is_final)
 	{
-		if(dup2(command->heredoc_fd, STDIN_FILENO) == -1)
-			exit_process(msh, "dup 2 fail for heredoc redirection", EXIT_FAILURE);
-		close(command->heredoc_fd);
+		if (command->is_heredoc && command->heredoc_fd != -1)
+		{
+			if (dup2(command->heredoc_fd, STDIN_FILENO) == -1)
+				exit_process(msh, "dup 2 fail for heredoc redirection", EXIT_FAILURE);
+			close(command->heredoc_fd);
+		}
 	}
-	if (command->input_redirect)
+	else if (command->input_redirect && command->input_redirect[0] != NULL)
 		if (!input_redirection(command))
 			exit_process(msh, NULL, EXIT_FAILURE);
 	if (command->outfile)
@@ -75,7 +79,6 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 			exit_process(msh, NULL, EXIT_FAILURE);
 	if (is_builtin(command->name))
 		child_builtin(msh);
-	printf("we have exited you shouldnt be here\n");
 	if (!command->path)	
 	{
 		//TODO make it more robust so it can check folders and
