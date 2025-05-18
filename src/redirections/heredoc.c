@@ -14,7 +14,7 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	char	*expanded_line;
 
 	if (pipe(pipe_fd) == -1)
-		error(msh, "pipe error", 1);
+		error_cleanup(msh, "pipe error");
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
 	{
