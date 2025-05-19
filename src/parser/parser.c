@@ -88,11 +88,17 @@ t_command	*parser(char *line, t_msh *msh)
 		return (NULL);
 	}
 	retokens = expand_and_retokenize(tokens, msh);
+	if (!retokens)
+	{
+		free_arr((void **)tokens);
+		return (NULL);
+	}
 	msh->command = analyser(retokens, 0, msh);
 	free_arr((void **)tokens);
 	if (!msh->command)
 	{
 		free_arr((void **)retokens);
+		return (NULL);
 	}
 	free_arr((void **)retokens);
 	return (msh->command);

@@ -2,6 +2,8 @@
 
 static void	write_line(int	*pipe_fd, char *expanded_line)
 {
+	if (!expanded_line)
+		return;
 	write(pipe_fd[1], expanded_line, ft_strlen(expanded_line));
 	write(pipe_fd[1], "\n", 1);
 	free(expanded_line);
@@ -14,7 +16,10 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	char	*expanded_line;
 
 	if (pipe(pipe_fd) == -1)
+	{
 		error_cleanup(msh, "pipe error");
+		return (0);
+	}
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
 	{
@@ -22,12 +27,19 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 		if (!line || is_equal(line, command->heredoc_delimiter))
 		{
 			free(line);
-			break ;
+			break;
 		}
 		expanded_line = expand_inline(line, msh);
 		free(line);
 		if (expanded_line)
 			write_line(pipe_fd, expanded_line);
+		else
+		{
+			close(pipe_fd[1]);
+			close(pipe_fd[0]);
+			error_cleanup(msh, "variable expansion failed in heredoc");
+			return (0);
+		}
 	}
 	close(pipe_fd[1]);
 	return (1);
@@ -41,8 +53,10 @@ int	process_heredocs(t_msh *msh)
 	while (command)
 	{
 		if (command->is_heredoc)
+		{
 			if (!handle_heredoc(command, msh))
 				return (0);
+		}
 		command = command->pipe_next;
 	}
 	return (1);

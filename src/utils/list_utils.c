@@ -16,24 +16,42 @@ void	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 {
 	t_outfile	*outfile;
 	t_outfile	*tmp;
+	char		*filename;
 
 	(void)cmd;
 	outfile = malloc(sizeof(t_outfile));
 	if (outfile == NULL)
-		perror("Error allocating memory"); // TODO fix cleanup
+	{
+		perror("Error allocating memory for outfile");
+		return;
+	}
 	if (is_equal(tokens[*i], ">"))
 		outfile->is_append = 0;
 	else if (is_equal(tokens[*i], ">>"))
 		outfile->is_append = 1;
-	outfile->filename = ft_strdup(tokens[*i + 1]);
+	filename = ft_strdup(tokens[*i + 1]);
+	if (!filename)
+	{
+		free(outfile);
+		perror("Error duplicating filename");
+		return;
+	}
+	outfile->filename = filename;
 	outfile->next = NULL;
 	(*i)++;
 	if (!*outfiles)
 	{
 		*outfiles = outfile;
-		return ;
+		return;
 	}
 	tmp = filelast(*outfiles);
+	if (!tmp)
+	{
+		free(outfile->filename);
+		free(outfile);
+		perror("Error finding last outfile");
+		return;
+	}
 	tmp->next = outfile;
 }
 
@@ -58,7 +76,7 @@ void	sort_vars_list(t_vars *head)
 
 	last_ptr = NULL;
 	if (head == NULL || head->next == NULL)
-		return ;
+		return;
 	swapped = 1;
 	while (swapped)
 	{

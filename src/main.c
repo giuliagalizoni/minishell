@@ -6,6 +6,11 @@ static void	msh_init(t_msh *msh, char **envp)
 {
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
+	if (!msh->myenv)
+	{
+		error_cleanup(msh, "Failed to initialize environment");
+		exit(1);
+	}
 	msh->exit = 0;
 	msh->exit_status = 0;
 	using_history();
@@ -15,12 +20,19 @@ static void	msh_init(t_msh *msh, char **envp)
 static void	parse_and_execute(t_msh *msh, char *line)
 {
 	msh->command = parser(line, msh);
+	if (!msh->command)
+	{
+		msh->exit_status = 1;
+		return;
+	}
 	msh->num_cmds = count_commands(msh->command);
-	/*
-	if (!process(msh)) // TODO wrap in if success?
-		return ;
-		*/
-	process(msh);
+	if (!process(msh))
+	{
+		msh->exit_status = 1;
+		clear_command_chain(msh->command);
+		msh->command = NULL;
+		return;
+	}
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
@@ -33,9 +45,6 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	/*
-	 * TODO HANDLE ERROR init_envp - parse_var ->malloc
-	 */
 	msh_init(&msh, envp);
 	while (!msh.exit)
 	{
@@ -48,14 +57,10 @@ int	main(int argc, char **argv, char **envp)
 		g_signal_code = -1;
 		set_signals_child();
 		if (!line)
-			exit_shell(&msh); // TODO EXIT POINT
+			exit_shell(&msh);
 		if (ft_strlen(line) != 0)
-			/* TODO
-			 * handle mallocs in parser- get_cmd_path - init_pipe
-			 *
-			 */
 			parse_and_execute(&msh, line);
 		free(line);
 	}
-	return (exit_shell(&msh), 0); //TODO EXIT POINT
+	return (exit_shell(&msh), 0);
 }

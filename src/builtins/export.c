@@ -6,12 +6,26 @@ void	init_value(char **key, char **value, const char *arg, char *eq)
 	char	*content;
 
 	*key = ft_substr(arg, 0, eq - arg);
+	if (!*key)
+		return;
 	content = ft_strdup(eq + 1);
+	if (!content)
+	{
+		free(*key);
+		*key = NULL;
+		return;
+	}
 	if (content && (content[0] == '\'' || content[0] == '\"')
 		&& content[ft_strlen(content) - 1] == content[0])
 	{
 		temp = ft_substr(content, 1, ft_strlen(content) - 2);
 		free(content);
+		if (!temp)
+		{
+			free(*key);
+			*key = NULL;
+			return;
+		}
 		content = temp;
 	}
 	*value = content;
@@ -28,13 +42,20 @@ t_vars	*parse_var(const char *arg)
 	if (!eq)
 	{
 		key = ft_strdup(arg);
+		if (!key)
+			return (NULL);
 		value = NULL;
 	}
 	else
 		init_value(&key, &value, arg, eq);
+	if (!key)
+		return (NULL);
 	if (validate_key(key))
 	{
 		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
+		free(key);
+		if (value)
+			free(value);
 		return (NULL);
 	}
 	new_var = malloc(sizeof(t_vars));
@@ -63,11 +84,13 @@ t_vars	*init_envp(char **envp)
 	}
 	return (head);
 }
-// TODO: Check ft_strdup results
+
 void	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
 	t_vars	*new_var;
+	char	*new_key;
+	char	*new_value;
 
 	current = *head;
 	while (current)
@@ -76,19 +99,41 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 		{
 			free(current->value);
 			if (value)
-				current->value = ft_strdup(value);
+			{
+				new_value = ft_strdup(value);
+				if (!new_value)
+					return;
+				current->value = new_value;
+			}
 			else
 				current->value = NULL;
-			return ;
+			return;
 		}
 		current = current->next;
 	}
 	new_var = malloc(sizeof(t_vars));
-	new_var->key = ft_strdup(key);
+	if (!new_var)
+		return;
+	new_key = ft_strdup(key);
+	if (!new_key)
+	{
+		free(new_var);
+		return;
+	}
 	if (value)
-		new_var->value = ft_strdup(value);
+	{
+		new_value = ft_strdup(value);
+		if (!new_value)
+		{
+			free(new_key);
+			free(new_var);
+			return;
+		}
+	}
 	else
-		new_var->value = NULL;
+		new_value = NULL;
+	new_var->key = new_key;
+	new_var->value = new_value;
 	new_var->next = NULL;
 	push_list(head, new_var);
 }
