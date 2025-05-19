@@ -7,17 +7,14 @@ static void	write_line(int	*pipe_fd, char *expanded_line)
 	free(expanded_line);
 }
 
-void	handle_heredoc(t_command *command, t_msh *msh)
+int	handle_heredoc(t_command *command, t_msh *msh)
 {
 	int		pipe_fd[2];
 	char	*line;
 	char	*expanded_line;
 
 	if (pipe(pipe_fd) == -1)
-	{
-		perror("pipe error");
-		exit(EXIT_FAILURE); // TODO handle exit status
-	}
+		error_cleanup(msh, "pipe error");
 	command->heredoc_fd = pipe_fd[0];
 	while (1)
 	{
@@ -33,9 +30,10 @@ void	handle_heredoc(t_command *command, t_msh *msh)
 			write_line(pipe_fd, expanded_line);
 	}
 	close(pipe_fd[1]);
+	return (1);
 }
 
-void	process_heredocs(t_msh *msh)
+int	process_heredocs(t_msh *msh)
 {
 	t_command	*command;
 
@@ -43,7 +41,9 @@ void	process_heredocs(t_msh *msh)
 	while (command)
 	{
 		if (command->is_heredoc)
-			handle_heredoc(command, msh);
+			if (!handle_heredoc(command, msh))
+				return (0);
 		command = command->pipe_next;
 	}
+	return (1);
 }

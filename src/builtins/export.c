@@ -57,13 +57,18 @@ t_vars	*init_envp(char **envp)
 	while (envp[i])
 	{
 		new_var = parse_var(envp[i]);
-		if (new_var)
-			push_list(&head, new_var);
+		if (!new_var)
+		{
+			clean_myenv(head);
+			return (NULL);
+		}
+		push_list(&head, new_var);
 		i++;
 	}
 	return (head);
 }
-// TODO: Check ft_strdup results
+
+// TODO: Check ft_strdup results more thoroughly, especially for new_var->key and consider returning status for critical failures.
 void	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
@@ -74,19 +79,41 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	{
 		if (is_equal(current->key, key))
 		{
-			free(current->value);
+			free(current->value); // Free existing value
 			if (value)
+			{
 				current->value = ft_strdup(value);
+				// If ft_strdup fails for value, current->value will be NULL.
+				// This is consistent with 'value' being explicitly NULL.
+				// If this is critical (e.g., value was non-NULL but ft_strdup failed),
+				// this function would need to return a status to indicate the error.
+			}
 			else
 				current->value = NULL;
-			return ;
+			return ; // Variable updated (or value set/cleared)
 		}
 		current = current->next;
 	}
+	// Variable not found, add a new one.
 	new_var = malloc(sizeof(t_vars));
+	if (!new_var)
+	{
+		perror("minishell: malloc failed for new_var in add_or_update_var");
+		return ; // Cannot add variable if struct allocation fails.
+	}
 	new_var->key = ft_strdup(key);
+	if (!new_var->key)
+	{
+		perror("minishell: ft_strdup failed for new_var->key in add_or_update_var");
+		free(new_var); // Free the allocated t_vars struct before returning.
+		return ; // Cannot add variable without a key.
+	}
 	if (value)
+	{
 		new_var->value = ft_strdup(value);
+		// If ft_strdup fails for value, new_var->value will be NULL.
+		// This is consistent with 'value' being explicitly NULL.
+	}
 	else
 		new_var->value = NULL;
 	new_var->next = NULL;

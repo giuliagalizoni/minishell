@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-void	input_redirection(t_command *command)
+int	input_redirection(t_command *command)
 {
 	int	i;
 	int	file;
@@ -10,14 +10,23 @@ void	input_redirection(t_command *command)
 	{
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
-		dup2(file, 0);
+		{
+			perror("Bad file descriptor");
+			return (0);
+	        }
+		if (dup2(file, STDIN_FILENO == -1))
+		{
+			perror("dup2 fail");
+			close(file);
+			return (0);
+		}
 		close(file);
 		i++;
 	}
+	return (1);
 }
 
-void	output_redirection(t_outfile *outfile)
+int	output_redirection(t_outfile *outfile)
 {
 	int	file;
 
@@ -28,9 +37,18 @@ void	output_redirection(t_outfile *outfile)
 		else
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
-			perror("Bad file descriptor");// cleanup routine here
-		dup2(file, 1);
+		{
+			perror("Bad file descriptor");
+			return (0);
+		}
+		if (dup2(file, 1) == -1)
+		{
+			perror("dup2 failed");
+			close(file);
+			return (0);
+		}
 		close(file);
 		outfile = outfile->next;
 	}
+	return (1);
 }

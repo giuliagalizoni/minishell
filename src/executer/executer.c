@@ -19,7 +19,7 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 		msh->exit_status = 128 + WTERMSIG(status);
 	else
 	{
-		perror("Error: failed to get status for the last command");
+		error_cleanup(msh, "failed to get status for the last command");
 		msh->exit_status = -1;
 	}
 	(void)waited_pid;
@@ -32,74 +32,103 @@ int	single_parent_process(t_msh *msh)
 	int	status;
 
 	saved_stdout_fd = dup(STDOUT_FILENO);
+	if (saved_stdout_fd < 0)
+	{
+		perror("minishell: dup failed for saved_stdout_fd");
+		return (EXIT_FAILURE); // Or an appropriate error status
+	}
 	saved_stdin_fd = dup(STDIN_FILENO);
+	if (saved_stdin_fd < 0)
+	{
+		perror("minishell: dup failed for saved_stdin_fd");
+		close(saved_stdout_fd); // Clean up the successfully duped fd
+		return (EXIT_FAILURE); // Or an appropriate error status
+	}
+
+	// TODO need some error checking somewhere? -> dup calls checked above.
 	if (msh->command->input_redirect)
 		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
-	dup2(saved_stdin_fd, STDIN_FILENO);
-	dup2(saved_stdout_fd, STDOUT_FILENO);
+
+	// Restore stdin and stdout
+	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0)
+	{
+		perror("minishell: dup2 failed to restore stdin");
+		// Attempt to restore stdout anyway, then record error
+		dup2(saved_stdout_fd, STDOUT_FILENO); // Best effort
+		status = EXIT_FAILURE; // Ensure exit status reflects the error
+	}
+	close(saved_stdin_fd);
+	if (dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
+	{
+		perror("minishell: dup2 failed to restore stdout");
+		status = EXIT_FAILURE; // Ensure exit status reflects the error
+	}
+	close(saved_stdout_fd);
 	return (status);
 }
 
-void	child_process(t_msh *msh, int prev_pipe_read_fd, int *fd)
+void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd)
 {
+	char **envp;
+
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-		{
-			perror("dup2 fail for stdin redirection");
-			exit(EXIT_FAILURE);
-		}
+			exit_process(msh, "dup 2 fail for stdin redirection", EXIT_FAILURE);
 		close(prev_pipe_read_fd);
 	}
-	if (msh->command->index < msh->num_cmds - 1)
+	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2 failed for stdout redirection");
-			exit(EXIT_FAILURE);
-		}
+			exit_process(msh, "dup 2 fail for stdout redirection", EXIT_FAILURE);
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
-	if (msh->command->heredoc_is_final)
+	if (command->heredoc_is_final)
 	{
-		if (msh->command->is_heredoc && msh->command->heredoc_fd != -1)
+		if (command->is_heredoc && command->heredoc_fd != -1)
 		{
-			if (dup2(msh->command->heredoc_fd, STDIN_FILENO) == -1)
-			{
-				perror("minishell: dup2 heredoc failed");
-				close(msh->command->heredoc_fd);
-				exit(EXIT_FAILURE);
-			}
-			close(msh->command->heredoc_fd);
+			if (dup2(command->heredoc_fd, STDIN_FILENO) == -1)
+				exit_process(msh, "dup 2 fail for heredoc redirection", EXIT_FAILURE);
+			close(command->heredoc_fd);
 		}
 	}
-	else if (msh->command->input_redirect && msh->command->input_redirect[0] != NULL)
-		input_redirection(msh->command);
-	//TODO what to do with builtins?if i just move his code to process it
-	//hangs. Mayb just copy it to the builtin router?
-	if (msh->command->outfile)
-		output_redirection(msh->command->outfile);
-	if (is_builtin(msh->command->name))
+	else if (command->input_redirect && command->input_redirect[0] != NULL)
+		if (!input_redirection(command))
+			exit_process(msh, NULL, EXIT_FAILURE);
+	if (command->outfile)
+		if (!output_redirection(command->outfile))
+			exit_process(msh, NULL, EXIT_FAILURE);
+	if (is_builtin(command->name))
 		child_builtin(msh);
+	if (!command->path)	
+	{
+		//TODO make it more robust so it can check folders and
+		//permissions?
+		exit_process(msh, NULL, EXIT_FAILURE);
+	}
 	else
 	{
-		execve(msh->command->path, msh->command->arguments, NULL);
-		perror("command not found");
-		clear_command_chain(msh->command);
-		exit(127);
+		envp = myenv_to_envp(msh->myenv);
+		if (execve(command->path, command->arguments, envp) == -1)
+		{
+			//TODO stuck here
+			free_arr((void **)envp);
+			exit_process(msh, "command not found", 127);
+		}
+		exit(EXIT_SUCCESS);
 	}
 }
 
-void	parent_process(t_msh *msh, int *fd, int *prev_pipe_read_fd)
+void	parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd)
 {
 	if (*prev_pipe_read_fd != STDIN_FILENO)
 		close(*prev_pipe_read_fd);
-	if (msh->command->index < msh->num_cmds - 1)
+	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[1]);
 		*prev_pipe_read_fd = fd[0];
@@ -112,42 +141,66 @@ int	process(t_msh *msh)
 	int			status;
 	int			prev_pipe_read_fd;
 	pid_t		pid;
-	t_command	*first_command;
+	t_command	*command;
 
-	process_heredocs(msh);
+	// If there's no command (e.g., empty line or parsing error), return 0.
+	if (!msh->command)
+	 // TODO maybe set exit status?
+		return (0);
+
+	if (!process_heredocs(msh))
+		return (0);
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 		return (single_parent_process(msh));
 	status = 0;
-	first_command = msh->command;
+	command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
-	if (pipe(fd) == -1)
-		perror("pipe fail");
-	while (msh->command)
+	// Initialize fd outside the loop for the first pipe, and for closing if loop doesn't run.
+	// However, pipe(fd) is best inside the loop if it's per-pipe segment.
+	// For now, the existing single fd array is used and repiped.
+
+	while (command)
 	{
-		if (msh->command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
+		if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
-				perror("pipe fail");
-				exit(EXIT_FAILURE);
+				perror("minishell: pipe failed");
+				msh->exit_status = EXIT_FAILURE; // Set exit status
+				if (prev_pipe_read_fd != STDIN_FILENO)
+					close(prev_pipe_read_fd); // Close previous read end if not stdin
+				break; // Exit the loop, proceed to wait_for_children and return
 			}
 		}
 		pid = fork();
-		msh->command->pid = pid;
+		command->pid = pid;
 		if (pid == -1)
 		{
-			perror("fork fail");
-			//some cleanup, close fds, free pids
+			perror("minishell: fork failed");
+			msh->exit_status = EXIT_FAILURE; // Set exit status
+			if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1) // If pipe was created for this command
+			{
+				close(fd[0]);
+				close(fd[1]);
+			}
+			if (prev_pipe_read_fd != STDIN_FILENO)
+				close(prev_pipe_read_fd); // Close previous read end if not stdin
+			break; // Exit the loop
 		}
 		else if (pid == 0)
-			child_process(msh, prev_pipe_read_fd, fd);
+			child_process(msh, command, prev_pipe_read_fd, fd);
 		else
-			parent_process(msh, fd, &prev_pipe_read_fd);
-		msh->command = msh->command->pipe_next;
+			parent_process(msh, command, fd, &prev_pipe_read_fd);
+		command = command->pipe_next;
 	}
-	msh->command = first_command;
-	wait_for_children(msh, first_command);
-	close(fd[0]);
-	close(fd[1]);
-	return (status);
+	// After the loop, prev_pipe_read_fd may hold the read end of the last pipe.
+	// It should be closed by the main shell process if it wasn't stdin.
+	if (prev_pipe_read_fd != STDIN_FILENO)
+		close(prev_pipe_read_fd);
+
+	wait_for_children(msh, msh->command);
+	// The individual pipe FDs (fd[0], fd[1]) should have been managed (closed or passed on)
+	// by child_process and parent_process within the loop.
+	// Removing the general close(fd[0]); close(fd[1]); here.
+	return (status); // msh->exit_status holds the more important status
 }
