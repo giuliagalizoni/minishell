@@ -9,8 +9,8 @@ import difflib
 
 # --- Configuration ---
 MINISHELL_EXECUTABLE = '../minishell'  # Replace with the actual path to your compiled minishell
-#SHELL_PROMPT = "🐚\033[38;5;199mconchinha\033[38;5;99m>\033[0m "          # The exact prompt your shell displays
-SHELL_PROMPT = "minishell> "          # The exact prompt your shell displays
+SHELL_PROMPT = "🐚\033[38;5;199mconchinha\033[38;5;99m>\033[0m "          # The exact prompt your shell displays
+#SHELL_PROMPT = "minishell> "          # The exact prompt your shell displays
 TIMEOUT_SECONDS = 2                   # How long to wait for output (increased slightly)
 GET_EXIT_CODE_COMMAND = 'echo $?'     # Command to get the last exit code in your minishell (like bash's $?)
                                       # !! IMPORTANT: Change this if your shell uses a different mechanism !!
@@ -147,9 +147,6 @@ def run_minishell_command(process, command, get_exit_code=True):
         tuple: (stdout_str, stderr_str, exit_code_int or None)
                Exit code is None if not retrieved or parsing fails.
     """
-    # Clear any previous output before sending command
-    # read_shell_output(process, timeout=0.1) # Short timeout to clear buffer
-
     # Send the main command
     try:
         process.stdin.write(f"{command}\n".encode('utf-8'))
@@ -162,17 +159,16 @@ def run_minishell_command(process, command, get_exit_code=True):
     stdout, stderr = read_shell_output(process)
 
     # --- Clean the output ---
-    # Remove the prompt itself from the end of stdout
-    if stdout.endswith(SHELL_PROMPT):
-        stdout_cleaned = stdout[:-len(SHELL_PROMPT)].rstrip()
+    # For redirection commands, we don't expect any stdout output
+    if '>' in command or '>>' in command:
+        stdout_cleaned = ""
     else:
-        # Handle cases where prompt might be missing (e.g., after exit)
-        # Or if the command output itself ends with the prompt string by chance
-        # This part might need refinement based on shell behavior
-        stdout_cleaned = stdout.rstrip()
-        if stdout_cleaned.endswith(SHELL_PROMPT.rstrip()): # Check without trailing space if prompt has one
-             stdout_cleaned = stdout_cleaned[:-len(SHELL_PROMPT.rstrip())].rstrip()
-
+        # Remove the command and prompt from the output
+        if stdout.startswith(command):
+            stdout = stdout[len(command):]
+        if stdout.endswith(SHELL_PROMPT):
+            stdout = stdout[:-len(SHELL_PROMPT)]
+        stdout_cleaned = stdout.strip()
 
     # --- Get Exit Code (if requested) ---
     exit_code = None
@@ -182,10 +178,12 @@ def run_minishell_command(process, command, get_exit_code=True):
             process.stdin.flush()
             ec_stdout, ec_stderr = read_shell_output(process)
 
-            # The exit code should be the first line of ec_stdout, before the next prompt
-            ec_stdout_cleaned = ec_stdout
-            if ec_stdout_cleaned.endswith(SHELL_PROMPT):
-                 ec_stdout_cleaned = ec_stdout_cleaned[:-len(SHELL_PROMPT)].rstrip()
+            # Clean exit code output
+            if ec_stdout.startswith(GET_EXIT_CODE_COMMAND):
+                ec_stdout = ec_stdout[len(GET_EXIT_CODE_COMMAND):]
+            if ec_stdout.endswith(SHELL_PROMPT):
+                ec_stdout = ec_stdout[:-len(SHELL_PROMPT)]
+            ec_stdout_cleaned = ec_stdout.strip()
 
             # Extract the number
             try:
@@ -194,12 +192,11 @@ def run_minishell_command(process, command, get_exit_code=True):
                 if potential_codes:
                     exit_code = potential_codes[-1]
                 else:
-                     print(f"Warning: Could not parse exit code from output: '{ec_stdout_cleaned}'")
+                    print(f"Warning: Could not parse exit code from output: '{ec_stdout_cleaned}'")
             except ValueError:
                 print(f"Warning: Could not parse exit code from output: '{ec_stdout_cleaned}'")
             except Exception as e:
-                 print(f"Warning: Error parsing exit code: {e}")
-
+                print(f"Warning: Error parsing exit code: {e}")
 
             # Append stderr from exit code command (if any) to main stderr
             if ec_stderr:
@@ -478,59 +475,94 @@ def run_comparison_test(test_description, command,
 
 # --- Run Tests ---
 if __name__ == "__main__":
-    """
-    process = subprocess.Popen(
-            "/home/marcampo/projects/minishell/minishell",
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            bufsize=0)
-
-    initial_stdout, initial_stderr = read_shell_output(process, timeout=TIMEOUT_SECONDS + 1) # Longer timeout for startup
-    if SHELL_PROMPT not in initial_stdout:
-        print(f"FAIL: Minishell initial prompt '{SHELL_PROMPT}' not found.")
-        print(f"Initial stdout: {initial_stdout}")
-        print(f"Initial stderr: {initial_stderr}")
-
-
-    ms_stdout, ms_stderr, ms_exit_code = run_minishell_command(process, "echo\
-    poooop")
-    print(f"Minishell -> exit={ms_exit_code}, stdout='{ms_stdout[:100]}...', stderr='{ms_stderr[:100]}...'")
-    """
     if not BASH_PATH:
         print("FATAL: Cannot run tests without bash. Please install bash or check PATH.")
         exit(1)
 
     test_results = {} # Use dict for named results
 
-    # === Basic Commands ===
-    test_results["echo"] = run_comparison_test(
+    # === Basic Echo Tests ===
+    test_results["echo_simple"] = run_comparison_test(
         "Simple Echo", "echo hello world", expect_exact_stdout=True
     )
+    test_results["echo_empty"] = run_comparison_test(
+        "Empty Echo", "echo", expect_exact_stdout=True
+    )
+    test_results["echo_multiple_spaces"] = run_comparison_test(
+        "Echo with Multiple Spaces", "echo 'hello    world'", expect_exact_stdout=True
+    )
+    test_results["echo_special_chars"] = run_comparison_test(
+        "Echo with Special Characters", "echo 'hello\nworld\t!'", expect_exact_stdout=True
+    )
+    test_results["echo_quotes"] = run_comparison_test(
+        "Echo with Quotes", "echo \"hello 'world'\"", expect_exact_stdout=True
+    )
+
+    # === Basic Command Tests ===
     test_results["pwd"] = run_comparison_test(
-        "PWD Command", "pwd", expect_exact_stdout=True # PWD output should be exact
+        "PWD Command", "pwd", expect_exact_stdout=True
     )
     test_results["cmd_not_found"] = run_comparison_test(
-        "Command Not Found", "a_very_unlikely_command_name_xyz", ignore_stderr=False # Error messages might differ slightly
+        "Command Not Found", "a_very_unlikely_command_name_xyz", ignore_stderr=False
     )
     test_results["exit_code_success"] = run_comparison_test(
         "Successful Command Exit Code", "echo success", expect_exact_stdout=True
     )
     test_results["exit_code_failure"] = run_comparison_test(
-        "Failing Command Exit Code", "ls non_existent_file_abc", ignore_stderr=False # Check stderr for failure reason
+        "Failing Command Exit Code", "ls non_existent_file_abc", ignore_stderr=False
     )
 
-    # === Pipe Tests ===
+    # === Pipe Tests - Simple ===
     test_results["pipe_simple"] = run_comparison_test(
-        "Simple Pipe", "echo 'one\\ntwo\\nthree' | grep two", expect_exact_stdout=True
+        "Simple Pipe", "echo 'one\ntwo\nthree' | grep two", expect_exact_stdout=True
     )
-    test_results["pipe_multiple"] = run_comparison_test(
-        "Multiple Pipes", "echo 'apple\\nbanana\\n apricot' | grep a | sort", expect_exact_stdout=True
+    test_results["pipe_empty"] = run_comparison_test(
+        "Empty Pipe", "echo '' | cat", expect_exact_stdout=True
     )
-    test_results["pipe_stderr"] = run_comparison_test(
-        "Pipe with Stderr", "ls non_existent_file_def | wc -l", expect_exact_stdout=True, ignore_stderr=False
+    test_results["pipe_special_chars"] = run_comparison_test(
+        "Pipe with Special Characters", "echo 'hello\nworld' | tr '\n' ' '", expect_exact_stdout=True
     )
 
+    # === Pipe Tests - Multiple ===
+    test_results["pipe_double"] = run_comparison_test(
+        "Double Pipe", "echo 'apple\nbanana\ncherry' | grep a | sort", expect_exact_stdout=True
+    )
+    test_results["pipe_triple"] = run_comparison_test(
+        "Triple Pipe", "echo '1\n2\n3\n4\n5' | grep '[24]' | sort -r | tr '\n' ' '", expect_exact_stdout=True
+    )
+    test_results["pipe_with_wc"] = run_comparison_test(
+        "Pipe with Word Count", "echo 'one\ntwo\nthree' | wc -l", expect_exact_stdout=True
+    )
+
+    # === Pipe Tests - Error Cases ===
+    test_results["pipe_first_fail"] = run_comparison_test(
+        "Pipe with First Command Failing", "ls nonexistent | cat", expect_exact_stdout=True, ignore_stderr=False
+    )
+    test_results["pipe_middle_fail"] = run_comparison_test(
+        "Pipe with Middle Command Failing", "echo 'test' | nonexistent | cat", expect_exact_stdout=True, ignore_stderr=False
+    )
+    test_results["pipe_last_fail"] = run_comparison_test(
+        "Pipe with Last Command Failing", "echo 'test' | cat nonexistent", expect_exact_stdout=True, ignore_stderr=False
+    )
+
+    # === Pipe Tests - Complex ===
+    test_results["pipe_with_grep"] = run_comparison_test(
+        "Pipe with Grep", "echo 'apple\nbanana\ncherry\ndate' | grep 'a' | sort -r", expect_exact_stdout=True
+    )
+    test_results["pipe_with_sed"] = run_comparison_test(
+        "Pipe with Sed", "echo 'hello world' | sed 's/world/earth/'", expect_exact_stdout=True
+    )
+    test_results["pipe_with_awk"] = run_comparison_test(
+        "Pipe with Awk", "echo '1 2 3\n4 5 6' | awk '{print $2}'", expect_exact_stdout=True
+    )
+
+    # === Pipe Tests - Long Output ===
+    test_results["pipe_long_output"] = run_comparison_test(
+        "Pipe with Long Output", "seq 1 100 | grep '5' | sort -r", expect_exact_stdout=True
+    )
+    test_results["pipe_multiple_lines"] = run_comparison_test(
+        "Pipe with Multiple Lines", "printf '%s\n' {1..10} | grep '[2468]' | sort -r", expect_exact_stdout=True
+    )
 
     # === Output Redirection Tests ===
     test_results["redir_out_overwrite"] = run_comparison_test(
