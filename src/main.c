@@ -6,6 +6,11 @@ static void	msh_init(t_msh *msh, char **envp)
 {
 	msh->command = NULL;
 	msh->myenv = init_envp(envp);
+	if (!msh->myenv)
+	{
+		ft_putstr_fd("Error: Failer to initialize environment\n", 2);
+		exit(EXIT_FAILURE);
+	}
 	msh->exit = 0;
 	msh->exit_status = 0;
 	using_history();

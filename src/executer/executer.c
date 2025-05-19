@@ -31,16 +31,42 @@ int	single_parent_process(t_msh *msh)
 	int	saved_stdin_fd;
 	int	status;
 
-	// TODO need some error checking somewhere?
 	saved_stdout_fd = dup(STDOUT_FILENO);
+	if (saved_stdout_fd < 0)
+	{
+		perror("minishell: dup failed for saved_stdout_fd");
+		return (EXIT_FAILURE); // Or an appropriate error status
+	}
 	saved_stdin_fd = dup(STDIN_FILENO);
+	if (saved_stdin_fd < 0)
+	{
+		perror("minishell: dup failed for saved_stdin_fd");
+		close(saved_stdout_fd); // Clean up the successfully duped fd
+		return (EXIT_FAILURE); // Or an appropriate error status
+	}
+
+	// TODO need some error checking somewhere? -> dup calls checked above.
 	if (msh->command->input_redirect)
 		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh);
-	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0 || dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
-		exit_process(msh, "dup2 failed", -1);
+
+	// Restore stdin and stdout
+	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0)
+	{
+		perror("minishell: dup2 failed to restore stdin");
+		// Attempt to restore stdout anyway, then record error
+		dup2(saved_stdout_fd, STDOUT_FILENO); // Best effort
+		status = EXIT_FAILURE; // Ensure exit status reflects the error
+	}
+	close(saved_stdin_fd);
+	if (dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
+	{
+		perror("minishell: dup2 failed to restore stdout");
+		status = EXIT_FAILURE; // Ensure exit status reflects the error
+	}
+	close(saved_stdout_fd);
 	return (status);
 }
 
@@ -116,10 +142,11 @@ int	process(t_msh *msh)
 	int			prev_pipe_read_fd;
 	pid_t		pid;
 	t_command	*command;
-	/* TODO ERROR HANDLING
-	 *
-	 * process_heredoc fds
-	 */
+
+	// If there's no command (e.g., empty line or parsing error), return 0.
+	if (!msh->command)
+	 // TODO maybe set exit status?
+		return (0);
 
 	if (!process_heredocs(msh))
 		return (0);
@@ -128,27 +155,37 @@ int	process(t_msh *msh)
 	status = 0;
 	command = msh->command;
 	prev_pipe_read_fd = STDIN_FILENO;
-	if (pipe(fd) == -1)
-		perror("pipe fail"); // TODO error handling
+	// Initialize fd outside the loop for the first pipe, and for closing if loop doesn't run.
+	// However, pipe(fd) is best inside the loop if it's per-pipe segment.
+	// For now, the existing single fd array is used and repiped.
+
 	while (command)
 	{
 		if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
 		{
 			if (pipe(fd) == -1)
 			{
-				//TODO cleanup cmd chain, print error, set exit
-				// return 0 or 1 or whatever
-				perror("pipe fail");
-				exit(EXIT_FAILURE);
+				perror("minishell: pipe failed");
+				msh->exit_status = EXIT_FAILURE; // Set exit status
+				if (prev_pipe_read_fd != STDIN_FILENO)
+					close(prev_pipe_read_fd); // Close previous read end if not stdin
+				break; // Exit the loop, proceed to wait_for_children and return
 			}
 		}
 		pid = fork();
 		command->pid = pid;
 		if (pid == -1)
 		{
-			//TODO cleanup cmd chain, print error, set exit
-			// return 0 or 1 or whatev
-			perror("fork fail");
+			perror("minishell: fork failed");
+			msh->exit_status = EXIT_FAILURE; // Set exit status
+			if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1) // If pipe was created for this command
+			{
+				close(fd[0]);
+				close(fd[1]);
+			}
+			if (prev_pipe_read_fd != STDIN_FILENO)
+				close(prev_pipe_read_fd); // Close previous read end if not stdin
+			break; // Exit the loop
 		}
 		else if (pid == 0)
 			child_process(msh, command, prev_pipe_read_fd, fd);
@@ -156,8 +193,14 @@ int	process(t_msh *msh)
 			parent_process(msh, command, fd, &prev_pipe_read_fd);
 		command = command->pipe_next;
 	}
+	// After the loop, prev_pipe_read_fd may hold the read end of the last pipe.
+	// It should be closed by the main shell process if it wasn't stdin.
+	if (prev_pipe_read_fd != STDIN_FILENO)
+		close(prev_pipe_read_fd);
+
 	wait_for_children(msh, msh->command);
-	close(fd[0]);
-	close(fd[1]);
-	return (status);
+	// The individual pipe FDs (fd[0], fd[1]) should have been managed (closed or passed on)
+	// by child_process and parent_process within the loop.
+	// Removing the general close(fd[0]); close(fd[1]); here.
+	return (status); // msh->exit_status holds the more important status
 }

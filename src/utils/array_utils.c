@@ -27,7 +27,10 @@ char	**arr_push(char ***arr, char *str)
 		len++;
 	new_arr = (char **)malloc(sizeof(char *) * (len + 2));
 	if (!new_arr)
+	{
+		perror("malloc failed in arr_push for new_arr");
 		return (NULL);
+	}
 	i = 0;
 	while (i < len)
 	{
@@ -36,7 +39,10 @@ char	**arr_push(char ***arr, char *str)
 	}
 	new_arr[i] = ft_strdup(str);
 	if (!new_arr[i])
+	{
+		perror("ft_strdup failed in arr_push");
 		return (free_arr((void **)new_arr), new_arr = NULL, NULL);
+	}
 	new_arr[i + 1] = NULL;
 	if (*arr)
 		free(*arr);

@@ -103,7 +103,7 @@ void		cleanup(t_msh *msh);
 void		clean_myenv(t_vars *myenv);
 
 //list_utils
-void		add_outfile(t_command *cmd, char **tokens,
+int		add_outfile(t_command *cmd, char **tokens,
 				t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
 
