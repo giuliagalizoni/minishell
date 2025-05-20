@@ -57,14 +57,32 @@ t_vars	*init_envp(char **envp)
 	while (envp[i])
 	{
 		new_var = parse_var(envp[i]);
-		if (new_var)
-			push_list(&head, new_var);
+		if (!new_var)
+		{
+			clean_myenv(head);
+			return (NULL);
+		}
+		push_list(&head, new_var);
 		i++;
 	}
 	return (head);
 }
-// TODO: Check ft_strdup results
-void	add_or_update_var(t_vars **head, char *key, char *value)
+
+static int	update_var_value(t_vars *var, const char *value)
+{
+	free(var->value);
+	if (value)
+	{
+		var->value = ft_strdup(value);
+		if (!var->value)
+		return (0);
+	}
+	else
+		var->value = NULL;
+	return (1);
+}
+
+int	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
 	t_vars	*new_var;
@@ -73,27 +91,27 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	while (current)
 	{
 		if (is_equal(current->key, key))
-		{
-			free(current->value);
-			if (value)
-				current->value = ft_strdup(value);
-			else
-				current->value = NULL;
-			return ;
-		}
+			return update_var_value(current, value);
 		current = current->next;
 	}
 	new_var = malloc(sizeof(t_vars));
+	if (!new_var)
+		return return_error("minishell: malloc failed for new_var in add_or_update_var");
 	new_var->key = ft_strdup(key);
+	if (!new_var->key)
+	{
+		free(new_var);
+		return return_error("minishell: ft_strdup failed for new_var->key in add_or_update_var");
+	}
 	if (value)
 		new_var->value = ft_strdup(value);
 	else
 		new_var->value = NULL;
 	new_var->next = NULL;
-	push_list(head, new_var);
+	return (push_list(head, new_var), 1);
 }
 
-void	export(t_msh *msh)
+int	export(t_msh *msh)
 {
 	int		i;
 	t_vars	*new_var;
@@ -102,7 +120,7 @@ void	export(t_msh *msh)
 	{
 		sort_vars_list(msh->myenv);
 		print_vars(msh->myenv);
-		return ;
+		return (0);
 	}
 	i = 1;
 	while (msh->command->arguments[i])
@@ -110,11 +128,13 @@ void	export(t_msh *msh)
 		new_var = parse_var(msh->command->arguments[i]);
 		if (new_var)
 		{
-			add_or_update_var(&msh->myenv, new_var->key, new_var->value);
+			if (!add_or_update_var(&msh->myenv, new_var->key, new_var->value))
+				return (EXIT_FAILURE);
 			free(new_var->key);
 			free(new_var->value);
 			free(new_var);
 		}
 		i++;
 	}
+	return 0;
 }

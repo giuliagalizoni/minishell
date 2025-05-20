@@ -8,6 +8,7 @@ void	command_init(t_command *command)
 	command->is_heredoc = 0;
 	command->heredoc_delimiter = NULL;
 	command->heredoc_fd = -1;
+	command->heredoc_is_final = 0;
 	command->outfile = NULL;
 	command->is_pipe = 0;
 	command->pipe_next = NULL;

@@ -20,6 +20,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   parser/lexer.c\
 	   parser/check_syntax.c\
 	   parser/expand_var.c\
+	   parser/expand_inline.c\
 	   executer/executer.c\
 	   utils/array_utils.c\
 	   utils/command_utils.c\
@@ -31,6 +32,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   utils/expand_var_utils.c\
 	   utils/export_utils.c\
 	   utils/lexer_utils.c\
+	   utils/error_utils.c\
 	   builtins/exit.c\
 	   builtins/echo.c\
 	   builtins/export.c\
@@ -40,7 +42,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   builtins/unset.c\
 	   redirections/redirection.c\
 	   redirections/heredoc.c\
-	   utils/heredoc_utils.c\
+	   utils/expand_inline_utils.c\
 	   tests.c)
 
 SRCFILES := $(MODULES)

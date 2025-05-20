@@ -59,3 +59,15 @@ int	p_syntax_error(char *token)
 	write(2, sufix, ft_strlen(sufix));
 	return (0);
 }
+
+char	*ft_triplestrjoin(char *str1, char *str2, char *str3)
+{
+	char	*str1_2;
+	char	*str1_2_3;
+
+	str1_2 = ft_strjoin(str1, str2);
+	str1_2_3 = ft_strjoin(str1_2, str3);
+	free(str1_2);
+	str1_2 = NULL;
+	return (str1_2_3);
+}

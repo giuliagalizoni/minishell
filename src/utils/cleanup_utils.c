@@ -15,3 +15,10 @@ void	clean_myenv(t_vars *myenv)
 		myenv = tmp;
 	}
 }
+
+void	cleanup(t_msh *msh)
+{
+	rl_clear_history();
+	clear_command_chain(msh->command);
+	clean_myenv(msh->myenv);
+}
