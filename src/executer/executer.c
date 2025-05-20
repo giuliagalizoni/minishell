@@ -104,19 +104,13 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		if (!output_redirection(command->outfile))
 			exit_process(msh, NULL, EXIT_FAILURE);
 	if (is_builtin(command->name))
-<<<<<<< HEAD
-		child_builtin(msh);
-	/*
-=======
 		child_builtin(msh, command);
->>>>>>> f1c72d0 (fixed the ghost segfault and the echo issue by fixing myenv_to_envp and adding command param to builtin routers etc)
 	if (!command->path)	
 	{
 		//TODO make it more robust so it can check folders and
 		//permissions?
 		exit_process(msh, NULL, EXIT_FAILURE);
 	}
-	*/
 	else
 	{
 		envp = myenv_to_envp(msh->myenv);
