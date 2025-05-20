@@ -68,8 +68,9 @@ void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
 // error_utils
-void	error_cleanup(t_msh *msh, char *error);
-void	exit_process(t_msh *msh, char *error, int exit_code);
+void		error_cleanup(t_msh *msh, char *error);
+void		exit_process(t_msh *msh, char *error, int exit_code);
+int			return_error(char *error_msg);
 // executer
 void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);

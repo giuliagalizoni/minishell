@@ -68,6 +68,20 @@ t_vars	*init_envp(char **envp)
 	return (head);
 }
 
+static int	update_var_value(t_vars *var, const char *value)
+{
+	free(var->value);
+	if (value)
+	{
+		var->value = ft_strdup(value);
+		if (!var->value)
+		return (0);
+	}
+	else
+		var->value = NULL;
+	return (1);
+}
+
 int	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
@@ -77,37 +91,24 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	while (current)
 	{
 		if (is_equal(current->key, key))
-		{
-			free(current->value);
-			if (value)
-				current->value = ft_strdup(value);
-			else
-				current->value = NULL;
-			return (1);
-		}
+			return update_var_value(current, value);
 		current = current->next;
 	}
 	new_var = malloc(sizeof(t_vars));
 	if (!new_var)
-	{
-		perror("minishell: malloc failed for new_var in add_or_update_var");
-		return (0);
-	}
+		return return_error("minishell: malloc failed for new_var in add_or_update_var");
 	new_var->key = ft_strdup(key);
 	if (!new_var->key)
 	{
-		perror("minishell: ft_strdup failed for new_var->key in add_or_update_var");
 		free(new_var);
-		return (0);
+		return return_error("minishell: ft_strdup failed for new_var->key in add_or_update_var");
 	}
 	if (value)
 		new_var->value = ft_strdup(value);
-
 	else
 		new_var->value = NULL;
 	new_var->next = NULL;
-	push_list(head, new_var);
-	return (1);
+	return (push_list(head, new_var), 1);
 }
 
 int	export(t_msh *msh)
