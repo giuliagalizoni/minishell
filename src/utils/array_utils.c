@@ -71,7 +71,11 @@ char	**myenv_to_envp(t_vars *myenv)
 		return (NULL);
 	while (myenv)
 	{
-		envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
+		if (myenv->value)
+			envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
+		else	
+			envp[i] = ft_strdup(myenv->key);
+
 		i++;
 		myenv = myenv->next;
 	}
