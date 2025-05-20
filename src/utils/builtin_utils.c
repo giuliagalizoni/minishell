@@ -30,7 +30,7 @@ int	builtin_router(t_msh *msh)
 	else if (is_equal(msh->command->name, "pwd"))
 		status = pwd();
 	else if (is_equal(msh->command->name, "unset"))
-		unset(msh);
+		status = unset(msh);
 	msh->exit_status = status;
 	return (status);
 }

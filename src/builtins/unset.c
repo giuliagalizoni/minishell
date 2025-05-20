@@ -26,17 +26,17 @@ void	find_and_delete(t_vars **head, char *key)
 	}
 }
 
-	// TODO: Set exit status?
-void	unset(t_msh *msh)
+int	unset(t_msh *msh)
 {
 	int	i;
 
 	if (!msh->command->arguments[1])
-		return ;
+		return (0);
 	i = 1;
 	while (msh->command->arguments[i])
 	{
 		find_and_delete(&msh->myenv, msh->command->arguments[i]);
 		i++;
 	}
+	return (0);
 }

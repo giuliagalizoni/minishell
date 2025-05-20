@@ -131,7 +131,7 @@ int			print_env(t_vars *myenv);
 
 
 //unset
-void		unset(t_msh *msh);
+int			unset(t_msh *msh);
 
 //expand var
 char		*get_var_value(t_vars *head, char *key);

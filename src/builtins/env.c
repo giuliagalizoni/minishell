@@ -5,7 +5,7 @@ int	print_env(t_vars *myenv)
 	while (myenv)
 	{
 		if (!myenv->key)
-			return ;
+			return (0);
 		if (myenv->value)
 			printf("%s=\"%s\"\n", myenv->key, myenv->value);
 		myenv = myenv->next;
