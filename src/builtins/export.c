@@ -68,8 +68,21 @@ t_vars	*init_envp(char **envp)
 	return (head);
 }
 
-// TODO: Check ft_strdup results more thoroughly, especially for new_var->key and consider returning status for critical failures.
-void	add_or_update_var(t_vars **head, char *key, char *value)
+static int	update_var_value(t_vars *var, const char *value)
+{
+	free(var->value);
+	if (value)
+	{
+		var->value = ft_strdup(value);
+		if (!var->value)
+		return (0);
+	}
+	else
+		var->value = NULL;
+	return (1);
+}
+
+int	add_or_update_var(t_vars **head, char *key, char *value)
 {
 	t_vars	*current;
 	t_vars	*new_var;
@@ -78,49 +91,27 @@ void	add_or_update_var(t_vars **head, char *key, char *value)
 	while (current)
 	{
 		if (is_equal(current->key, key))
-		{
-			free(current->value); // Free existing value
-			if (value)
-			{
-				current->value = ft_strdup(value);
-				// If ft_strdup fails for value, current->value will be NULL.
-				// This is consistent with 'value' being explicitly NULL.
-				// If this is critical (e.g., value was non-NULL but ft_strdup failed),
-				// this function would need to return a status to indicate the error.
-			}
-			else
-				current->value = NULL;
-			return ; // Variable updated (or value set/cleared)
-		}
+			return update_var_value(current, value);
 		current = current->next;
 	}
-	// Variable not found, add a new one.
 	new_var = malloc(sizeof(t_vars));
 	if (!new_var)
-	{
-		perror("minishell: malloc failed for new_var in add_or_update_var");
-		return ; // Cannot add variable if struct allocation fails.
-	}
+		return return_error("minishell: malloc failed for new_var in add_or_update_var");
 	new_var->key = ft_strdup(key);
 	if (!new_var->key)
 	{
-		perror("minishell: ft_strdup failed for new_var->key in add_or_update_var");
-		free(new_var); // Free the allocated t_vars struct before returning.
-		return ; // Cannot add variable without a key.
+		free(new_var);
+		return return_error("minishell: ft_strdup failed for new_var->key in add_or_update_var");
 	}
 	if (value)
-	{
 		new_var->value = ft_strdup(value);
-		// If ft_strdup fails for value, new_var->value will be NULL.
-		// This is consistent with 'value' being explicitly NULL.
-	}
 	else
 		new_var->value = NULL;
 	new_var->next = NULL;
-	push_list(head, new_var);
+	return (push_list(head, new_var), 1);
 }
 
-void	export(t_msh *msh)
+int	export(t_msh *msh)
 {
 	int		i;
 	t_vars	*new_var;
@@ -129,7 +120,7 @@ void	export(t_msh *msh)
 	{
 		sort_vars_list(msh->myenv);
 		print_vars(msh->myenv);
-		return ;
+		return (0);
 	}
 	i = 1;
 	while (msh->command->arguments[i])
@@ -137,11 +128,13 @@ void	export(t_msh *msh)
 		new_var = parse_var(msh->command->arguments[i]);
 		if (new_var)
 		{
-			add_or_update_var(&msh->myenv, new_var->key, new_var->value);
+			if (!add_or_update_var(&msh->myenv, new_var->key, new_var->value))
+				return (EXIT_FAILURE);
 			free(new_var->key);
 			free(new_var->value);
 			free(new_var);
 		}
 		i++;
 	}
+	return 0;
 }
