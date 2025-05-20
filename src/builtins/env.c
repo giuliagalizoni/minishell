@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-void	print_env(t_vars *myenv)
+int	print_env(t_vars *myenv)
 {
 	while (myenv)
 	{
@@ -10,6 +10,7 @@ void	print_env(t_vars *myenv)
 			printf("%s=\"%s\"\n", myenv->key, myenv->value);
 		myenv = myenv->next;
 	}
+	return (0);
 }
 
 char	*get_var_value(t_vars *head, char *key)

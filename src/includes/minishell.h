@@ -127,7 +127,7 @@ void		sig_ignore(void);
 
 //env
 t_vars		*init_envp(char **envp);
-void		print_env(t_vars *myenv);
+int			print_env(t_vars *myenv);
 
 
 //unset
