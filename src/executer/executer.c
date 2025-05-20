@@ -50,7 +50,7 @@ int	single_parent_process(t_msh *msh)
 		input_redirection(msh->command);
 	if (msh->command->outfile)
 		output_redirection(msh->command->outfile);
-	status = builtin_router(msh);
+	status = builtin_router(msh, msh->command);
 
 	// Restore stdin and stdout
 	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0)
@@ -104,8 +104,12 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		if (!output_redirection(command->outfile))
 			exit_process(msh, NULL, EXIT_FAILURE);
 	if (is_builtin(command->name))
+<<<<<<< HEAD
 		child_builtin(msh);
 	/*
+=======
+		child_builtin(msh, command);
+>>>>>>> f1c72d0 (fixed the ghost segfault and the echo issue by fixing myenv_to_envp and adding command param to builtin routers etc)
 	if (!command->path)	
 	{
 		//TODO make it more robust so it can check folders and
