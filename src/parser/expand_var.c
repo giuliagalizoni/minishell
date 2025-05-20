@@ -1,32 +1,5 @@
 #include "../includes/minishell.h"
 
-char	*remove_quotes(const char *str)
-{
-	size_t	i;
-	size_t	j;
-	char	*new_str;
-
-	if (!str)
-		return (NULL);
-	new_str = malloc(ft_strlen(str) + 1);
-	if (!new_str)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (str[i])
-	{
-		if (str[i] != '\'' && str[i] != '"')
-		{
-			new_str[j] = str[i];
-			j++;
-		}
-		i++;
-	}
-	new_str[j] = '\0';
-	return (new_str);
-}
-
-
 static int	retokenize(char ***new_tokens, char *value)
 {
 	char	**temp_tokens;
