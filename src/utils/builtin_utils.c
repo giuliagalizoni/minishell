@@ -20,18 +20,17 @@ int	builtin_router(t_msh *msh)
 	if (is_equal(msh->command->name, "exit"))
 		exit_shell(msh);
 	else if (is_equal(msh->command->name, "echo"))
-		echo(msh->command);
+		status = echo(msh->command);
 	else if (is_equal(msh->command->name, "export"))
-		export(msh);
+		status = export(msh);
 	else if (is_equal(msh->command->name, "env"))
-		print_env(msh->myenv);
+		status = print_env(msh->myenv);
 	else if (is_equal(msh->command->name, "cd"))
 		status = cd(msh->command);
 	else if (is_equal(msh->command->name, "pwd"))
 		status = pwd();
 	else if (is_equal(msh->command->name, "unset"))
-		unset(msh);
-	// TODO need to change builtins to send me their exit codes
+		status = unset(msh);
 	msh->exit_status = status;
 	return (status);
 }
