@@ -93,7 +93,7 @@ void		child_builtin(t_msh *msh);
 
 // builtins
 void		exit_shell(t_msh *msh);
-void		echo(t_command *cmd);
+int			echo(t_command *cmd);
 void		export(t_msh *msh);
 int			cd(t_command *command);
 int			pwd(void);

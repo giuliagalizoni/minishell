@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-void	echo(t_command *cmd)
+int	echo(t_command *cmd)
 {
 	int	i;
 	int	flag;
@@ -9,7 +9,7 @@ void	echo(t_command *cmd)
 	if (!cmd->arguments[1])
 	{
 		printf("\n");
-		return ;
+		return (0);
 	}
 	i = 1;
 	if (is_equal(cmd->arguments[1], "-n"))
@@ -26,4 +26,5 @@ void	echo(t_command *cmd)
 	}
 	if (!flag)
 		printf("\n");
+	return (0);
 }
