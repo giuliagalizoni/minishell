@@ -52,6 +52,7 @@ int	single_parent_process(t_msh *msh)
 		output_redirection(msh->command->outfile);
 	status = builtin_router(msh, msh->command);
 
+
 	// Restore stdin and stdout
 	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0)
 	{
