@@ -111,21 +111,22 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	return (push_list(head, new_var), 1);
 }
 
-int	export(t_msh *msh)
+
+int	export(t_msh *msh, t_command *command)
 {
 	int		i;
 	t_vars	*new_var;
 
-	if (!msh->command->arguments[1])
+	if (!command->arguments[1])
 	{
 		sort_vars_list(msh->myenv);
 		print_vars(msh->myenv);
 		return (0);
 	}
 	i = 1;
-	while (msh->command->arguments[i])
+	while (command->arguments[i])
 	{
-		new_var = parse_var(msh->command->arguments[i]);
+		new_var = parse_var(command->arguments[i]);
 		if (new_var)
 		{
 			if (!add_or_update_var(&msh->myenv, new_var->key, new_var->value))
