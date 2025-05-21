@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/21 13:37:02 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:55:45 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,21 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 	int	i;
 
 	i = 0;
-	while (tokens[i] && tokens[i][0] == '<')
-		i = i + 2;
+	while (tokens[i])
+	{
+		if (is_equal(tokens[i], "<") || is_equal(tokens[i], "<<") || \
+            is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
+		{
+			if (!tokens[i + 1])
+			{
+				p_syntax_error(NULL);
+				return (0);
+			}
+			i += 2;
+		}
+		else
+			break ;
+	}
 	if (!tokens[i])
 	{
 		p_syntax_error(NULL);
