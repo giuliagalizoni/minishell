@@ -12,31 +12,31 @@ int	is_builtin(char *name)
 	return (0);
 }
 
-int	builtin_router(t_msh *msh)
+int	builtin_router(t_msh *msh, t_command *command)
 {
 	int	status;
 
 	status = 0;
-	if (is_equal(msh->command->name, "exit"))
+	if (is_equal(command->name, "exit"))
 		exit_shell(msh);
-	else if (is_equal(msh->command->name, "echo"))
-		status = echo(msh->command);
-	else if (is_equal(msh->command->name, "export"))
-		status = export(msh);
-	else if (is_equal(msh->command->name, "env"))
-		status = print_env(msh->myenv);
-	else if (is_equal(msh->command->name, "cd"))
-		status = cd(msh->command);
-	else if (is_equal(msh->command->name, "pwd"))
+	else if (is_equal(command->name, "echo"))
+		echo(command);
+	else if (is_equal(command->name, "export"))
+		export(msh, command);
+	else if (is_equal(command->name, "env"))
+		print_env(msh->myenv);
+	else if (is_equal(command->name, "cd"))
+		status = cd(command);
+	else if (is_equal(command->name, "pwd"))
 		status = pwd();
-	else if (is_equal(msh->command->name, "unset"))
-		status = unset(msh);
+	else if (is_equal(command->name, "unset"))
+		unset(msh);
 	msh->exit_status = status;
 	return (status);
 }
 
-void	child_builtin(t_msh *msh)
+void	child_builtin(t_msh *msh, t_command *command)
 {
-	msh->exit_status = builtin_router(msh);
+	msh->exit_status = builtin_router(msh, command);
 	exit_process(msh, NULL, msh->exit_status);
 }

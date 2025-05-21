@@ -89,13 +89,14 @@ void		push_token(char ***tokens, char *result);
 
 // builtin_utils
 int			is_builtin(char *name);
-int			builtin_router(t_msh *msg);
-void		child_builtin(t_msh *msh);
+int			builtin_router(t_msh *msh, t_command *command);
+void		child_builtin(t_msh *msh, t_command *command);
 
 // builtins
 void		exit_shell(t_msh *msh);
 int			echo(t_command *cmd);
-int			export(t_msh *msh);
+int			export(t_msh *msh, t_command *command);
+
 int			cd(t_command *command);
 int			pwd(void);
 

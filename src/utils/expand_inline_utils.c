@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_inline_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/20 17:23:04 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/05/20 17:23:05 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 static int	append_literal(char *line, int start, int end, char ***parts)
@@ -80,7 +92,8 @@ int	process_line(char *line, t_msh *msh, char ***parts)
 	quote = 0;
 	while (line[i])
 	{
-		if ((line[i] == '\'' || line[i] == '\"') && (!quote || quote == line[i]))
+		if ((line[i] == '\'' || line[i] == '\"')
+			&& (!quote || quote == line[i]))
 			toggle_quote(&quote, line[i]);
 		if (line[i] == '$' && quote != '\'')
 		{
