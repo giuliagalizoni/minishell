@@ -21,7 +21,7 @@ static int	check_operators(t_command *command, char **tokens, int i)
 	else if (i > 0 && is_equal(tokens[i - 1], "<"))
 	{
 		if (!arr_push(&command->input_redirect, tokens[i]))
-			return (0); // arr_push failed, propagate error
+			return (0);
 	}
 	else if (i > 0 && is_equal(tokens[i - 1], "<<"))
 	{
@@ -31,15 +31,15 @@ static int	check_operators(t_command *command, char **tokens, int i)
 		if (!command->heredoc_delimiter)
 		{
 			perror("ft_strdup failed for heredoc_delimiter");
-			return (0); // ft_strdup failed, propagate error
+			return (0);
 		}
 	}
 	else
 	{
 		if (!arr_push(&command->arguments, tokens[i]))
-			return (0); // arr_push failed, propagate error
+			return (0);
 	}
-	return (1); // Success
+	return (1);
 }
 
 // Returns 1 on success, 0 on failure (e.g., malloc error)
@@ -48,24 +48,21 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 	int	i;
 
 	i = 0;
-	// It's assumed tokens and tokens[i] are valid based on prior lexing/parsing stages.
-	// If tokens[i] could be NULL here, further checks would be needed.
-	while (tokens[i] && tokens[i][0] == '<') // Added check for tokens[i]
+	while (tokens[i] && tokens[i][0] == '<')
 		i = i + 2;
-	if (!tokens[i]) // If no command name found after skipping redirections
+	if (!tokens[i])
 	{
-		p_syntax_error(NULL); // Or a more specific error
+		p_syntax_error(NULL);
 		return (0);
 	}
 	command->name = ft_strdup(tokens[i]);
 	if (!command->name)
 	{
 		perror("malloc failed for command name");
-		return (0); // Indicate failure
+		return (0);
 	}
-	command->path = get_cmd_path(command->name, myenv); // Use command->name here
-	// No need to free command->name if get_cmd_path fails, path can be NULL.
-	return (1); // Indicate success
+	command->path = get_cmd_path(command->name, myenv);
+	return (1);
 }
 
 t_command	*analyser(char **tokens, int index, t_msh *msh)
@@ -73,48 +70,32 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 	t_command	*command;
 	int			i;
 
-	if (!tokens || !tokens[0]) // If tokens is NULL or empty, it's an error or no command
+	if (!tokens || !tokens[0])
 		return (NULL);
 	command = malloc(sizeof(t_command));
 	if (!command)
-	{
-		perror("malloc failed for command struct");
-		return (NULL);
-	}
+		return (perror("malloc failed for command struct"), NULL);
 	command_init(command);
 	command->index = index;
-	// Call set_name and check its return value.
 	if (!set_name(command, tokens, msh->myenv))
-	{
-		free(command); // Free the allocated command struct
-		return (NULL); // Propagate the error
-	}
+		return (free(command), NULL);
 	i = 0;
 	while (tokens[i])
 	{
 		if (is_equal(tokens[i], "|"))
 		{
 			init_pipe(command, tokens, &i, msh);
-			// If init_pipe can fail due to malloc, its error should be propagated.
-			// For now, assume init_pipe handles its errors or they are caught by command->pipe_next being NULL.
 			break ;
 		}
 		else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
 		{
-			// add_outfile now returns a status. Check it.
 			if (!add_outfile(command, tokens, &command->outfile, &i))
-			{
-				clear_command_chain(command); // Free partially built command
-				return (NULL); // Propagate error
-			}
+				return (clear_command_chain(command), NULL);
 		}
 		else
 		{
 			if (!check_operators(command, tokens, i))
-			{
-				clear_command_chain(command); // Free partially built command
-				return (NULL); // Propagate error
-			}
+				return (clear_command_chain(command), NULL);
 		}
 		i++;
 	}
@@ -142,11 +123,6 @@ t_command	*parser(char *line, t_msh *msh)
 	retokens = expand_and_retokenize(tokens, msh);
 	msh->command = analyser(retokens, 0, msh);
 	free_arr((void **)tokens);
-	if (!msh->command)
-	{
-		// retokens is now freed unconditionally later, so no need to free here.
-		// No specific error message needed here as downstream functions handle it.
-	}
-	free_arr((void **)retokens); // Unconditionally free retokens here
+	free_arr((void **)retokens);
 	return (msh->command);
 }
