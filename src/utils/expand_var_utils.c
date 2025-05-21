@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_var_utils.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/20 17:22:04 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/05/20 17:22:05 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 char	*remove_quotes(const char *str)
@@ -87,7 +99,7 @@ int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 	expanded = expand_inline(literal, msh);
 	free(literal);
 	if (!expanded)
-		 return (perror("expand_variables_in_line failed"), 0);
+		return (perror("expand_variables_in_line failed"), 0);
 	success = safe_arr_push(new_tokens, expanded);
 	free(expanded);
 	return (success);

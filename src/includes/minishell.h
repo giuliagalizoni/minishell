@@ -76,8 +76,8 @@ void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // redirection
-int		input_redirection(t_command *command);
-int		output_redirection(t_outfile *outfile);
+int			input_redirection(t_command *command);
+int			output_redirection(t_outfile *outfile);
 
 // parser
 t_command	*parser(char *line, t_msh *msh);
@@ -129,14 +129,12 @@ void		sig_ignore(void);
 //env
 t_vars		*init_envp(char **envp);
 int			print_env(t_vars *myenv);
-
-
 //unset
 int			unset(t_msh *msh);
-
 //expand var
 char		*get_var_value(t_vars *head, char *key);
 char		**expand_and_retokenize(char **tokens, t_msh *msh);
+int			process_one_token(char *token, t_msh *msh, char ***new_tokens);
 //expand var utils
 int			safe_arr_push(char ***arr, const char *str);
 int			handle_exit_status(t_msh *msh, char ***new_tokens);
