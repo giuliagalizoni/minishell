@@ -1,12 +1,16 @@
-#include "../includes/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/05/21 13:37:02 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// static void	init_pipe(t_command *command, char **tokens, int *i, t_msh *msh)
-// {
-// 	command->is_pipe = 1;
-// 	tokens++;
-// 	// TODO check if this command is NULL
-// 	command->pipe_next = analyser(tokens + ((*i)++), (command->index) + 1, msh);
-// }
+#include "../includes/minishell.h"
 
 static int	check_operators(t_command *command, char **tokens, int i)
 {
@@ -28,7 +32,7 @@ static int	check_operators(t_command *command, char **tokens, int i)
 			free(command->heredoc_delimiter);
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
 		if (!command->heredoc_delimiter)
-			return return_error("ft_strdup failed for heredoc_delimiter");
+			return (return_error("ft_strdup failed for heredoc_delimiter"));
 	}
 	else if (!arr_push(&command->arguments, tokens[i]))
 		return (0);
@@ -57,30 +61,16 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 	return (1);
 }
 
-// int process_command(char **tokens, int *i, t_command *command)
-// {
-// 	if (is_equal(tokens[*i], ">") || is_equal(tokens[*i], ">>"))
-// 	{
-// 		if (!add_outfile(command, tokens, &command->outfile, i))
-// 			return (0);
-// 	}
-// 	else
-// 	{
-// 		if (!check_operators(command, tokens, *i))
-// 			return (0);
-// 	}
-// 	return 1;
-// }
-
 int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 {
 	if (is_equal(tokens[*i], "|"))
 	{
 		command->is_pipe = 1;
-		command->pipe_next = analyser(tokens + (*i) + 1, command->index + 1, msh);
+		command->pipe_next = analyser(tokens + (*i) + 1,
+				command->index + 1, msh);
 		if (!command->pipe_next)
 			return (clear_command_chain(command), 0);
-		return 0;
+		return (0);
 	}
 	else if (is_equal(tokens[*i], ">") || is_equal(tokens[*i], ">>"))
 	{
@@ -92,7 +82,7 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 		if (!check_operators(command, tokens, *i))
 			return (clear_command_chain(command), 0);
 	}
-	return 1;
+	return (1);
 }
 
 t_command	*analyser(char **tokens, int index, t_msh *msh)
@@ -113,30 +103,7 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 	while (tokens[i])
 	{
 		if (!process_command(command, tokens, &i, msh))
-			break;
-		// this is working:
-		/*
-		if (is_equal(tokens[i], "|"))
-		{
-			init_pipe(command, tokens, &i, msh);
 			break ;
-		}
-		else
-		{
-			if (!process_command(tokens, &i, command))
-				return (clear_command_chain(command), NULL);
-		}*/
-
-		// else if (is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
-		// {
-		// 	if (!add_outfile(command, tokens, &command->outfile, &i))
-		// 		return (clear_command_chain(command), NULL);
-		// }
-		// else
-		// {
-		// 	if (!check_operators(command, tokens, i))
-		// 		return (clear_command_chain(command), NULL);
-		// }
 		i++;
 	}
 	return (command);
