@@ -22,13 +22,16 @@ void	exit_process(t_msh *msh, char *error, int exit_code)
 		exit(exit_code);
 }
 
-int	ft_perror(t_command *command, char *arg, int	status)
+int	ft_perror(t_command *command, char *arg, int status, int has_prefix)
 {
 	char	*prefix;
 	char	*cmd_str;
 	char	*err_message;
 
-	prefix = "conchinha: ";
+	if (has_prefix)
+		prefix = "conchinha: ";
+	else
+		prefix = "";
 	cmd_str = ft_strjoin(command->name, ": ");
 	err_message = ft_triplestrjoin(prefix, cmd_str, arg);
 	perror(err_message);
