@@ -71,6 +71,7 @@ int			count_commands(t_command *command);
 void		error_cleanup(t_msh *msh, char *error);
 void		exit_process(t_msh *msh, char *error, int exit_code);
 int			return_error(char *error_msg);
+int			ft_perror(t_command *command, char *arg, int	status);
 // executer
 void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
