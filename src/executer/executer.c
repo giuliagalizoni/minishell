@@ -106,14 +106,6 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 			exit_process(msh, NULL, EXIT_FAILURE);
 	if (is_builtin(command->name))
 		child_builtin(msh, command);
-	/*
-	if (!command->path)	
-	{
-		//TODO make it more robust so it can check folders and
-		//permissions?
-		exit_process(msh, NULL, EXIT_FAILURE);
-	}
-	*/
 	else
 	{
 		envp = myenv_to_envp(msh->myenv);

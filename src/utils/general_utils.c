@@ -65,8 +65,14 @@ char	*ft_triplestrjoin(char *str1, char *str2, char *str3)
 	char	*str1_2;
 	char	*str1_2_3;
 
+	if (!str1 || !str2 || !str3)
+		return (NULL);
 	str1_2 = ft_strjoin(str1, str2);
+	if (str1_2 == NULL)
+		return (NULL);
 	str1_2_3 = ft_strjoin(str1_2, str3);
+	if (str1_2_3 == NULL)
+		return(NULL);
 	free(str1_2);
 	str1_2 = NULL;
 	return (str1_2_3);
