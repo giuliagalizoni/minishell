@@ -30,11 +30,7 @@ char	*get_var_value(t_vars *head, char *key)
 int	env(t_msh *msh, t_command *command)
 {
 	if (command->arguments[1])
-	{
-		// apply new perror after
-		perror("env: ");
-		return (127);
-	}
+		return (ft_perror(command, command->arguments[1], 127, 0));
 	print_env(msh->myenv);
 	return (0);
 }
