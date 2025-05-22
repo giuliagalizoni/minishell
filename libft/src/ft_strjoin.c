@@ -6,7 +6,7 @@
 /*   By: marcampo <marcampo@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 12:55:26 by marcampo          #+#    #+#             */
-/*   Updated: 2024/06/11 12:55:27 by marcampo         ###   ########.fr       */
+/*   Updated: 2025/05/22 13:12:15 by marcampo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*ptr;
 	size_t	i;
 
+	if (!s1 || !s2)
+		return (NULL);
 	i = 0;
 	len_s1 = ft_strlen(s1);
 	len_s2 = ft_strlen(s2);
