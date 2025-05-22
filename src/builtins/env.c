@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-int	print_env(t_vars *myenv)
+static int	print_env(t_vars *myenv)
 {
 	while (myenv)
 	{
@@ -25,4 +25,16 @@ char	*get_var_value(t_vars *head, char *key)
 		current = current->next;
 	}
 	return (NULL);
+}
+
+int	env(t_msh *msh, t_command *command)
+{
+	if (command->arguments[1])
+	{
+		// apply new perror after
+		perror("env: ");
+		return (127);
+	}
+	print_env(msh->myenv);
+	return (0);
 }

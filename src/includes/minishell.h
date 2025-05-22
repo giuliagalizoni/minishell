@@ -96,7 +96,7 @@ void		child_builtin(t_msh *msh, t_command *command);
 void		exit_shell(t_msh *msh);
 int			echo(t_command *cmd);
 int			export(t_msh *msh, t_command *command);
-
+int			env(t_msh *msh, t_command *command);
 int			cd(t_command *command);
 int			pwd(void);
 
@@ -128,7 +128,7 @@ void		sig_ignore(void);
 
 //env
 t_vars		*init_envp(char **envp);
-int			print_env(t_vars *myenv);
+// int			print_env(t_vars *myenv);
 //unset
 int			unset(t_msh *msh);
 //expand var
