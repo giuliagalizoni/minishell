@@ -38,5 +38,5 @@ int	builtin_router(t_msh *msh, t_command *command)
 void	child_builtin(t_msh *msh, t_command *command)
 {
 	msh->exit_status = builtin_router(msh, command);
-	exit_process(msh, NULL, msh->exit_status);
+	exit_process(msh, command, NULL, NULL, msh->exit_status);
 }

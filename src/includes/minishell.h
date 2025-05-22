@@ -68,11 +68,12 @@ void		command_init(t_command *command);
 void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
+int	is_directory(const char *path);
 // error_utils
-void		error_cleanup(t_msh *msh, char *error);
-void		exit_process(t_msh *msh, char *error, int exit_code);
+void		error_cleanup(t_msh *msh);
+void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
 int			return_error(char *error_msg);
-int			ft_perror(t_command *command, char *arg, int status, int has_prefix);
+int			ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_str);
 // executer
 void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
@@ -110,6 +111,8 @@ void		clean_myenv(t_vars *myenv);
 int		add_outfile(t_command *cmd, char **tokens,
 				t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
+
+//file_utils
 
 //general_utils
 int			is_equal(char *str1, char *str2);

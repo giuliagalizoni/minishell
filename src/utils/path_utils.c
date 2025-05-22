@@ -28,7 +28,7 @@ char	*get_cmd_path(char *cmd, t_vars *myenv)
 	char	*fullpath;
 	int		i;
 
-	if (access(cmd, X_OK) == 0)
+	if (access(cmd, F_OK) == 0)
 		return (ft_strdup(cmd));
 	i = -1;
 	if (!(paths = get_paths(myenv)))
@@ -42,7 +42,7 @@ char	*get_cmd_path(char *cmd, t_vars *myenv)
 		fullpath = ft_strjoin(basepath, cmd);
 		free(basepath);
 		basepath = NULL;
-		if (access(fullpath, X_OK) == 0)
+		if (access(fullpath, F_OK) == 0)
 		{
 			free_arr((void **)paths);
 			return (fullpath);
