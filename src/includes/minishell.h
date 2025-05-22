@@ -10,6 +10,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <sys/stat.h>
 # define BANNER_FILE_PATH "./cfg/banner.txt"
 
 typedef struct s_vars
