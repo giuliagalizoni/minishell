@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 17:22:04 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/20 17:22:05 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:09:21 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,17 @@ int	process_inner(char *content, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+int is_shell_operator(char *s)
+{
+    if (!s)
+        return (0);
+    if (ft_strcmp(s, ">") == 0 || ft_strcmp(s, "<") == 0 ||
+        ft_strcmp(s, ">>") == 0 || ft_strcmp(s, "<<") == 0 ||
+        ft_strcmp(s, "|") == 0)
+        return (1);
+    return (0);
+}
+
 int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 {
 	char	*literal;
@@ -100,7 +111,10 @@ int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 	free(literal);
 	if (!expanded)
 		return (perror("expand_variables_in_line failed"), 0);
-	success = safe_arr_push(new_tokens, expanded);
+	if (is_shell_operator(expanded))
+		success = safe_arr_push(new_tokens, token);
+	else
+		success = safe_arr_push(new_tokens, expanded);
 	free(expanded);
 	return (success);
 }

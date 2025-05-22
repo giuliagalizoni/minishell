@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/21 16:00:38 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:42:59 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 			if (!tokens[i + 1])
 			{
 				p_syntax_error(NULL);
-				return (0);
+				return (2);
 			}
 			i += 2;
 		}
@@ -62,7 +62,7 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 	if (!tokens[i])
 	{
 		p_syntax_error(NULL);
-		return (0);
+		return (2);
 	}
 	command->name = ft_strdup(tokens[i]);
 	if (!command->name)
@@ -78,6 +78,11 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 {
 	if (is_equal(tokens[*i], "|"))
 	{
+		if (!tokens[*i +1])
+		{
+			p_syntax_error(tokens[*i]);
+			return (0);
+		}
 		command->is_pipe = 1;
 		command->pipe_next = analyser(tokens + (*i) + 1,
 				command->index + 1, msh);

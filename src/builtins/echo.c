@@ -16,10 +16,27 @@ static int	is_n_flag(char *arg)
 	return (1);
 }
 
+char	*trim_quotes(char *str)
+{
+	size_t	len;
+	char	*trimmed;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\''))
+	{
+		trimmed = ft_substr(str, 1, len - 2);
+		return (trimmed);
+	}
+	return (ft_strdup(str));
+}
+
 int	echo(t_command *cmd)
 {
 	int	i;
 	int	flag;
+	char *arg;
 
 	flag = 1;
 	if (!cmd->arguments[1])
@@ -35,7 +52,9 @@ int	echo(t_command *cmd)
 	}
 	while(cmd->arguments[i])
 	{
-		printf("%s", cmd->arguments[i]);
+		arg = trim_quotes(cmd->arguments[i]);
+		printf("%s", arg);
+		free(arg);
 		if (cmd->arguments[i + 1])
 			printf(" ");
 		i++;
