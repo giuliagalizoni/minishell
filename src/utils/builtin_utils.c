@@ -24,7 +24,7 @@ int	builtin_router(t_msh *msh, t_command *command)
 	else if (is_equal(command->name, "export"))
 		export(msh, command);
 	else if (is_equal(command->name, "env"))
-		print_env(msh->myenv);
+		status = env(msh, command);
 	else if (is_equal(command->name, "cd"))
 		status = cd(command);
 	else if (is_equal(command->name, "pwd"))
