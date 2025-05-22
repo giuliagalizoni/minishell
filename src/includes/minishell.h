@@ -131,7 +131,7 @@ void		sig_ignore(void);
 t_vars		*init_envp(char **envp);
 // int			print_env(t_vars *myenv);
 //unset
-int			unset(t_msh *msh);
+int			unset(t_msh *msh, t_command *command);
 //expand var
 char		*get_var_value(t_vars *head, char *key);
 char		**expand_and_retokenize(char **tokens, t_msh *msh);
