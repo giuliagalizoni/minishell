@@ -82,7 +82,7 @@ int			input_redirection(t_command *command);
 int			output_redirection(t_outfile *outfile);
 
 // parser
-t_command	*parser(char *line, t_msh *msh);
+int			parser(char *line, t_msh *msh);
 t_command	*analyser(char **tokens, int index, t_msh *msh);
 // lexer
 int			lexer(char *line, char ***tokens);
