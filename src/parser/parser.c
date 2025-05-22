@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/22 16:42:59 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/22 17:10:15 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,7 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 	if (is_equal(tokens[*i], "|"))
 	{
 		if (!tokens[*i +1])
-		{
-			p_syntax_error(tokens[*i]);
 			return (0);
-		}
 		command->is_pipe = 1;
 		command->pipe_next = analyser(tokens + (*i) + 1,
 				command->index + 1, msh);
