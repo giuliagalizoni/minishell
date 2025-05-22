@@ -20,9 +20,9 @@ int	builtin_router(t_msh *msh, t_command *command)
 	if (is_equal(command->name, "exit"))
 		exit_shell(msh);
 	else if (is_equal(command->name, "echo"))
-		echo(command);
+		status = echo(command);
 	else if (is_equal(command->name, "export"))
-		export(msh, command);
+		status = export(msh, command);
 	else if (is_equal(command->name, "env"))
 		status = env(msh, command);
 	else if (is_equal(command->name, "cd"))
@@ -30,7 +30,7 @@ int	builtin_router(t_msh *msh, t_command *command)
 	else if (is_equal(command->name, "pwd"))
 		status = pwd();
 	else if (is_equal(command->name, "unset"))
-		unset(msh);
+		status = unset(msh);
 	msh->exit_status = status;
 	return (status);
 }
