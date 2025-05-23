@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/22 17:24:54 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:56:27 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,17 +56,20 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 		else
 			break ;
 	}
-	if (!tokens[i])
+	// if (!tokens[i])
+	// {
+	// 	return (p_syntax_error(NULL));
+	// }
+	if (tokens[i])
 	{
-		return (p_syntax_error(NULL));
+		command->name = ft_strdup(tokens[i]);
+		if (!command->name)
+		{
+			perror("malloc failed for command name");
+			return (0);
+		}
+		command->path = get_cmd_path(command->name, myenv);
 	}
-	command->name = ft_strdup(tokens[i]);
-	if (!command->name)
-	{
-		perror("malloc failed for command name");
-		return (0);
-	}
-	command->path = get_cmd_path(command->name, myenv);
 	return (1);
 }
 
