@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/21 15:55:45 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:22:56 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,7 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
             is_equal(tokens[i], ">") || is_equal(tokens[i], ">>"))
 		{
 			if (!tokens[i + 1])
-			{
-				p_syntax_error(NULL);
-				return (0);
-			}
+				return (p_syntax_error(NULL));
 			i += 2;
 		}
 		else
@@ -61,8 +58,7 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 	}
 	if (!tokens[i])
 	{
-		p_syntax_error(NULL);
-		return (0);
+		return (p_syntax_error(NULL));
 	}
 	command->name = ft_strdup(tokens[i]);
 	if (!command->name)
@@ -78,6 +74,8 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 {
 	if (is_equal(tokens[*i], "|"))
 	{
+		if (!tokens[*i +1])
+			return (0);
 		command->is_pipe = 1;
 		command->pipe_next = analyser(tokens + (*i) + 1,
 				command->index + 1, msh);
@@ -122,31 +120,33 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 	return (command);
 }
 
-t_command	*parser(char *line, t_msh *msh)
+int	parser(char *line, t_msh *msh)
 {
 	char	**tokens;
 	char	**retokens;
 
 	if (!line)
-		return (NULL);
+		return (0);
 	tokens = NULL;
 	if (!lexer(line, &tokens))
-		return (NULL);
+		return (0);
 	if (!tokens)
-		return (NULL);
+		return (0);
 	if (tokens && !check_invalid_syntax(tokens))
 	{
 		free_arr((void **)tokens);
 		tokens = NULL;
-		return (NULL);
+		return (2);
 	}
 	print_tokens(tokens);
 	retokens = expand_and_retokenize(tokens, msh);
 	printf("retokens:\n");
 	print_tokens(retokens);
 	msh->command = analyser(retokens, 0, msh);
+	if (!msh->command)
+		return (2);
 	print_command_list(msh->command);
 	free_arr((void **)tokens);
 	free_arr((void **)retokens);
-	return (msh->command);
+	return (1);
 }

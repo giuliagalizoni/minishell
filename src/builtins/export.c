@@ -35,6 +35,7 @@ t_vars	*parse_var(const char *arg)
 	if (validate_key(key))
 	{
 		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
+		// return code should be 1
 		return (NULL);
 	}
 	new_var = malloc(sizeof(t_vars));
@@ -118,11 +119,7 @@ int	export(t_msh *msh, t_command *command)
 	t_vars	*new_var;
 
 	if (!command->arguments[1])
-	{
-		sort_vars_list(msh->myenv);
-		print_vars(msh->myenv);
-		return (0);
-	}
+		return (sort_vars_list(msh->myenv), print_vars(msh->myenv), 0);
 	i = 1;
 	while (command->arguments[i])
 	{
@@ -130,12 +127,14 @@ int	export(t_msh *msh, t_command *command)
 		if (new_var)
 		{
 			if (!add_or_update_var(&msh->myenv, new_var->key, new_var->value))
-				return (EXIT_FAILURE);
+				return (1);
 			free(new_var->key);
 			free(new_var->value);
 			free(new_var);
 		}
+		else
+			return (1);
 		i++;
 	}
-	return 0;
+	return (0);
 }

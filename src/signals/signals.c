@@ -4,16 +4,28 @@ void	sigint_reset_prompt(int signal)
 {
 	(void)signal;
 	g_signal_code = signal;
-	write(1, "\n", 1);
+	ft_putchar_fd('\n', 2);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
 
-void	signal_newline(int signal)
+void	sigint_newline(int signal)
 {
-	(void)signal;
 	g_signal_code = signal;
+	ft_putchar_fd('\n', 2);
+	rl_on_new_line();
+}
+
+void	sigquit_newline(int signal)
+{
+	char	*message;
+
+	message = ft_strjoin("Quit ", ft_itoa(signal));
+	g_signal_code = signal;
+	ft_putstr_fd(message, 2);
+	ft_putchar_fd('\n', 2);
+	free(message);
 	rl_on_new_line();
 }
 
@@ -30,13 +42,17 @@ void	sig_ignore(void)
 
 void	set_signals_child(void)
 {
-	struct sigaction	sa;
+	struct sigaction	sa_sigint;
+	struct sigaction	sa_sigquit;
 
-	ft_bzero(&sa, sizeof(sa));
-	sa.sa_handler = &signal_newline;
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
+	ft_bzero(&sa_sigint, sizeof(sa_sigint));
+	ft_bzero(&sa_sigquit, sizeof(sa_sigquit));
+	sa_sigint.sa_handler = &sigint_newline;
+	sa_sigquit.sa_handler = &sigquit_newline;
+	sa_sigint.sa_flags = SA_RESTART;
+	sa_sigquit.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_sigint, NULL);
+	sigaction(SIGQUIT, &sa_sigquit, NULL);
 }
 
 void	set_signals_parent(void)
