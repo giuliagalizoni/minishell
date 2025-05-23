@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:06:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 15:17:51 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:20:21 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,60 +103,6 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 
 	return (success);
 }
-
-
-// static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
-// {
-// 	char	*key;
-// 	char	*value;
-// 	char	*remainder;
-// 	char	*combined;
-// 	char	**split_value;
-// 	int		var_length;
-// 	int		success;
-
-// 	// Determine where the variable ends
-// 	var_length = 1;
-// 	while (token[var_length] && ft_isalnum(token[var_length]))
-// 		var_length++;
-
-// 	// Extract the key
-// 	key = ft_substr(token, 1, var_length - 1);
-// 	if (!key)
-// 		return (perror("failed creating key substring"), 0);
-
-// 	// Extract the remainder
-// 	remainder = ft_strdup(token + var_length);
-// 	if (!remainder)
-// 		return (free(key), perror("failed duplicating remainder"), 0);
-
-// 	// Get the value
-// 	value = get_var_value(msh->myenv, key);
-// 	free(key);
-
-// 	// Combine value and remainder
-// 	if (value)
-// 		combined = ft_strjoin(value, remainder);
-// 	else
-// 		combined = ft_strdup(remainder);
-// 	free(remainder);
-// 	if (!combined)
-// 		return (perror("failed combining expanded token"), 0);
-
-// 	// Split the combined value into tokens if needed
-// 	split_value = ft_split(combined, ' ');
-// 	free(combined);
-// 	if (!split_value)
-// 		return (perror("failed splitting expanded token"), 0);
-
-// 	// Push each split token into new_tokens
-// 	success = 1;
-// 	for (int i = 0; split_value[i] && success; i++)
-// 		success = safe_arr_push(new_tokens, split_value[i]);
-// 	free_arr((void **)split_value);
-
-// 	return (success);
-// }
 
 static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 {
