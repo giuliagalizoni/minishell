@@ -3,39 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   process_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: giuliagalizoni <giuliagalizoni@student.    +#+  +:+       +#+        */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:06:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/22 23:22:13 by giuliagaliz      ###   ########.fr       */
+/*   Updated: 2025/05/23 15:17:51 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-// static int	retokenize(char ***new_tokens, char *value)
-// {
-// 	char	**temp_tokens;
-// 	int		i;
-// 	int		success;
-
-// 	temp_tokens = ft_split(value, ' ');
-// 	if (!temp_tokens)
-// 	{
-// 		perror("ft_split failed or returned no words");
-// 		return (0);
-// 	}
-// 	i = 0;
-// 	success = 1;
-// 	while (temp_tokens[i] && success)
-// 	{
-// 		success = safe_arr_push(new_tokens, temp_tokens[i]);
-// 		i++;
-// 	}
-// 	free_arr((void **)temp_tokens);
-// 	if (!success)
-// 		return (0);
-// 	return (1);
-// }
 
 static int	handle_single_quote(char *token, char ***new_tokens)
 {
@@ -56,67 +31,130 @@ static int	handle_single_quote(char *token, char ***new_tokens)
 	return (success);
 }
 
-static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
+static int	extract_key_and_remainder(char *token, char **key, char **remainder)
 {
-	char	*key;
-	char	*value;
-	char	*remainder;
-	char	*expanded_token;
-	int		var_length;
-	int		success;
+	int	var_length;
 
-	// Determine where the variable ends (e.g., `$VARtest`)
-	var_length = 1; // Start after `$`
+	var_length = 1;
 	while (token[var_length] && ft_isalnum(token[var_length]))
 		var_length++;
-
-	// Extract the variable key
-	key = ft_substr(token, 1, var_length - 1); // Skip `$` and take only the key part
-	if (!key)
+	*key = ft_substr(token, 1, var_length - 1);
+	if (!(*key))
 		return (perror("failed creating key substring"), 0);
+	*remainder = ft_strdup(token + var_length);
+	if (!(*remainder))
+	{
+		free(*key);
+		return (perror("failed duplicating remainder"), 0);
+	}
+	return (1);
+}
 
-	// Extract the remainder (if any, e.g., `test` in `$VARtest`)
-	remainder = ft_strdup(token + var_length);
-	if (!remainder)
-		return (free(key), perror("failed duplicating remainder"), 0);
+static char	*expand_and_combine(char *key, char *remainder, t_msh *msh)
+{
+	char	*value;
+	char	*combined;
 
-	// Get the value of the variable
 	value = get_var_value(msh->myenv, key);
 	free(key);
-
-	// Combine expanded value and remainder
 	if (value)
-		expanded_token = ft_strjoin(value, remainder);
+		combined = ft_strjoin(value, remainder);
 	else
-		expanded_token = ft_strdup(remainder);
-
+		combined = ft_strdup(remainder);
 	free(remainder);
-	if (!expanded_token)
-		return (perror("failed combining expanded token"), 0);
+	return (combined);
+}
 
-	// Push the expanded token to new_tokens
-	success = safe_arr_push(new_tokens, expanded_token);
-	free(expanded_token);
+static int	push_split_tokens(char *combined, char ***new_tokens)
+{
+	char	**split_value;
+	int		success;
+	int		i;
 
+	split_value = ft_split(combined, ' ');
+	if (!split_value)
+		return (perror("failed splitting expanded token"), 0);
+	success = 1;
+	for (i = 0; split_value[i] && success; i++)
+		success = safe_arr_push(new_tokens, split_value[i]);
+	free_arr((void **)split_value);
 	return (success);
 }
 
+static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
+{
+	char	*key;
+	char	*remainder;
+	char	*combined;
+	int		success;
+
+	// Extract key and remainder
+	if (!extract_key_and_remainder(token, &key, &remainder))
+		return (0);
+
+	// Expand variable and combine with remainder
+	combined = expand_and_combine(key, remainder, msh);
+	if (!combined)
+		return (perror("failed combining expanded token"), 0);
+
+	// Push tokens to new_tokens
+	success = push_split_tokens(combined, new_tokens);
+	free(combined);
+
+	return (success);
+}
 
 
 // static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 // {
 // 	char	*key;
 // 	char	*value;
+// 	char	*remainder;
+// 	char	*combined;
+// 	char	**split_value;
+// 	int		var_length;
 // 	int		success;
 
-// 	success = 1;
-// 	key = ft_substr(token, 1, ft_strlen(token) - 1);
+// 	// Determine where the variable ends
+// 	var_length = 1;
+// 	while (token[var_length] && ft_isalnum(token[var_length]))
+// 		var_length++;
+
+// 	// Extract the key
+// 	key = ft_substr(token, 1, var_length - 1);
 // 	if (!key)
 // 		return (perror("failed creating key substring"), 0);
+
+// 	// Extract the remainder
+// 	remainder = ft_strdup(token + var_length);
+// 	if (!remainder)
+// 		return (free(key), perror("failed duplicating remainder"), 0);
+
+// 	// Get the value
 // 	value = get_var_value(msh->myenv, key);
 // 	free(key);
+
+// 	// Combine value and remainder
 // 	if (value)
-// 		success = retokenize(new_tokens, value);
+// 		combined = ft_strjoin(value, remainder);
+// 	else
+// 		combined = ft_strdup(remainder);
+// 	free(remainder);
+// 	if (!combined)
+// 		return (perror("failed combining expanded token"), 0);
+
+// 	// Split the combined value into tokens if needed
+// 	split_value = ft_split(combined, ' ');
+// 	free(combined);
+// 	if (!split_value)
+// 		return (perror("failed splitting expanded token"), 0);
+
+// 	// Push each split token into new_tokens
+// 	success = 1;
+// 	for (int i = 0; split_value[i] && success; i++)
+// 		success = safe_arr_push(new_tokens, split_value[i]);
+// 	free_arr((void **)split_value);
+
 // 	return (success);
 // }
 
