@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 17:22:04 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 16:45:57 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:53:15 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,32 @@ int	process_inner(char *content, t_msh *msh, char ***new_tokens)
 	return (success);
 }
 
+char	*remove_double_quotes(const char *str)
+{
+	size_t	i;
+	size_t	j;
+	char	*new_str;
+
+	if (!str)
+		return (NULL);
+	new_str = malloc(ft_strlen(str) + 1);
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '"')
+		{
+			new_str[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
 int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 {
 	char	*inner_content;
@@ -109,7 +135,7 @@ int	handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh)
 	}
 	else
 	{
-		final_value_to_push = remove_quotes(expanded);
+		final_value_to_push = remove_double_quotes(expanded);
 		if (!final_value_to_push)
 			return (perror("remove_quotes failed"), free(expanded), 0);
 	}
