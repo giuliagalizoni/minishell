@@ -19,7 +19,7 @@ static void	msh_init(t_msh *msh, char **envp)
 
 static void	parse_and_execute(t_msh *msh, char *line)
 {
-	msh->command = parser(line, msh);
+	msh->exit_status = parser(line, msh);
 	msh->num_cmds = count_commands(msh->command);
 	/*
 	if (!process(msh)) // TODO wrap in if success?
