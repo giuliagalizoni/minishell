@@ -84,6 +84,8 @@ int			output_redirection(t_outfile *outfile);
 // parser
 int			parser(char *line, t_msh *msh);
 t_command	*analyser(char **tokens, int index, t_msh *msh);
+int			is_shell_operator(char *s);
+
 // lexer
 int			lexer(char *line, char ***tokens);
 int			process_token(char *line, int *i, char ***tokens, char *result);
