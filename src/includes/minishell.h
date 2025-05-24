@@ -83,8 +83,10 @@ int			input_redirection(t_command *command);
 int			output_redirection(t_outfile *outfile);
 
 // parser
-t_command	*parser(char *line, t_msh *msh);
+int			parser(char *line, t_msh *msh);
 t_command	*analyser(char **tokens, int index, t_msh *msh);
+int			is_shell_operator(char *s);
+
 // lexer
 int			lexer(char *line, char ***tokens);
 int			process_token(char *line, int *i, char ***tokens, char *result);
@@ -135,7 +137,7 @@ void		sig_ignore(void);
 t_vars		*init_envp(char **envp);
 // int			print_env(t_vars *myenv);
 //unset
-int			unset(t_msh *msh);
+int			unset(t_msh *msh, t_command *command);
 //expand var
 char		*get_var_value(t_vars *head, char *key);
 char		**expand_and_retokenize(char **tokens, t_msh *msh);
