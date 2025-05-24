@@ -69,7 +69,7 @@ t_vars	*init_envp(char **envp)
 	return (head);
 }
 
-static int	update_var_value(t_vars *var, const char *value)
+int	update_var_value(t_vars *var, const char *value)
 {
 	free(var->value);
 	if (value)
