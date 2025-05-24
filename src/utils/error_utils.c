@@ -50,6 +50,10 @@ int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *e
 		tmp = ft_strjoin(err_str, err_msg);
 		free(err_str);
 		err_str = tmp;
+		ft_putstr_fd(err_str, STDERR_FILENO);
+		ft_putchar_fd('\n', STDERR_FILENO);
+		free(err_str);
+		return (status);
 	}
 	perror(err_str);
 	free(err_str);
