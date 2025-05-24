@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: giuliagalizoni <giuliagalizoni@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:06:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 17:34:44 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/24 15:19:34 by giuliagaliz      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,12 @@ int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 		if (token[1] == '?')
 			success = handle_exit_status(msh, new_tokens);
 		else
-			success = handle_unquoted_var(token, msh, new_tokens);
+		{
+			if (ft_strchr(token + 1, '$'))
+				success = handle_mixed_token(token, new_tokens, msh);
+			else
+				success = handle_unquoted_var(token, msh, new_tokens);
+		}
 	}
 	else
 		success = handle_mixed_token(token, new_tokens, msh);

@@ -113,6 +113,8 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		exit_process(msh, command, NULL, "Permission denied", 126);
 	else
 	{
+		if (!command->name)
+			exit(0);
 		envp = myenv_to_envp(msh->myenv);
 		if (execve(command->path, command->arguments, envp) == -1)
 		{

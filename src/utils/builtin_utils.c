@@ -2,6 +2,8 @@
 
 int	is_builtin(char *name)
 {
+	if (!name)
+		return (0);
 	if (is_equal(name, "echo") || is_equal(name, "cd") || is_equal(name, "pwd"))
 		return (1);
 	if (is_equal(name, "export") || is_equal(name, "unset")
