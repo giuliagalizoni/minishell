@@ -22,32 +22,28 @@ void	exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int 
 
 int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_msg)
 {
-	char	*cmd_str;
 	char	*tmp;
 	char	*err_str;
 
-	cmd_str = NULL;
 	if (has_prefix)
 		err_str = ft_strdup("conchinha: ");
 	else
 		err_str = ft_strdup("");
 	if (command->name)
 	{
-		cmd_str = ft_strjoin(command->name, ": ");
-		tmp = ft_strjoin(err_str, cmd_str);
+		tmp = ft_strjoin(err_str, command->name);
 		free(err_str);
-		free(cmd_str);
 		err_str = tmp;
 	}
 	if (arg)
 	{
-		tmp = ft_triplestrjoin(err_str, arg, ": ");
+		tmp = ft_triplestrjoin(err_str, ": ", arg);
 		free(err_str);
 		err_str = tmp;
 	}
 	if (err_msg)
 	{
-		tmp = ft_strjoin(err_str, err_msg);
+		tmp = ft_triplestrjoin(err_str, ": ", err_msg);
 		free(err_str);
 		err_str = tmp;
 		ft_putstr_fd(err_str, STDERR_FILENO);
