@@ -13,6 +13,7 @@ t_vars	*find_var(t_vars *var, char *key)
 int	cd(t_command *command, t_vars *myenv)
 {
 	char	pwd[PATH_MAX];
+	struct stat	st;
 
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
@@ -21,16 +22,8 @@ int	cd(t_command *command, t_vars *myenv)
 		return (ft_perror(command, NULL, 1, 1, "too many arguments"));
 	else
 	{
-		/*
-		if (stat(command->arguments[1]) == -1)
-		{
-			if (errno == ENOENT)
-				return (ft_perror(command, command->arguments[1], 1, 1, "No such file or directory"));
-			else
-				return (ft_perror(command, command->arguments[1], 1, 1, NULL));
-		}
-		*/
-					
+		if (stat(command->arguments[1], &st) == -1)
+			return (ft_perror(command, command->arguments[1], 1, 1, "No such file or directory"));
 		if (chdir(command->arguments[1]) != 0)
 			return (ft_perror(command, command->arguments[1], 1, 1, NULL));
 		else
