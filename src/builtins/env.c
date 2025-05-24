@@ -30,7 +30,7 @@ char	*get_var_value(t_vars *head, char *key)
 int	env(t_msh *msh, t_command *command)
 {
 	if (command->arguments[1])
-		return (ft_perror(command, command->arguments[1], 127, 0));
+		return (ft_perror(command, command->arguments[1], 127, 0, NULL));
 	print_env(msh->myenv);
 	return (0);
 }

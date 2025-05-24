@@ -15,6 +15,7 @@ void	command_init(t_command *command)
 	command->index = 0;
 }
 
+// TODO CLEAN THIS UP
 // void	set_command_paths(t_command *command, char **envp)
 // {
 // 	char	*full_cmd_path;
@@ -57,6 +58,15 @@ void	clear_command_chain(t_command *command)
 	free(command);
 }
 
+int	is_directory(const char *path)
+{
+	struct stat	statbuf;
+	if (stat(path, &statbuf) != 0)
+		return (0);
+	return (S_ISDIR(statbuf.st_mode));
+}
+
+// TODO CLEAN THIS UP
 // void	clear_command_chain(t_command *command)
 // {
 // 	t_command	*tmp;
