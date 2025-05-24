@@ -14,10 +14,10 @@ int	return_error(char *error_msg)
 
 void	exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status)
 {
-	ft_perror(command, arg, status, 1, err_msg);
+	if (status != 0)
+		ft_perror(command, arg, status, 1, err_msg);
 	cleanup(msh);
-	if (status >= 0)
-		exit(status);
+	exit(status);
 }
 
 int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_msg)

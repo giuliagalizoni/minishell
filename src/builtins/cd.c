@@ -21,6 +21,16 @@ int	cd(t_command *command, t_vars *myenv)
 		return (ft_perror(command, NULL, 1, 1, "too many arguments"));
 	else
 	{
+		/*
+		if (stat(command->arguments[1]) == -1)
+		{
+			if (errno == ENOENT)
+				return (ft_perror(command, command->arguments[1], 1, 1, "No such file or directory"));
+			else
+				return (ft_perror(command, command->arguments[1], 1, 1, NULL));
+		}
+		*/
+					
 		if (chdir(command->arguments[1]) != 0)
 			return (ft_perror(command, command->arguments[1], 1, 1, NULL));
 		else
