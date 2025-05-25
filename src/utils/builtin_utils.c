@@ -30,7 +30,7 @@ int	builtin_router(t_msh *msh, t_command *command)
 	else if (is_equal(command->name, "cd"))
 		status = cd(command, msh->myenv);
 	else if (is_equal(command->name, "pwd"))
-		status = pwd();
+		status = pwd(command);
 	else if (is_equal(command->name, "unset"))
 		status = unset(msh, command);
 	msh->exit_status = status;

@@ -7,7 +7,7 @@ void	exit_shell(t_msh *msh)
 	// e.g., by the exit builtin parsing its argument, or by the last command executed.
 	clear_command_chain(msh->command);
 	clean_myenv(msh->myenv);
-	rl_clear_history();
+	// rl_clear_history();
 	// printf("byeeeeeee conchinha exit status: %d\n", msh->exit_status);
 	exit(msh->exit_status);
 }
