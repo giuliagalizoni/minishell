@@ -100,7 +100,7 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		}
 	}
 	else if (command->input_redirect && command->input_redirect[0] != NULL)
-		if (!input_redirection(command))
+		if (!input_redirection(command)) // TODO we r printing twice
 			exit_process(msh, command, NULL, "input redirection failed", EXIT_FAILURE);
 	if (command->outfile)
 		if (!output_redirection(command->outfile))
