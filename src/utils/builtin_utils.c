@@ -28,7 +28,7 @@ int	builtin_router(t_msh *msh, t_command *command)
 	else if (is_equal(command->name, "env"))
 		status = env(msh, command);
 	else if (is_equal(command->name, "cd"))
-		status = cd(command);
+		status = cd(command, msh->myenv);
 	else if (is_equal(command->name, "pwd"))
 		status = pwd();
 	else if (is_equal(command->name, "unset"))
@@ -40,5 +40,5 @@ int	builtin_router(t_msh *msh, t_command *command)
 void	child_builtin(t_msh *msh, t_command *command)
 {
 	msh->exit_status = builtin_router(msh, command);
-	exit_process(msh, NULL, msh->exit_status);
+	exit_process(msh, command, NULL, NULL, msh->exit_status);
 }
