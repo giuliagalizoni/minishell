@@ -114,7 +114,7 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	else
 	{
 		if (!command->name)
-			exit(0);
+			exit_process(msh, command, NULL,  NULL, EXIT_SUCCESS);
 		envp = myenv_to_envp(msh->myenv);
 		if (execve(command->path, command->arguments, envp) == -1)
 		{
