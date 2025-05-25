@@ -26,15 +26,6 @@ void	find_and_delete(t_vars **head, char *key)
 	}
 }
 
-static int	invalid_option_error(t_command *cmd, char* arg, int status)
-{
-	write(2, "conchinha: ", 11);
-	write(2, cmd->name, ft_strlen(cmd->name));
-	write(2, ": ", 2);
-	write(2, arg, ft_strlen(arg));
-	write(2, ": invalid option\n", 17);
-	return (status);
-}
 
 int	unset(t_msh *msh, t_command *command)
 {
