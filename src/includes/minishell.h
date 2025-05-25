@@ -163,7 +163,9 @@ int			validate_key(char	*key);
 // heredoc
 int		handle_heredoc(t_command *command, t_msh *msh);
 int		process_heredocs(t_msh *msh);
-int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
+// int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
+int	process_expansion(char *line, int *i, t_msh *msh, char ***parts, char quote);
+
 int			process_line(char *line, t_msh *msh, char ***parts);
 
 char		*expand_inline(char *line, t_msh *msh);

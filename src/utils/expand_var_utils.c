@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_var_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: giuliagalizoni <giuliagalizoni@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 17:22:04 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 17:53:15 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/25 10:49:15 by giuliagaliz      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,16 @@ char	*remove_quotes(const char *str)
 
 	if (!str)
 		return (NULL);
+
 	new_str = malloc(ft_strlen(str) + 1);
 	if (!new_str)
 		return (NULL);
+
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
+		// Ignore both single and double quotes
 		if (str[i] != '\'' && str[i] != '"')
 		{
 			new_str[j] = str[i];
@@ -37,6 +40,33 @@ char	*remove_quotes(const char *str)
 	new_str[j] = '\0';
 	return (new_str);
 }
+
+
+// char	*remove_quotes(const char *str)
+// {
+// 	size_t	i;
+// 	size_t	j;
+// 	char	*new_str;
+
+// 	if (!str)
+// 		return (NULL);
+// 	new_str = malloc(ft_strlen(str) + 1);
+// 	if (!new_str)
+// 		return (NULL);
+// 	i = 0;
+// 	j = 0;
+// 	while (str[i])
+// 	{
+// 		if (str[i] != '\'' && str[i] != '"')
+// 		{
+// 			new_str[j] = str[i];
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// 	new_str[j] = '\0';
+// 	return (new_str);
+// }
 
 int	handle_exit_status(t_msh *msh, char ***new_tokens)
 {
