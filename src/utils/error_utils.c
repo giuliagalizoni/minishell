@@ -55,3 +55,13 @@ int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *e
 	free(err_str);
 	return (status);
 }
+
+int	invalid_option_error(t_command *cmd, char* arg, int status)
+{
+	ft_putstr_fd("conchinha: ", STDERR_FILENO);
+	ft_putstr_fd(cmd->name, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putstr_fd(": invalid option\n", STDERR_FILENO);
+	return (status);
+}
