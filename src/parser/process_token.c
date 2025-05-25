@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   process_token.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: giuliagalizoni <giuliagalizoni@student.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/20 15:06:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/24 15:19:34 by giuliagaliz      ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
@@ -169,6 +158,7 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 	if (!processed)
 		return (perror("remove_quotes failed"), 0);
 	success = safe_arr_push(new_tokens, processed);
+	free(processed);
 	return (success);
 }
 
