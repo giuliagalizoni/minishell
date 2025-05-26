@@ -153,7 +153,11 @@ int	process(t_msh *msh)
 		return (0);
 
 	if (!process_heredocs(msh))
+	{
+//		sigint_reset_prompt(SIGINT);
+//		clear_command_chain(msh->command);
 		return (0);
+	}
 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
 		return (single_parent_process(msh));
 	status = 0;

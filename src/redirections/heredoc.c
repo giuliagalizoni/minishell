@@ -12,13 +12,27 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	int		pipe_fd[2];
 	char	*line;
 	char	*expanded_line;
+//	struct sigaction sa_heredoc;
+//	struct sigaction sa_original_sigint;
 
 	if (pipe(pipe_fd) == -1)
 		error_cleanup(msh);
 	command->heredoc_fd = pipe_fd[0];
+//	sigemptyset(&sa_heredoc.sa_mask);
+//	sa_heredoc.sa_flags = 0;
+//	sa_heredoc.sa_handler = sigint_heredoc_handler;
+//	if (sigaction(SIGINT, &sa_heredoc, &sa_original_sigint) == -1)
+//		error_cleanup(msh);
 	while (1)
 	{
 		line = readline("> ");
+		if (g_signal_code == SIGINT)
+		{
+			if (line)
+				free(line);
+			ft_putchar_fd('\n', STDERR_FILENO);
+			break ;
+		}
 		if (!line || is_equal(line, command->heredoc_delimiter))
 		{
 			free(line);
@@ -30,6 +44,8 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 			write_line(pipe_fd, expanded_line);
 	}
 	close(pipe_fd[1]);
+//	if (sigaction(SIGINT, &sa_original_sigint, NULL) == -1)
+//		error_cleanup(msh);
 	return (1);
 }
 

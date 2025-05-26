@@ -1,8 +1,13 @@
 #include "../includes/minishell.h"
 
+void	sigint_heredoc_handler(int signal)
+{
+	g_signal_code = signal;
+	rl_done = 1;
+}
+
 void	sigint_reset_prompt(int signal)
 {
-	(void)signal;
 	g_signal_code = signal;
 	ft_putchar_fd('\n', 2);
 	rl_on_new_line();
@@ -38,6 +43,16 @@ void	sig_ignore(void)
 	sa.sa_handler = SIG_IGN;
 	sa.sa_flags = 0;
 	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	set_signals_heredoc(void)
+{
+	struct sigaction	sa_sigint;
+
+	ft_bzero(&sa_sigint, sizeof(sa_sigint));
+	sa_sigint.sa_handler = &sigint_reset_prompt;
+	sa_sigint.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_sigint, NULL);
 }
 
 void	set_signals_child(void)

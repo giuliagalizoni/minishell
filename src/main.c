@@ -68,10 +68,17 @@ int	main(int argc, char **argv, char **envp)
 	msh_init(&msh, envp);
 	while (!msh.exit)
 	{
+		g_signal_code = 0;
 		set_signals_parent();
 		line = readline("🐚\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
 		if (g_signal_code == SIGINT)
+		{
+//			sigint_reset_prompt(SIGINT);
+//			if (line)
+//				free(line);
 			msh.exit_status = 130;
+//			continue ;
+		}
 		else if (g_signal_code == SIGQUIT)
 			msh.exit_status = 131;
 		g_signal_code = -1;
