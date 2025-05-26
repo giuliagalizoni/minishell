@@ -17,8 +17,41 @@ static void	msh_init(t_msh *msh, char **envp)
 	print_banner();
 }
 
+#include <stdbool.h>
+
+#include <stdbool.h>
+
+int contains_only_quotes(const char *str)
+{
+	int single_count = 0;
+	int double_count = 0;
+	int i = 0;
+
+	if (!str)
+		return 0;
+	while (str[i])
+	{
+		if (str[i] == '\'')
+			single_count++;
+		else if (str[i] == '\"')
+			double_count++;
+		else
+			return 0;
+		i++;
+	}
+	return (single_count % 2 == 0) && (double_count % 2 == 0);
+}
+
+
+
 static void	parse_and_execute(t_msh *msh, char *line)
 {
+	if (contains_only_quotes(line))
+	{
+		ft_putstr_fd("conchinha: : command not found\n", 2);
+		msh->exit_status = 127;
+		return ;
+	}
 	msh->exit_status = parser(line, msh);
 	msh->num_cmds = count_commands(msh->command);
 	/*

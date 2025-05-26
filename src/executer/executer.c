@@ -107,7 +107,7 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 			exit_process(msh, command, NULL, "output redirection failed", EXIT_FAILURE);
 	if (is_builtin(command->name))
 		child_builtin(msh, command);
-	if (is_directory(command->path))
+	if (command->path && is_directory(command->path))
 		exit_process(msh, command, NULL, "Is a directory", 126);
 	if (command->path && access(command->path, X_OK))
 		exit_process(msh, command, NULL, "Permission denied", 126);
