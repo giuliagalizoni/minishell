@@ -19,7 +19,14 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || is_equal(line, command->heredoc_delimiter))
+		if (!line)
+		{
+			//TODO too many semicolon
+			ft_perror(command, NULL, 1, "warning: here-document delimited by end-of-file");
+			free(line);
+			break ;
+		}
+		if (is_equal(line, command->heredoc_delimiter))
 		{
 			free(line);
 			break ;
