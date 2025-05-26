@@ -12,7 +12,7 @@ int	input_redirection(t_command *command)
 		if (file == -1)
 		{
 			// TODO use the error function.
-			ft_perror(command, command->input_redirect[i], 1, 1, NULL);
+			// ft_perror(command, command->input_redirect[i], 1, 1, NULL);
 			// perror("Bad file descriptor");
 			return (0);
 		}
