@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/26 11:58:53 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:53:39 by marcampo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,12 +123,12 @@ int	parser(char *line, t_msh *msh)
 	char	**retokens;
 
 	if (!line)
-		return (0);
+		return (1);
 	tokens = NULL;
 	if (!lexer(line, &tokens))
-		return (0);
+		return (1);
 	if (!tokens)
-		return (0);
+		return (1);
 	if (tokens && !check_invalid_syntax(tokens))
 	{
 		free_arr((void **)tokens);
@@ -141,5 +141,5 @@ int	parser(char *line, t_msh *msh)
 		return (2);
 	free_arr((void **)tokens);
 	free_arr((void **)retokens);
-	return (1);
+	return (0);
 }
