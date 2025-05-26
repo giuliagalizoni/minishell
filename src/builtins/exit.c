@@ -8,9 +8,9 @@ void	exit_shell(t_msh *msh, t_command *command)
 	{
 		arg_len = array_length((void **)command->arguments);
 		if (arg_len > 1 && !is_num_string(command->arguments[1]))
-			msh->exit_status = ft_perror(command, command->arguments[1], 0, 1, "numeric argument required");
+			msh->exit_status = ft_perror(command, command->arguments[1], 0, "numeric argument required");
 		else if (arg_len > 2)
-			msh->exit_status = ft_perror(command, NULL, 1, 1, "too many arguments");
+			msh->exit_status = ft_perror(command, NULL, 1, "too many arguments");
 		if (arg_len == 2 && is_num_string(command->arguments[1]))
 				msh->exit_status = ft_atoi(command->arguments[1]);
 		else
@@ -22,7 +22,7 @@ void	exit_shell(t_msh *msh, t_command *command)
 	clear_command_chain(msh->command);
 	clean_myenv(msh->myenv);
 	rl_clear_history();
-	
+
 	if (msh->num_cmds < 2)
 		ft_putstr_fd("exit\n", STDERR_FILENO);
 	exit(msh->exit_status);

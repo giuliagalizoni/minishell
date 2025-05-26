@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 16:45:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/26 16:45:26 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 19:17:51 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ char	*get_var_value(t_vars *head, char *key)
 int	env(t_msh *msh, t_command *command)
 {
 	if (command->arguments[1])
-		return (ft_perror(command, command->arguments[1], 127, 0, NULL));
+	// change for a function with no predix
+		return (ft_perror(command, command->arguments[1], 127, NULL));
 	print_env(msh->myenv);
 	return (0);
 }
