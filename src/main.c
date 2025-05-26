@@ -17,10 +17,6 @@ static void	msh_init(t_msh *msh, char **envp)
 	print_banner();
 }
 
-#include <stdbool.h>
-
-#include <stdbool.h>
-
 int contains_only_quotes(const char *str)
 {
 	int single_count = 0;
@@ -41,8 +37,6 @@ int contains_only_quotes(const char *str)
 	}
 	return (single_count % 2 == 0) && (double_count % 2 == 0);
 }
-
-
 
 static void	parse_and_execute(t_msh *msh, char *line)
 {

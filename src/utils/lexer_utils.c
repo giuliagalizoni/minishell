@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 17:21:12 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/20 17:21:13 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 14:14:51 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	push_token(char ***tokens, char *result)
 	if (result[0])
 	{
 		token = ft_strdup(result);
-		arr_push(tokens, token);
+		safe_arr_push(tokens, token);
 		free(token);
 		result[0] = '\0';
 	}
