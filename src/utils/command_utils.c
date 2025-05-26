@@ -30,6 +30,22 @@ void	command_init(t_command *command)
 // 	}
 // }
 
+static void	clear_outfile_list(t_outfile *head)
+{
+	t_outfile	*current;
+	t_outfile	*next_node;
+
+	current = head;
+	while (current)
+	{
+		next_node = current->next;
+		if (current->filename)
+			free(current->filename);
+		free(current);
+		current = next_node;
+	}
+}
+
 void	clear_command_chain(t_command *command)
 {
 	if (!command)
@@ -51,9 +67,7 @@ void	clear_command_chain(t_command *command)
 		free(command->heredoc_delimiter);
 	if (command->outfile)
 	{
-		if (command->outfile->filename)
-			free(command->outfile->filename);
-		free(command->outfile);
+		clear_outfile_list(command->outfile);
 		command->outfile = NULL;
 	}
 	free(command);
