@@ -35,11 +35,20 @@ int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *e
 		free(err_str);
 		err_str = tmp;
 	}
-	if (arg)
+	if (arg && !command->name)
 	{
-		tmp = ft_triplestrjoin(err_str, ": ", arg);
+		tmp = ft_strjoin(err_str, arg);
 		free(err_str);
 		err_str = tmp;
+	}
+	else
+	{
+		if (arg)
+		{
+			tmp = ft_triplestrjoin(err_str, ": ", arg);
+			free(err_str);
+			err_str = tmp;
+		}
 	}
 	if (err_msg)
 	{
