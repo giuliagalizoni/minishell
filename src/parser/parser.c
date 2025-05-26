@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 16:14:38 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 11:58:53 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ static int	set_name(t_command *command, char **tokens, t_vars *myenv)
 		command->name = ft_strdup(tokens[i]);
 		if (!command->name)
 			return (perror("malloc failed for command name"), 0);
-		command->path = get_cmd_path(command->name, myenv);
+		if (!is_equal(tokens[i], ""))
+			command->path = get_cmd_path(command->name, myenv);
 	}
 	return (1);
 }
