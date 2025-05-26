@@ -109,7 +109,8 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 		return (free(command), NULL);
 	i = 0;
 	while (tokens[i])
-	{
+	{ctrl-c when heredoc
+ctrl-d when heredoc
 		if (!process_command(command, tokens, &i, msh))
 			break ;
 		i++;
@@ -123,12 +124,12 @@ int	parser(char *line, t_msh *msh)
 	char	**retokens;
 
 	if (!line)
-		return (0);
+		return (1);
 	tokens = NULL;
 	if (!lexer(line, &tokens))
-		return (0);
+		return (1);
 	if (!tokens)
-		return (0);
+		return (1);
 	if (tokens && !check_invalid_syntax(tokens))
 	{
 		free_arr((void **)tokens);
@@ -141,5 +142,5 @@ int	parser(char *line, t_msh *msh)
 		return (2);
 	free_arr((void **)tokens);
 	free_arr((void **)retokens);
-	return (1);
+	return (0);
 }

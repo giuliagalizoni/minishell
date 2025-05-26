@@ -100,7 +100,7 @@ int			builtin_router(t_msh *msh, t_command *command);
 void		child_builtin(t_msh *msh, t_command *command);
 
 // builtins
-void		exit_shell(t_msh *msh);
+void		exit_shell(t_msh *msh, t_command *command);
 int			echo(t_command *cmd);
 int			export(t_msh *msh, t_command *command);
 int			update_var_value(t_vars *var, const char *value);
@@ -125,6 +125,8 @@ char		*ft_strncat(char *dest, const char *src, size_t n);
 int			p_syntax_error(char *token);
 int			ft_strcmp(char *s1, char *s2);
 char	*ft_triplestrjoin(char *str1, char *str2, char *str3);
+int	is_num_string(char *str);
+int	array_length(void **arr);
 
 //startup
 void		print_banner(void);

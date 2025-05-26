@@ -20,7 +20,7 @@ int	builtin_router(t_msh *msh, t_command *command)
 
 	status = 0;
 	if (is_equal(command->name, "exit"))
-		exit_shell(msh);
+		exit_shell(msh, command);
 	else if (is_equal(command->name, "echo"))
 		status = echo(command);
 	else if (is_equal(command->name, "export"))
