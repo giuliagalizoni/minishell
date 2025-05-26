@@ -44,7 +44,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   redirections/redirection.c\
 	   redirections/heredoc.c\
 	   utils/expand_inline_utils.c\
-	   utils/parser_utils.c)
+	   utils/parser_utils.c\
+	   utils/ft_perror.c)
 
 SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
