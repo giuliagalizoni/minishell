@@ -3,6 +3,7 @@
 void	command_init(t_command *command)
 {
 	command->name = NULL;
+	command->path = NULL;
 	command->arguments = NULL;
 	command->input_redirect = NULL;
 	command->is_heredoc = 0;
