@@ -13,6 +13,7 @@ static void	msh_init(t_msh *msh, char **envp)
 	}
 	msh->exit = 0;
 	msh->exit_status = 0;
+	msh->num_cmds = 0;
 	using_history();
 	print_banner();
 }

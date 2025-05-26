@@ -22,7 +22,8 @@ void	exit_shell(t_msh *msh, t_command *command)
 	clear_command_chain(msh->command);
 	clean_myenv(msh->myenv);
 	rl_clear_history();
-	if (msh->num_cmds == 1)
+	
+	if (msh->num_cmds < 2)
 		ft_putstr_fd("exit\n", STDERR_FILENO);
 	exit(msh->exit_status);
 }
