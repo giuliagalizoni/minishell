@@ -4,6 +4,7 @@ void	error_cleanup(t_msh *msh)
 {
 	cleanup(msh);
 }
+
 // I'll make this function better soon
 int	return_error(char *error_msg)
 {
@@ -15,20 +16,17 @@ int	return_error(char *error_msg)
 void	exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status)
 {
 	if (status != 0)
-		ft_perror(command, arg, status, 1, err_msg);
+		ft_perror(command, arg, status, err_msg);
 	cleanup(msh);
 	exit(status);
 }
 
-int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_msg)
+int	ft_perror(t_command *command, char *arg, int status, char *err_msg)
 {
 	char	*tmp;
 	char	*err_str;
 
-	if (has_prefix)
-		err_str = ft_strdup("conchinha: ");
-	else
-		err_str = ft_strdup("");
+	err_str = ft_strdup("conchinha: ");
 	if (command->name)
 	{
 		tmp = ft_strjoin(err_str, command->name);
