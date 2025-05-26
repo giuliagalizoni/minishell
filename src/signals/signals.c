@@ -20,12 +20,17 @@ void	sigint_newline(int signal)
 void	sigquit_newline(int signal)
 {
 	char	*message;
+	char	*errnum;
 
-	message = ft_strjoin("Quit ", ft_itoa(signal));
+	errnum = ft_itoa(signal);
+	if (!errnum)
+		return ;
+	message = ft_strjoin("Quit ", errnum);
 	g_signal_code = signal;
 	ft_putstr_fd(message, 2);
 	ft_putchar_fd('\n', 2);
 	free(message);
+	free(errnum);
 	rl_on_new_line();
 }
 
