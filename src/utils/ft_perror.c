@@ -75,7 +75,7 @@ int	ft_perror(t_command *command, char *arg, int status, char *err_msg)
 		perror("ft_perror (base)");
 		return (status);
 	}
-	prefix_with_arg = append_argument_to_error_string(base_prefix,
+	prefix_with_arg = append_err_arg(base_prefix,
 			name_added_flag, arg);
 	if (!prefix_with_arg)
 	{
