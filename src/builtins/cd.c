@@ -10,10 +10,11 @@ t_vars	*find_var(t_vars *var, char *key)
 	}
 	return (NULL);
 }
+
 int	cd(t_command *command, t_vars *myenv)
 {
 	char	pwd[PATH_MAX];
-	struct stat	st;
+	struct	stat	st;
 
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
@@ -32,7 +33,6 @@ int	cd(t_command *command, t_vars *myenv)
 			getcwd(pwd, PATH_MAX);
 			update_var_value(find_var(myenv, "PWD"), (const char *)pwd);
 		}
-
 	}
 	return (0);
 }
