@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/26 11:58:53 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:53:39 by marcampo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,7 @@ t_command	*analyser(char **tokens, int index, t_msh *msh)
 		return (free(command), NULL);
 	i = 0;
 	while (tokens[i])
-	{ctrl-c when heredoc
-ctrl-d when heredoc
+	{
 		if (!process_command(command, tokens, &i, msh))
 			break ;
 		i++;
