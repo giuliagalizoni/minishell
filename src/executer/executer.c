@@ -101,13 +101,13 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	}
 	else if (command->input_redirect && command->input_redirect[0] != NULL)
 		if (!input_redirection(command)) // TODO we r printing twice
-			exit_process(msh, command, NULL, "input redirection failed", EXIT_FAILURE);
+			exit_process(msh, command, command->input_redirect[0], NULL, EXIT_FAILURE);
 	if (command->outfile)
 		if (!output_redirection(command->outfile))
 			exit_process(msh, command, NULL, "output redirection failed", EXIT_FAILURE);
 	if (is_builtin(command->name))
 		child_builtin(msh, command);
-	if (is_directory(command->path))
+	if (command->path && is_directory(command->path))
 		exit_process(msh, command, NULL, "Is a directory", 126);
 	if (command->path && access(command->path, X_OK))
 		exit_process(msh, command, NULL, "Permission denied", 126);
@@ -115,6 +115,8 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 	{
 		if (!command->name)
 			exit_process(msh, command, NULL,  NULL, EXIT_SUCCESS);
+		if (!command->path)
+			exit_process(msh, command, NULL, "command not found", 127);
 		envp = myenv_to_envp(msh->myenv);
 		if (execve(command->path, command->arguments, envp) == -1)
 		{

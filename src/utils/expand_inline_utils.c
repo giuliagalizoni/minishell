@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 17:23:04 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/20 17:23:05 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:29:44 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ static int	append_variable(char *line, int *i, t_msh *msh, char ***parts)
 	if (!key)
 		return (0);
 	value = get_var_value(msh->myenv, key);
+	free(key);
 	if (value)
 	{
 		if (!arr_push(parts, value))

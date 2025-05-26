@@ -124,19 +124,14 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 	char	*combined;
 	int		success;
 
-	// Extract key and remainder
+
 	if (!extract_key_and_remainder(token, &key, &remainder))
 		return (0);
-
-	// Expand variable and combine with remainder
 	combined = expand_and_combine(key, remainder, msh);
 	if (!combined)
 		return (perror("failed combining expanded token"), 0);
-
-	// Push tokens to new_tokens
 	success = push_split_tokens(combined, new_tokens);
 	free(combined);
-
 	return (success);
 }
 
@@ -146,6 +141,8 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 	char	*processed;
 	int		success;
 
+	if (is_equal(token, "$"))
+		return safe_arr_push(new_tokens, token);
 	if (ft_strchr(token, '$'))
 	{
 		expanded = expand_inline(token, msh);
