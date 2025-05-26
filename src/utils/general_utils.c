@@ -77,3 +77,29 @@ char	*ft_triplestrjoin(char *str1, char *str2, char *str3)
 	str1_2 = NULL;
 	return (str1_2_3);
 }
+
+int	is_num_string(char *str)
+{
+	while (*str)
+	{
+		if (*str == '-' || *str == '+')
+			str++;
+		if (!isdigit(*str))
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
+int	array_length(void **arr)
+{
+	int	count;
+
+	count = 0;
+	if (*arr)
+	{
+		while (arr[count])
+			count++;
+	}
+	return (count);
+}

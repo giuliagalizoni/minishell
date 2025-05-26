@@ -20,7 +20,7 @@ void	exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int 
 	exit(status);
 }
 
-int	ft_perror(char *command_name, char *arg, int status, int has_prefix, char *err_msg)
+int	ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_msg)
 {
 	char	*tmp;
 	char	*err_str;
@@ -29,9 +29,9 @@ int	ft_perror(char *command_name, char *arg, int status, int has_prefix, char *e
 		err_str = ft_strdup("conchinha: ");
 	else
 		err_str = ft_strdup("");
-	if (command_name)
+	if (command->name)
 	{
-		tmp = ft_strjoin(err_str, command_name);
+		tmp = ft_strjoin(err_str, command->name);
 		free(err_str);
 		err_str = tmp;
 	}

@@ -73,7 +73,7 @@ int	is_directory(const char *path);
 void		error_cleanup(t_msh *msh);
 void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
 int			return_error(char *error_msg);
-int			ft_perror(char *command_name, char *arg, int status, int has_prefix, char *err_str);
+int			ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_str);
 int		invalid_option_error(t_command *cmd, char* arg, int status);
 
 // executer
@@ -100,7 +100,7 @@ int			builtin_router(t_msh *msh, t_command *command);
 void		child_builtin(t_msh *msh, t_command *command);
 
 // builtins
-void		exit_shell(t_msh *msh);
+void		exit_shell(t_msh *msh, t_command *command);
 int			echo(t_command *cmd);
 int			export(t_msh *msh, t_command *command);
 int			update_var_value(t_vars *var, const char *value);
@@ -126,6 +126,7 @@ int			p_syntax_error(char *token);
 int			ft_strcmp(char *s1, char *s2);
 char	*ft_triplestrjoin(char *str1, char *str2, char *str3);
 int	is_num_string(char *str);
+int	array_length(void **arr);
 
 //startup
 void		print_banner(void);
