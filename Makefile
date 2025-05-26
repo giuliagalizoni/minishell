@@ -34,7 +34,6 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   utils/export_utils.c\
 	   utils/lexer_utils.c\
 	   utils/error_utils.c\
-	   utils/file_utils.c\
 	   builtins/exit.c\
 	   builtins/echo.c\
 	   builtins/export.c\
@@ -45,6 +44,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   redirections/redirection.c\
 	   redirections/heredoc.c\
 	   utils/expand_inline_utils.c\
+	   utils/parser_utils.c\
 	   tests.c)
 
 SRCFILES := $(MODULES)

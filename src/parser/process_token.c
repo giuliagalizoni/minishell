@@ -1,34 +1,70 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   process_token.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/20 15:06:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/23 15:20:21 by ggalizon         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
+// static int	handle_single_quote(char *token, char ***new_tokens)
+// {
+// 	char	*inner_content;
+// 	char	*processed;
+// 	int		success;
+
+// 	success = 1;
+// 	inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
+// 	if (!inner_content)
+// 		return (perror("ft_substr failed removing quotes"), 0);
+// 	processed = remove_quotes(inner_content);
+// 	free(inner_content);
+// 	if (!processed)
+// 		return (perror("remove_quotes failed"), 0);
+// 	success = safe_arr_push(new_tokens, processed);
+// 	free(processed);
+// 	return (success);
+// }
+
 static int	handle_single_quote(char *token, char ***new_tokens)
 {
-	char	*inner_content;
-	char	*processed;
-	int		success;
+    char	*inner_content;
+    char	*final_value_to_push;
+    int		success;
 
-	success = 1;
-	inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
-	if (!inner_content)
-		return (perror("ft_substr failed removing quotes"), 0);
-	processed = remove_quotes(inner_content);
-	free(inner_content);
-	if (!processed)
-		return (perror("remove_quotes failed"), 0);
-	success = safe_arr_push(new_tokens, processed);
-	free(processed);
-	return (success);
+    // Extract the content within the outermost single quotes.
+    inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
+    if (!inner_content)
+        return (perror("ft_substr failed for single_quote inner_content"), 0);
+
+    // Check if the extracted inner_content still contains single quotes.
+    if (ft_strchr(inner_content, '\''))
+    {
+        // If inner_content has more single quotes, apply remove_quotes to flatten everything.
+        // remove_quotes is expected to strip all single and double quotes.
+        final_value_to_push = remove_quotes(inner_content);
+        if (!final_value_to_push)
+        {
+            free(inner_content); // Free the result of ft_substr
+            return (perror("remove_quotes failed"), 0);
+        }
+    }
+    else
+    {
+        // If inner_content has no more single quotes (it might have double quotes or be plain),
+        // use it as is. We need to ft_strdup it because inner_content will be freed.
+        final_value_to_push = ft_strdup(inner_content);
+        if (!final_value_to_push)
+        {
+            free(inner_content); // Free the result of ft_substr
+            return (perror("ft_strdup of inner_content failed"), 0);
+        }
+    }
+
+    // At this point, inner_content (from ft_substr) is no longer directly needed,
+    // as its data is either processed by remove_quotes or duplicated by ft_strdup
+    // into final_value_to_push.
+    free(inner_content);
+
+    success = safe_arr_push(new_tokens, final_value_to_push);
+    // Assuming safe_arr_push makes its own copy of final_value_to_push.
+    free(final_value_to_push);
+
+    return (success);
 }
 
 static int	extract_key_and_remainder(char *token, char **key, char **remainder)
@@ -122,6 +158,7 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 	if (!processed)
 		return (perror("remove_quotes failed"), 0);
 	success = safe_arr_push(new_tokens, processed);
+	free(processed);
 	return (success);
 }
 
@@ -141,7 +178,12 @@ int	process_one_token(char *token, t_msh *msh, char ***new_tokens)
 		if (token[1] == '?')
 			success = handle_exit_status(msh, new_tokens);
 		else
-			success = handle_unquoted_var(token, msh, new_tokens);
+		{
+			if (ft_strchr(token + 1, '$'))
+				success = handle_mixed_token(token, new_tokens, msh);
+			else
+				success = handle_unquoted_var(token, msh, new_tokens);
+		}
 	}
 	else
 		success = handle_mixed_token(token, new_tokens, msh);

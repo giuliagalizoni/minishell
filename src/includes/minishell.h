@@ -68,11 +68,14 @@ void		command_init(t_command *command);
 void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
+int	is_directory(const char *path);
 // error_utils
-void		error_cleanup(t_msh *msh, char *error);
-void		exit_process(t_msh *msh, char *error, int exit_code);
+void		error_cleanup(t_msh *msh);
+void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
 int			return_error(char *error_msg);
-int			ft_perror(t_command *command, char *arg, int status, int has_prefix);
+int			ft_perror(t_command *command, char *arg, int status, int has_prefix, char *err_str);
+int		invalid_option_error(t_command *cmd, char* arg, int status);
+
 // executer
 void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
 void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
@@ -84,6 +87,8 @@ int			output_redirection(t_outfile *outfile);
 // parser
 int			parser(char *line, t_msh *msh);
 t_command	*analyser(char **tokens, int index, t_msh *msh);
+int			is_shell_operator(char *s);
+
 // lexer
 int			lexer(char *line, char ***tokens);
 int			process_token(char *line, int *i, char ***tokens, char *result);
@@ -98,9 +103,10 @@ void		child_builtin(t_msh *msh, t_command *command);
 void		exit_shell(t_msh *msh);
 int			echo(t_command *cmd);
 int			export(t_msh *msh, t_command *command);
+int			update_var_value(t_vars *var, const char *value);
 int			env(t_msh *msh, t_command *command);
-int			cd(t_command *command);
-int			pwd(void);
+int			cd(t_command *command, t_vars *myenv);
+int			pwd(t_command *command);
 
 //cleanup_utils
 void		cleanup(t_msh *msh);
@@ -110,6 +116,8 @@ void		clean_myenv(t_vars *myenv);
 int		add_outfile(t_command *cmd, char **tokens,
 				t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
+
+//file_utils
 
 //general_utils
 int			is_equal(char *str1, char *str2);

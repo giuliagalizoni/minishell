@@ -11,6 +11,7 @@ int	input_redirection(t_command *command)
 		file = open(command->input_redirect[i], O_RDONLY);
 		if (file == -1)
 		{
+			// TODO use the error function. 
 			perror("Bad file descriptor");
 			return (0);
 	        }
@@ -38,6 +39,8 @@ int	output_redirection(t_outfile *outfile)
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 		{
+			// TODO use the error function. 
+			// make sure file is created if we get a cmd like cat -e > test1 < test2
 			perror("Bad file descriptor");
 			return (0);
 		}
