@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/27 11:53:20 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/27 15:04:31 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 	}
 	else if (is_equal(tokens[*i], ">") || is_equal(tokens[*i], ">>"))
 	{
-		if (!add_outfile(command, tokens, &command->outfile, i))
+		if (!add_outfile(tokens, &command->outfile, i))
 			return (clear_command_chain(command), 0);
 	}
 	else
