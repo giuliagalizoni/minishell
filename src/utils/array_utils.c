@@ -45,7 +45,20 @@ char	**arr_push(char ***arr, char *str)
 	return (new_arr);
 }
 
-int	envp_len(t_vars *myenv)
+int	array_length(void **arr)
+{
+	int	count;
+
+	count = 0;
+	if (*arr)
+	{
+		while (arr[count])
+			count++;
+	}
+	return (count);
+}
+
+static int	envp_len(t_vars *myenv)
 {
 	int		size;
 
@@ -56,30 +69,6 @@ int	envp_len(t_vars *myenv)
 		myenv = myenv->next;
 	}
 	return (size);
-}
-
-char	**myenv_to_envp(t_vars *myenv)
-{
-	char	**envp;
-	int		size;
-	int		i;
-
-	i = 0;
-	size = envp_len(myenv);
-	envp = (char **)malloc(sizeof(char *) * (size + 1));
-	if (envp == NULL)
-		return (NULL);
-	while (myenv)
-	{
-		if (myenv->value)
-			envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
-		else
-			envp[i] = ft_strdup(myenv->key);
-		i++;
-		myenv = myenv->next;
-	}
-	envp[i] = NULL;
-	return (envp);
 }
 
 int	safe_arr_push(char ***arr, const char *str)

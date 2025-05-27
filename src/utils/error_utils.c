@@ -2,7 +2,7 @@
 
 void	error_cleanup(t_msh *msh)
 {
-	cleanup(msh);
+	cleanup(msh); // why do we have this function?
 }
 
 void	export_error(char *arg)
@@ -11,10 +11,12 @@ void	export_error(char *arg)
 	write(2, arg, ft_strlen(arg));
 	write(2, "\': not a valid identifier\n", 26);
 }
-//figure out how to make this 4 arguments (delete command?)
-void	exit_process(t_msh *msh, t_command *command, char *arg,
-	char *err_msg, int status)
+
+void	exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg)
 {
+	int	status;
+
+	status = msh->exit_status;
 	if (status != 0)
 		ft_perror(command->name, arg, status, err_msg);
 	cleanup(msh);

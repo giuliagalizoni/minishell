@@ -11,7 +11,7 @@ void	print_banner(void)
 	i = 0;
 	fd = open(BANNER_FILE_PATH, O_RDONLY);
 	if (fd == -1)
-		perror("banner file read error"); // TODO exit gracefully
+		perror("banner file read error");
 	printf("\n");
 	line = get_next_line(fd);
 	while (line)

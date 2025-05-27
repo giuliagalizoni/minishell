@@ -52,14 +52,11 @@ static void	parse_and_execute(t_msh *msh, char *line)
 	}
 	msh->exit_status = parser(line, msh);
 	msh->num_cmds = count_commands(msh->command);
-//	if (!process(msh)) // TODO wrap in if success?
-//		return ;
 	process(msh);
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
 }
-
 
 int	main(int argc, char **argv, char **envp)
 {

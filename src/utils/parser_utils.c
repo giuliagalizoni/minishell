@@ -28,6 +28,30 @@ int	p_syntax_error(char *token)
 	return (0);
 }
 
+char	**myenv_to_envp(t_vars *myenv)
+{
+	char	**envp;
+	int		size;
+	int		i;
+
+	i = 0;
+	size = envp_len(myenv);
+	envp = (char **)malloc(sizeof(char *) * (size + 1));
+	if (envp == NULL)
+		return (NULL);
+	while (myenv)
+	{
+		if (myenv->value)
+			envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
+		else
+			envp[i] = ft_strdup(myenv->key);
+		i++;
+		myenv = myenv->next;
+	}
+	envp[i] = NULL;
+	return (envp);
+}
+
 t_vars	*init_envp(char **envp)
 {
 	t_vars	*head;

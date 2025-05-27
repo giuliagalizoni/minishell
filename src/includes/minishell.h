@@ -72,7 +72,7 @@ int			is_directory(const char *path);
 // error_utils
 void		error_cleanup(t_msh *msh);
 void		exit_process(t_msh *msh, t_command *command, char *arg,
-				char *err_msg, int status);
+				char *err_msg);
 void		export_error(char *arg);
 int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 int			invalid_option_error(t_command *cmd, char *arg, int status);
@@ -156,8 +156,6 @@ int			process_quoted_var(char *content, t_msh *msh, char ***new_tokens);
 int			process_inner(char *content, t_msh *msh, char ***new_tokens);
 int			handle_double_quote(char *token, char ***new_tokens,
 				size_t len, t_msh *msh);
-
-
 //check syntax
 int			check_invalid_syntax(char **tokens);
 

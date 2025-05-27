@@ -74,19 +74,20 @@ int	single_parent_process(t_msh *msh)
 
 void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd)
 {
-	char **envp;
+	char	**envp;
 
+	msh->exit_status = 1;
 	if (prev_pipe_read_fd != STDIN_FILENO)
 	{
 		if (dup2(prev_pipe_read_fd, STDIN_FILENO) == -1)
-			exit_process(msh, command, NULL, "dup 2 fail for stdin redirection", EXIT_FAILURE);
+			exit_process(msh, command, NULL, "dup 2 fail for stdin redirection");
 		close(prev_pipe_read_fd);
 	}
 	if (command->index < msh->num_cmds - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			exit_process(msh, command, NULL,  "dup 2 fail for stdout redirection", EXIT_FAILURE);
+			exit_process(msh, command, NULL,  "dup 2 fail for stdout redirection");
 		close(fd[1]);
 	}
 	// ***	HEREDOC ***
@@ -95,34 +96,47 @@ void	child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *f
 		if (command->is_heredoc && command->heredoc_fd != -1)
 		{
 			if (dup2(command->heredoc_fd, STDIN_FILENO) == -1)
-				exit_process(msh, command, NULL, "dup 2 fail for heredoc redirection", EXIT_FAILURE);
+				exit_process(msh, command, NULL, "dup 2 fail for heredoc redirection");
 			close(command->heredoc_fd);
 		}
 	}
 	else if (command->input_redirect && command->input_redirect[0] != NULL)
-		if (!input_redirection(command)) // TODO we r printing twice
-			exit_process(msh, command, command->input_redirect[0], NULL, EXIT_FAILURE);
+		if (!input_redirection(command))
+			exit_process(msh, command, command->input_redirect[0], NULL);
 	if (command->outfile)
 		if (!output_redirection(command->outfile))
-			exit_process(msh, command, NULL, "output redirection failed", EXIT_FAILURE);
+			exit_process(msh, command, NULL, "output redirection failed");
 	if (is_builtin(command->name))
 		child_builtin(msh, command);
 	if (command->path && is_directory(command->path))
-		exit_process(msh, command, NULL, "Is a directory", 126);
+	{
+		msh->exit_status = 126;
+		exit_process(msh, command, NULL, "Is a directory");
+	}
 	if (command->path && access(command->path, X_OK))
-		exit_process(msh, command, NULL, "Permission denied", 126);
+	{
+		msh->exit_status = 126;
+		exit_process(msh, command, NULL, "Permission denied");
+	}
 	else
 	{
 		if (!command->name)
-			exit_process(msh, command, NULL,  NULL, EXIT_SUCCESS);
+		{
+			msh->exit_status = 0;
+			exit_process(msh, command, NULL, NULL);
+		}
 		if (!command->path)
-			exit_process(msh, command, NULL, "command not found", 127);
+		{
+			msh->exit_status = 127;
+			exit_process(msh, command, NULL, "command not found");
+		}
 		envp = myenv_to_envp(msh->myenv);
 		if (execve(command->path, command->arguments, envp) == -1)
 		{
 			//TODO stuck here
 			free_arr((void **)envp);
-			exit_process(msh, command, NULL, "command not found", 127);
+			msh->exit_status = 127;
+			exit_process(msh, command, NULL, "command not found");
 		}
 		exit(EXIT_SUCCESS);
 	}

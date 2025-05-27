@@ -73,16 +73,3 @@ int	is_num_string(char *str)
 	}
 	return (1);
 }
-
-int	array_length(void **arr)
-{
-	int	count;
-
-	count = 0;
-	if (*arr)
-	{
-		while (arr[count])
-			count++;
-	}
-	return (count);
-}

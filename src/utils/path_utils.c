@@ -24,24 +24,18 @@ char	**get_paths(t_vars *myenv)
 char	*get_cmd_path(char *cmd, t_vars *myenv)
 {
 	char	**paths;
-	char	*basepath;
 	char	*fullpath;
 	int		i;
 
 	if (access(cmd, F_OK) == 0)
 		return (ft_strdup(cmd));
 	i = -1;
-	if (!(paths = get_paths(myenv)))
-		return NULL;
+	paths = get_paths(myenv);
+	if (!(paths))
+		return (NULL);
 	while (paths[++i])
 	{
-		//TODO make a strjoin for 3 strings then we can shorten it
-		//enough
-		basepath = ft_strjoin(paths[i], "/");
-		//TODO check if fullpath == NULL
-		fullpath = ft_strjoin(basepath, cmd);
-		free(basepath);
-		basepath = NULL;
+		fullpath = ft_triplestrjoin(paths[i], "/", cmd);
 		if (access(fullpath, F_OK) == 0)
 		{
 			free_arr((void **)paths);

@@ -13,9 +13,9 @@ t_vars	*find_var(t_vars *var, char *key)
 
 int	cd(t_command *command, t_vars *myenv)
 {
-	char	pwd[PATH_MAX];
-	struct	stat st; //can;t figure out norminette here
-
+	char		pwd[PATH_MAX];
+	struct stat	st;
+	//can;t figure out norminette here
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
 		return (ft_perror(command->name, NULL, 1, "Usage: cd <directory>"));
