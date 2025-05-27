@@ -119,8 +119,6 @@ void		clean_myenv(t_vars *myenv);
 int			add_outfile(char **tokens, t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
 
-//file_utils
-
 //general_utils
 int			is_equal(char *str1, char *str2);
 char		*ft_strncat(char *dest, const char *src, size_t n);
@@ -142,7 +140,6 @@ void		sig_ignore(void);
 
 //env
 t_vars		*init_envp(char **envp);
-// int			print_env(t_vars *myenv);
 //unset
 int			unset(t_msh *msh, t_command *command);
 //expand var
@@ -173,9 +170,11 @@ int			process_heredocs(t_msh *msh);
 int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
 int			process_line(char *line, t_msh *msh, char ***parts);
 
+//expand inline
 char		*expand_inline(char *line, t_msh *msh);
 char		*remove_quotes(const char *str);
 void		toggle_quote(char *quote, char line_char);
-//process tkens utils
+
+//process tokens utils
 int			handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens);
 #endif

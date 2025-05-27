@@ -58,19 +58,6 @@ int	array_length(void **arr)
 	return (count);
 }
 
-static int	envp_len(t_vars *myenv)
-{
-	int		size;
-
-	size = 0;
-	while (myenv)
-	{
-		size++;
-		myenv = myenv->next;
-	}
-	return (size);
-}
-
 int	safe_arr_push(char ***arr, const char *str)
 {
 	char	*copy;

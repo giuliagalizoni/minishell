@@ -28,6 +28,19 @@ int	p_syntax_error(char *token)
 	return (0);
 }
 
+static int	envp_len(t_vars *myenv)
+{
+	int		size;
+
+	size = 0;
+	while (myenv)
+	{
+		size++;
+		myenv = myenv->next;
+	}
+	return (size);
+}
+
 char	**myenv_to_envp(t_vars *myenv)
 {
 	char	**envp;
