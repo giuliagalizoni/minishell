@@ -92,18 +92,15 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	while (current)
 	{
 		if (is_equal(current->key, key))
-			return update_var_value(current, value);
+			return (update_var_value(current, value));
 		current = current->next;
 	}
 	new_var = malloc(sizeof(t_vars));
 	if (!new_var)
-		return return_error("minishell: malloc failed for new_var in add_or_update_var");
+		return (ft_perror(NULL, NULL, 0, "malloc failed"));
 	new_var->key = ft_strdup(key);
 	if (!new_var->key)
-	{
-		free(new_var);
-		return return_error("minishell: ft_strdup failed for new_var->key in add_or_update_var");
-	}
+		return (free(new_var), ft_perror(NULL, NULL, 0, "malloc failed"));
 	if (value)
 		new_var->value = ft_strdup(value);
 	else
@@ -111,7 +108,6 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	new_var->next = NULL;
 	return (push_list(head, new_var), 1);
 }
-
 
 int	export(t_msh *msh, t_command *command)
 {
