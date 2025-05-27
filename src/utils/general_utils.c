@@ -72,7 +72,7 @@ char	*ft_triplestrjoin(char *str1, char *str2, char *str3)
 		return (NULL);
 	str1_2_3 = ft_strjoin(str1_2, str3);
 	if (str1_2_3 == NULL)
-		return(NULL);
+		return (NULL);
 	free(str1_2);
 	str1_2 = NULL;
 	return (str1_2_3);
