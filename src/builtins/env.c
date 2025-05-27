@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 16:45:25 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/26 19:17:51 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:43:17 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,18 @@ char	*get_var_value(t_vars *head, char *key)
 	return (NULL);
 }
 
+int	env_error(char *arg)
+{
+	write(2, "env: '", 6);
+	write(2, arg, ft_strlen(arg));
+	write(2, "': No such file or directory\n", 29);
+	return (127);
+}
+
 int	env(t_msh *msh, t_command *command)
 {
 	if (command->arguments[1])
-	// change for a function with no predix
-		return (ft_perror(command, command->arguments[1], 127, NULL));
+		return (env_error(command->arguments[1]));
 	print_env(msh->myenv);
 	return (0);
 }

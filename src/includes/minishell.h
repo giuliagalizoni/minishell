@@ -68,17 +68,20 @@ void		command_init(t_command *command);
 void		set_command_paths(t_command *command, char **envp);
 void		clear_command_chain(t_command *command);
 int			count_commands(t_command *command);
-int	is_directory(const char *path);
+int			is_directory(const char *path);
 // error_utils
 void		error_cleanup(t_msh *msh);
-void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
-int			return_error(char *error_msg);
-int			ft_perror(t_command *command, char *arg, int status, char *err_str);
-int		invalid_option_error(t_command *cmd, char* arg, int status);
+void		exit_process(t_msh *msh, t_command *command, char *arg,
+				char *err_msg);
+void		export_error(char *arg);
+int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
+int			invalid_option_error(t_command *cmd, char *arg, int status);
 
 // executer
-void		child_process(t_msh *msh, t_command *command, int prev_pipe_read_fd, int *fd);
-void		parent_process(t_msh *msh, t_command *command, int *fd, int *prev_pipe_read_fd);
+void		child_process(t_msh *msh, t_command *command,
+				int prev_pipe_read_fd, int *fd);
+void		parent_process(t_msh *msh, t_command *command,
+				int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // redirection
 int			input_redirection(t_command *command);
@@ -113,20 +116,17 @@ void		cleanup(t_msh *msh);
 void		clean_myenv(t_vars *myenv);
 
 //list_utils
-int		add_outfile(t_command *cmd, char **tokens,
-				t_outfile **outfiles, int *i);
+int			add_outfile(char **tokens, t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
-
-//file_utils
 
 //general_utils
 int			is_equal(char *str1, char *str2);
 char		*ft_strncat(char *dest, const char *src, size_t n);
 int			p_syntax_error(char *token);
 int			ft_strcmp(char *s1, char *s2);
-char	*ft_triplestrjoin(char *str1, char *str2, char *str3);
-int	is_num_string(char *str);
-int	array_length(void **arr);
+char		*ft_triplestrjoin(char *str1, char *str2, char *str3);
+int			is_num_string(char *str);
+int			array_length(void **arr);
 
 //startup
 void		print_banner(void);
@@ -140,7 +140,6 @@ void		sig_ignore(void);
 
 //env
 t_vars		*init_envp(char **envp);
-// int			print_env(t_vars *myenv);
 //unset
 int			unset(t_msh *msh, t_command *command);
 //expand var
@@ -152,8 +151,8 @@ int			safe_arr_push(char ***arr, const char *str);
 int			handle_exit_status(t_msh *msh, char ***new_tokens);
 int			process_quoted_var(char *content, t_msh *msh, char ***new_tokens);
 int			process_inner(char *content, t_msh *msh, char ***new_tokens);
-int			handle_double_quote(char *token, char ***new_tokens, size_t len, t_msh *msh);
-
+int			handle_double_quote(char *token, char ***new_tokens,
+				size_t len, t_msh *msh);
 //check syntax
 int			check_invalid_syntax(char **tokens);
 
@@ -163,15 +162,19 @@ void		push_list(t_vars **exp_vars, t_vars *new);
 void		print_vars(t_vars *vars);
 void		*handle_malloc_error(char **key, char **value, char *str);
 int			validate_key(char	*key);
+t_vars		*parse_var(char *arg);
 
 // heredoc
-int		handle_heredoc(t_command *command, t_msh *msh);
-int		process_heredocs(t_msh *msh);
+int			handle_heredoc(t_command *command, t_msh *msh);
+int			process_heredocs(t_msh *msh);
 int			process_expansion(char *line, int *i, t_msh *msh, char ***parts);
 int			process_line(char *line, t_msh *msh, char ***parts);
 
+//expand inline
 char		*expand_inline(char *line, t_msh *msh);
 char		*remove_quotes(const char *str);
 void		toggle_quote(char *quote, char line_char);
 
+//process tokens utils
+int			handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens);
 #endif

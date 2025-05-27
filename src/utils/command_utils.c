@@ -16,20 +16,6 @@ void	command_init(t_command *command)
 	command->index = 0;
 }
 
-// TODO CLEAN THIS UP
-// void	set_command_paths(t_command *command, char **envp)
-// {
-// 	char	*full_cmd_path;
-
-// 	while (command)
-// 	{
-// 		full_cmd_path = get_cmd_path(command->name, envp);
-// 		free(command->name);
-// 		command->name = full_cmd_path;
-// 		command = command->pipe_next;
-// 	}
-// }
-
 static void	clear_outfile_list(t_outfile *head)
 {
 	t_outfile	*current;
@@ -76,47 +62,11 @@ void	clear_command_chain(t_command *command)
 int	is_directory(const char *path)
 {
 	struct stat	statbuf;
+
 	if (stat(path, &statbuf) != 0)
 		return (0);
 	return (S_ISDIR(statbuf.st_mode));
 }
-
-// TODO CLEAN THIS UP
-// void	clear_command_chain(t_command *command)
-// {
-// 	t_command	*tmp;
-
-// 	if (!command)
-// 		return ;
-// 	while (command)
-// 	{
-// 		tmp = command->pipe_next;
-// 		if (command->name)
-// 			free(command->name);
-// 		if (command->path)
-// 			free(command->path);
-// 		if (command->arguments)
-// 			free_arr((void **)command->arguments);
-// 		if (command->input_redirect)
-// 			free(command->input_redirect);
-// 		if (command->heredoc_delimiter)
-// 			free(command->heredoc_delimiter);
-// 		/* TODO change this to the outfile thing
-// 		if (command->output_redirect)
-// 			free(command->output_redirect);
-// 			*/
-// 		if (command->outfile)
-// 		{
-// 			free(command->outfile->filename);
-// 			free(command->outfile);
-// 			command->outfile = NULL;
-// 		}
-// 		free(command);
-// 		command = tmp;
-// 	}
-// 	free(tmp);
-// 	free(command);
-// }
 
 int	count_commands(t_command *command)
 {

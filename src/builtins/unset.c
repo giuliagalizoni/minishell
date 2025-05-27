@@ -26,7 +26,6 @@ void	find_and_delete(t_vars **head, char *key)
 	}
 }
 
-
 int	unset(t_msh *msh, t_command *command)
 {
 	int	i;
@@ -34,7 +33,7 @@ int	unset(t_msh *msh, t_command *command)
 	if (!command->arguments[1])
 		return (0);
 	if (command->arguments[1][0] == '-')
-		return invalid_option_error(command, command->arguments[1], 2);
+		return (invalid_option_error(command, command->arguments[1], 2));
 	i = 1;
 	while (msh->command->arguments[i])
 	{

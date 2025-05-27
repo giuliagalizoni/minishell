@@ -29,7 +29,7 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 		}
 		if (!line)
 		{
-			ft_perror(command, NULL, 1, "warning: here-document delimited by end-of-file");
+			ft_perror(command->name, NULL, 1, "warning: here-document delimited by end-of-file");
 			break ;
 		}
 		if (is_equal(line, command->heredoc_delimiter))

@@ -17,7 +17,7 @@ void	init_value(char **key, char **value, const char *arg, char *eq)
 	*value = content;
 }
 
-t_vars	*parse_var(const char *arg)
+t_vars	*parse_var(char *arg)
 {
 	t_vars	*new_var;
 	char	*eq;
@@ -34,8 +34,7 @@ t_vars	*parse_var(const char *arg)
 		init_value(&key, &value, arg, eq);
 	if (validate_key(key))
 	{
-		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
-		// return code should be 1
+		export_error(arg);
 		return (NULL);
 	}
 	new_var = malloc(sizeof(t_vars));
@@ -47,28 +46,6 @@ t_vars	*parse_var(const char *arg)
 	return (new_var);
 }
 
-t_vars	*init_envp(char **envp)
-{
-	t_vars	*head;
-	t_vars	*new_var;
-	int		i;
-
-	head = NULL;
-	i = 0;
-	while (envp[i])
-	{
-		new_var = parse_var(envp[i]);
-		if (!new_var)
-		{
-			clean_myenv(head);
-			return (NULL);
-		}
-		push_list(&head, new_var);
-		i++;
-	}
-	return (head);
-}
-
 int	update_var_value(t_vars *var, const char *value)
 {
 	free(var->value);
@@ -76,7 +53,7 @@ int	update_var_value(t_vars *var, const char *value)
 	{
 		var->value = ft_strdup(value);
 		if (!var->value)
-		return (0);
+			return (0);
 	}
 	else
 		var->value = NULL;
@@ -92,18 +69,15 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	while (current)
 	{
 		if (is_equal(current->key, key))
-			return update_var_value(current, value);
+			return (update_var_value(current, value));
 		current = current->next;
 	}
 	new_var = malloc(sizeof(t_vars));
 	if (!new_var)
-		return return_error("minishell: malloc failed for new_var in add_or_update_var");
+		return (ft_perror(NULL, NULL, 0, "malloc failed"));
 	new_var->key = ft_strdup(key);
 	if (!new_var->key)
-	{
-		free(new_var);
-		return return_error("minishell: ft_strdup failed for new_var->key in add_or_update_var");
-	}
+		return (free(new_var), ft_perror(NULL, NULL, 0, "malloc failed"));
 	if (value)
 		new_var->value = ft_strdup(value);
 	else
@@ -111,7 +85,6 @@ int	add_or_update_var(t_vars **head, char *key, char *value)
 	new_var->next = NULL;
 	return (push_list(head, new_var), 1);
 }
-
 
 int	export(t_msh *msh, t_command *command)
 {

@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:02:24 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/20 15:02:57 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:49:51 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ static int	tokens_check(char **tokens, int i)
 	return (1);
 }
 
-	//syntax error code 2
 int	check_invalid_syntax(char **tokens)
 {
 	int	i;

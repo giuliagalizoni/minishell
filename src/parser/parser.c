@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:34:26 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/05/26 16:53:39 by marcampo         ###   ########.fr       */
+/*   Updated: 2025/05/27 15:04:31 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ static int	check_operators(t_command *command, char **tokens, int i)
 			free(command->heredoc_delimiter);
 		command->heredoc_delimiter = ft_strdup(tokens[i]);
 		if (!command->heredoc_delimiter)
-			return (return_error("ft_strdup failed for heredoc_delimiter"));
+			return (ft_perror(command->name, NULL, 0,
+					"ft_strdup failed [check_operators]"));
 	}
 	else if (!arr_push(&command->arguments, tokens[i]))
 		return (0);
@@ -82,7 +83,7 @@ int	process_command(t_command *command, char **tokens, int *i, t_msh *msh)
 	}
 	else if (is_equal(tokens[*i], ">") || is_equal(tokens[*i], ">>"))
 	{
-		if (!add_outfile(command, tokens, &command->outfile, i))
+		if (!add_outfile(tokens, &command->outfile, i))
 			return (clear_command_chain(command), 0);
 	}
 	else

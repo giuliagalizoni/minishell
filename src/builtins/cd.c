@@ -13,20 +13,21 @@ t_vars	*find_var(t_vars *var, char *key)
 
 int	cd(t_command *command, t_vars *myenv)
 {
-	char	pwd[PATH_MAX];
-	struct	stat	st;
-
+	char		pwd[PATH_MAX];
+	struct stat	st;
+	//can;t figure out norminette here
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
-		return (ft_perror(command, NULL, 1, "Usage: cd <directory>"));
+		return (ft_perror(command->name, NULL, 1, "Usage: cd <directory>"));
 	else if (command->arguments[2])
-		return (ft_perror(command, NULL, 1, "too many arguments"));
+		return (ft_perror(command->name, NULL, 1, "too many arguments"));
 	else
 	{
 		if (stat(command->arguments[1], &st) == -1)
-			return (ft_perror(command, command->arguments[1], 1, "No such file or directory"));
+			return (ft_perror(command->name, command->arguments[1], 1,
+					"No such file or directory"));
 		if (chdir(command->arguments[1]) != 0)
-			return (ft_perror(command, command->arguments[1], 1, NULL));
+			return (ft_perror(command->name, command->arguments[1], 1, NULL));
 		else
 		{
 			update_var_value(find_var(myenv, "OLDPWD"), (const char *)pwd);

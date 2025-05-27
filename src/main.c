@@ -18,14 +18,17 @@ static void	msh_init(t_msh *msh, char **envp)
 	print_banner();
 }
 
-int contains_only_quotes(const char *str)
+int	contains_only_quotes(const char *str)
 {
-	int single_count = 0;
-	int double_count = 0;
-	int i = 0;
+	int	single_count;
+	int	double_count;
+	int	i;
 
+	single_count = 0;
+	double_count = 0;
+	i = 0;
 	if (!str)
-		return 0;
+		return (0);
 	while (str[i])
 	{
 		if (str[i] == '\'')
@@ -33,10 +36,10 @@ int contains_only_quotes(const char *str)
 		else if (str[i] == '\"')
 			double_count++;
 		else
-			return 0;
+			return (0);
 		i++;
 	}
-	return (single_count % 2 == 0) && (double_count % 2 == 0);
+	return ((single_count % 2 == 0) && (double_count % 2 == 0));
 }
 
 static void	parse_and_execute(t_msh *msh, char *line)
@@ -54,22 +57,18 @@ static void	parse_and_execute(t_msh *msh, char *line)
 		add_history(line);
 		return;
 	}
-
 	msh->num_cmds = count_commands(msh->command);
-
 	if (!process(msh))
 	{
 		clear_command_chain(msh->command);
 		msh->command = NULL;
 		add_history(line);
-		return;
+		return ;
 	}
-
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
 }
-
 
 int	main(int argc, char **argv, char **envp)
 {

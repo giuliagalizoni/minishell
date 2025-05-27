@@ -12,40 +12,25 @@ t_outfile	*filelast(t_outfile *outfile)
 	return (tmp);
 }
 
-// Returns 1 on success, 0 on failure
-int	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
+int	add_outfile(char **tokens, t_outfile **outfiles, int *i)
 {
 	t_outfile	*outfile;
 	t_outfile	*tmp;
 
-	(void)cmd;
 	outfile = malloc(sizeof(t_outfile));
 	if (outfile == NULL)
-	{
-		perror("malloc failed for outfile struct in add_outfile");
-		return (0); // Allocation failed
-	}
+		return (perror("malloc failed for outfile struct in add_outfile"), 0);
 	if (is_equal(tokens[*i], ">"))
 		outfile->is_append = 0;
 	else if (is_equal(tokens[*i], ">>"))
 		outfile->is_append = 1;
-
-	// tokens[*i + 1] should be the filename. Ensure it exists.
 	if (!tokens[*i + 1])
-	{
-		p_syntax_error(NULL); // Or specific error for missing filename
-		free(outfile);
-		return (0);
-	}
+		return (free(outfile), p_syntax_error(NULL), 0);
 	outfile->filename = ft_strdup(tokens[*i + 1]);
 	if (!outfile->filename)
-	{
-		perror("ft_strdup failed for outfile filename in add_outfile");
-		free(outfile); // Free the allocated outfile struct
-		return (0); // Allocation failed
-	}
+		return (free(outfile), perror("ft_strdup failed add_outfile"), 0);
 	outfile->next = NULL;
-	(*i)++; // Increment i *after* using tokens[i] and tokens[i+1]
+	(*i)++;
 	if (!*outfiles)
 	{
 		*outfiles = outfile;
@@ -53,7 +38,7 @@ int	add_outfile(t_command *cmd, char **tokens, t_outfile **outfiles, int *i)
 	}
 	tmp = filelast(*outfiles);
 	tmp->next = outfile;
-	return (1); // Success
+	return (1);
 }
 
 static void	swap_vars(t_vars *a, t_vars *b)
