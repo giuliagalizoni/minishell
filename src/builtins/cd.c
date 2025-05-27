@@ -14,7 +14,7 @@ t_vars	*find_var(t_vars *var, char *key)
 int	cd(t_command *command, t_vars *myenv)
 {
 	char	pwd[PATH_MAX];
-	struct	stat	st;
+	struct	stat st; //can;t figure out norminette here
 
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
@@ -24,7 +24,8 @@ int	cd(t_command *command, t_vars *myenv)
 	else
 	{
 		if (stat(command->arguments[1], &st) == -1)
-			return (ft_perror(command->name, command->arguments[1], 1, "No such file or directory"));
+			return (ft_perror(command->name, command->arguments[1], 1,
+					"No such file or directory"));
 		if (chdir(command->arguments[1]) != 0)
 			return (ft_perror(command->name, command->arguments[1], 1, NULL));
 		else
