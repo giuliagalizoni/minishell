@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-static char	*create_base_shell_prefix(t_command *command, int *name_added)
+static char	*create_base_shell_prefix(char *cmd_name, int *name_added)
 {
 	char	*base;
 	char	*tmp;
@@ -9,9 +9,9 @@ static char	*create_base_shell_prefix(t_command *command, int *name_added)
 	base = ft_strdup("conchinha: ");
 	if (!base)
 		return (NULL);
-	if (command && command->name)
+	if (cmd_name)
 	{
-		tmp = ft_strjoin(base, command->name);
+		tmp = ft_strjoin(base, cmd_name);
 		free(base);
 		if (!tmp)
 			return (NULL);
@@ -63,13 +63,13 @@ static void	print_error_and_free(char *full_prefix, char *err_msg)
 	}
 }
 
-int	ft_perror(t_command *command, char *arg, int status, char *err_msg)
+int	ft_perror(char *cmd_name, char *arg, int status, char *err_msg)
 {
 	char	*base_prefix;
 	char	*prefix_with_arg;
 	int		name_added_flag;
 
-	base_prefix = create_base_shell_prefix(command, &name_added_flag);
+	base_prefix = create_base_shell_prefix(cmd_name, &name_added_flag);
 	if (!base_prefix)
 	{
 		perror("ft_perror (base)");

@@ -20,7 +20,7 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	else
 	{
 		msh->exit_status = -1;
-		ft_perror(command, NULL, msh->exit_status, "failed to get status for the last command");
+		ft_perror(command->name, NULL, msh->exit_status, "failed to get status for the last command");
 		clear_command_chain(first_command);
 	}
 	(void)waited_pid;

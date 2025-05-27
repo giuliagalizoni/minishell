@@ -22,7 +22,7 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 		if (!line)
 		{
 			//TODO too many semicolon
-			ft_perror(command, NULL, 1, "warning: here-document delimited by end-of-file");
+			ft_perror(command->name, NULL, 1, "warning: here-document delimited by end-of-file");
 			free(line);
 			break ;
 		}

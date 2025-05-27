@@ -17,7 +17,7 @@ void	init_value(char **key, char **value, const char *arg, char *eq)
 	*value = content;
 }
 
-t_vars	*parse_var(const char *arg)
+t_vars	*parse_var(char *arg)
 {
 	t_vars	*new_var;
 	char	*eq;
@@ -34,8 +34,7 @@ t_vars	*parse_var(const char *arg)
 		init_value(&key, &value, arg, eq);
 	if (validate_key(key))
 	{
-		printf("conchinha: export: `%s\': not a valid identifier\n", arg);
-		// return code should be 1
+		export_error(arg);
 		return (NULL);
 	}
 	new_var = malloc(sizeof(t_vars));

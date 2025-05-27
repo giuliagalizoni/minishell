@@ -73,7 +73,8 @@ int	is_directory(const char *path);
 void		error_cleanup(t_msh *msh);
 void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
 int			return_error(char *error_msg);
-int			ft_perror(t_command *command, char *arg, int status, char *err_str);
+void		export_error(char *arg);
+int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 int		invalid_option_error(t_command *cmd, char* arg, int status);
 
 // executer

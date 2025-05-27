@@ -5,6 +5,13 @@ void	error_cleanup(t_msh *msh)
 	cleanup(msh);
 }
 
+void	export_error(char *arg)
+{
+	write(2, "conchinha: export: `", 21);
+	write(2, arg, ft_strlen(arg));
+	write(2, "\': not a valid identifier\n", 26);
+}
+
 // I'll make this function better soon
 int	return_error(char *error_msg)
 {
@@ -17,7 +24,7 @@ void	exit_process(t_msh *msh, t_command *command, char *arg,
 			char *err_msg, int status)
 {
 	if (status != 0)
-		ft_perror(command, arg, status, err_msg);
+		ft_perror(command->name, arg, status, err_msg);
 	cleanup(msh);
 	exit(status);
 }
