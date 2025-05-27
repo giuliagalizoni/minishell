@@ -2,7 +2,7 @@
 
 void	error_cleanup(t_msh *msh)
 {
-	p_error("pipe failure in heredoc")
+	perror("pipe failure in heredoc");
 	cleanup(msh);
 }
 
