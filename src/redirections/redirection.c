@@ -35,12 +35,14 @@ int	output_redirection(t_outfile *outfile)
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
 		{
-			perror("Bad file descriptor");
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(outfile->filename, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			return (0);
 		}
 		if (dup2(file, 1) == -1)
 		{
-			perror("dup2 failed");
+			ft_putstr_fd("minishell: dup2 failed\n", 2);
 			close(file);
 			return (0);
 		}

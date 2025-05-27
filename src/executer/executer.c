@@ -50,7 +50,8 @@ int	single_parent_process(t_msh *msh)
 	if (msh->command->input_redirect)
 		input_redirection(msh->command);
 	if (msh->command->outfile)
-		output_redirection(msh->command->outfile);
+		if (!output_redirection(msh->command->outfile))
+			return (EXIT_FAILURE);
 	status = builtin_router(msh, msh->command);
 
 
