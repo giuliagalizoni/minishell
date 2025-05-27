@@ -159,6 +159,7 @@ int			process_inner(char *content, t_msh *msh, char ***new_tokens);
 int			handle_double_quote(char *token, char ***new_tokens,
 				size_t len, t_msh *msh);
 
+
 //check syntax
 int			check_invalid_syntax(char **tokens);
 
@@ -179,5 +180,6 @@ int			process_line(char *line, t_msh *msh, char ***parts);
 char		*expand_inline(char *line, t_msh *msh);
 char		*remove_quotes(const char *str);
 void		toggle_quote(char *quote, char line_char);
-
+//process tkens utils
+int			handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens);
 #endif
