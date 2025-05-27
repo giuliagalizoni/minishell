@@ -46,7 +46,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   utils/expand_inline_utils.c\
 	   utils/parser_utils.c\
 	   utils/ft_perror.c\
-	   utils/process_token_utils.c)
+	   utils/process_token_utils.c\
+	   utils/handle_double_quote.c)
 
 SRCFILES := $(MODULES)
 OBJFILES := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCFILES))
