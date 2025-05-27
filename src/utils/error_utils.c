@@ -2,7 +2,8 @@
 
 void	error_cleanup(t_msh *msh)
 {
-	cleanup(msh); // why do we have this function?
+	p_error("pipe failure in heredoc")
+	cleanup(msh);
 }
 
 void	export_error(char *arg)
