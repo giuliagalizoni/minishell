@@ -71,7 +71,8 @@ int			count_commands(t_command *command);
 int			is_directory(const char *path);
 // error_utils
 void		error_cleanup(t_msh *msh);
-void		exit_process(t_msh *msh, t_command *command, char *arg, char *err_msg, int status);
+void		exit_process(t_msh *msh, t_command *command, char *arg,
+				char *err_msg, int status);
 int			return_error(char *error_msg);
 void		export_error(char *arg);
 int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
