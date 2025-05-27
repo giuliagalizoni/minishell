@@ -43,23 +43,6 @@ int	ft_strcmp(char *s1, char *s2)
 	return (0);
 }
 
-int	p_syntax_error(char *token)
-{
-	char	*prefix;
-	char	*sufix;
-	char	*actual_token;
-
-	prefix = "minishell: syntax error near unexpected token `";
-	sufix = "'\n";
-	actual_token = token;
-	if (!actual_token)
-		actual_token = "newline";
-	write(2, prefix, ft_strlen(prefix));
-	write(2, actual_token, ft_strlen(actual_token));
-	write(2, sufix, ft_strlen(sufix));
-	return (0);
-}
-
 char	*ft_triplestrjoin(char *str1, char *str2, char *str3)
 {
 	char	*str1_2;
