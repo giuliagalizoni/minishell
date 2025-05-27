@@ -27,10 +27,7 @@ char	**arr_push(char ***arr, char *str)
 		len++;
 	new_arr = (char **)malloc(sizeof(char *) * (len + 2));
 	if (!new_arr)
-	{
-		perror("malloc failed in arr_push for new_arr");
-		return (NULL);
-	}
+		return (perror("malloc failed in arr_push for new_arr"), NULL);
 	i = 0;
 	while (i < len)
 	{
@@ -39,10 +36,8 @@ char	**arr_push(char ***arr, char *str)
 	}
 	new_arr[i] = ft_strdup(str);
 	if (!new_arr[i])
-	{
-		perror("ft_strdup failed in arr_push");
-		return (free_arr((void **)new_arr), new_arr = NULL, NULL);
-	}
+		return (free_arr((void **)new_arr),
+			perror("ft_strdup failed in arr_push"), new_arr = NULL, NULL);
 	new_arr[i + 1] = NULL;
 	if (*arr)
 		free(*arr);
@@ -50,22 +45,27 @@ char	**arr_push(char ***arr, char *str)
 	return (new_arr);
 }
 
-char	**myenv_to_envp(t_vars *myenv)
+int	envp_len(t_vars *myenv)
 {
-	t_vars	*envstart;
-	char	**envp;
-	int	size;
-	int	i;
+	int		size;
 
-	i = 0;
 	size = 0;
-	envstart = myenv;
 	while (myenv)
 	{
 		size++;
 		myenv = myenv->next;
 	}
-	myenv = envstart;
+	return (size);
+}
+
+char	**myenv_to_envp(t_vars *myenv)
+{
+	char	**envp;
+	int		size;
+	int		i;
+
+	i = 0;
+	size = envp_len(myenv);
 	envp = (char **)malloc(sizeof(char *) * (size + 1));
 	if (envp == NULL)
 		return (NULL);
@@ -73,9 +73,8 @@ char	**myenv_to_envp(t_vars *myenv)
 	{
 		if (myenv->value)
 			envp[i] = ft_triplestrjoin(myenv->key, "=", myenv->value);
-		else	
+		else
 			envp[i] = ft_strdup(myenv->key);
-
 		i++;
 		myenv = myenv->next;
 	}
