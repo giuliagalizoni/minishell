@@ -84,7 +84,7 @@ int	is_num_string(char *str)
 	{
 		if (*str == '-' || *str == '+')
 			str++;
-		if (!isdigit(*str))
+		if (!ft_isdigit(*str))
 			return (0);
 		str++;
 	}
