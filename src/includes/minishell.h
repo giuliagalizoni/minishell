@@ -164,6 +164,7 @@ void		push_list(t_vars **exp_vars, t_vars *new);
 void		print_vars(t_vars *vars);
 void		*handle_malloc_error(char **key, char **value, char *str);
 int			validate_key(char	*key);
+t_vars		*parse_var(char *arg);
 
 // heredoc
 int		handle_heredoc(t_command *command, t_msh *msh);

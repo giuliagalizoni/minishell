@@ -46,28 +46,6 @@ t_vars	*parse_var(char *arg)
 	return (new_var);
 }
 
-t_vars	*init_envp(char **envp)
-{
-	t_vars	*head;
-	t_vars	*new_var;
-	int		i;
-
-	head = NULL;
-	i = 0;
-	while (envp[i])
-	{
-		new_var = parse_var(envp[i]);
-		if (!new_var)
-		{
-			clean_myenv(head);
-			return (NULL);
-		}
-		push_list(&head, new_var);
-		i++;
-	}
-	return (head);
-}
-
 int	update_var_value(t_vars *var, const char *value)
 {
 	free(var->value);
@@ -75,7 +53,7 @@ int	update_var_value(t_vars *var, const char *value)
 	{
 		var->value = ft_strdup(value);
 		if (!var->value)
-		return (0);
+			return (0);
 	}
 	else
 		var->value = NULL;
