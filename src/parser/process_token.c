@@ -1,70 +1,31 @@
-
 #include "../includes/minishell.h"
-
-// static int	handle_single_quote(char *token, char ***new_tokens)
-// {
-// 	char	*inner_content;
-// 	char	*processed;
-// 	int		success;
-
-// 	success = 1;
-// 	inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
-// 	if (!inner_content)
-// 		return (perror("ft_substr failed removing quotes"), 0);
-// 	processed = remove_quotes(inner_content);
-// 	free(inner_content);
-// 	if (!processed)
-// 		return (perror("remove_quotes failed"), 0);
-// 	success = safe_arr_push(new_tokens, processed);
-// 	free(processed);
-// 	return (success);
-// }
 
 static int	handle_single_quote(char *token, char ***new_tokens)
 {
-    char	*inner_content;
-    char	*final_value_to_push;
-    int		success;
+	char	*inner_content;
+	char	*final_value_to_push;
+	int		success;
 
-    // Extract the content within the outermost single quotes.
-    inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
-    if (!inner_content)
-        return (perror("ft_substr failed for single_quote inner_content"), 0);
-
-    // Check if the extracted inner_content still contains single quotes.
-    if (ft_strchr(inner_content, '\''))
-    {
-        // If inner_content has more single quotes, apply remove_quotes to flatten everything.
-        // remove_quotes is expected to strip all single and double quotes.
-        final_value_to_push = remove_quotes(inner_content);
-        if (!final_value_to_push)
-        {
-            free(inner_content); // Free the result of ft_substr
-            return (perror("remove_quotes failed"), 0);
-        }
-    }
-    else
-    {
-        // If inner_content has no more single quotes (it might have double quotes or be plain),
-        // use it as is. We need to ft_strdup it because inner_content will be freed.
-        final_value_to_push = ft_strdup(inner_content);
-        if (!final_value_to_push)
-        {
-            free(inner_content); // Free the result of ft_substr
-            return (perror("ft_strdup of inner_content failed"), 0);
-        }
-    }
-
-    // At this point, inner_content (from ft_substr) is no longer directly needed,
-    // as its data is either processed by remove_quotes or duplicated by ft_strdup
-    // into final_value_to_push.
-    free(inner_content);
-
-    success = safe_arr_push(new_tokens, final_value_to_push);
-    // Assuming safe_arr_push makes its own copy of final_value_to_push.
-    free(final_value_to_push);
-
-    return (success);
+	inner_content = ft_substr(token, 1, ft_strlen(token) - 2);
+	if (!inner_content)
+		return (perror("ft_substr failed for single_quote inner_content"), 0);
+	if (ft_strchr(inner_content, '\''))
+	{
+		final_value_to_push = remove_quotes(inner_content);
+		if (!final_value_to_push)
+			return (free(inner_content), perror("remove_quotes failed"), 0);
+	}
+	else
+	{
+		final_value_to_push = ft_strdup(inner_content);
+		if (!final_value_to_push)
+			return (free(inner_content),
+				perror("ft_strdup of inner_content failed"), 0);
+	}
+	free(inner_content);
+	success = safe_arr_push(new_tokens, final_value_to_push);
+	free(final_value_to_push);
+	return (success);
 }
 
 static int	extract_key_and_remainder(char *token, char **key, char **remainder)
@@ -111,8 +72,12 @@ static int	push_split_tokens(char *combined, char ***new_tokens)
 	if (!split_value)
 		return (perror("failed splitting expanded token"), 0);
 	success = 1;
-	for (i = 0; split_value[i] && success; i++)
+	i = 0;
+	while (split_value[i] && success)
+	{
 		success = safe_arr_push(new_tokens, split_value[i]);
+		i++;
+	}
 	free_arr((void **)split_value);
 	return (success);
 }
@@ -123,7 +88,6 @@ static int	handle_unquoted_var(char *token, t_msh *msh, char ***new_tokens)
 	char	*remainder;
 	char	*combined;
 	int		success;
-
 
 	if (!extract_key_and_remainder(token, &key, &remainder))
 		return (0);
