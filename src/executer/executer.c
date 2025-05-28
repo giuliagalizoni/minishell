@@ -105,15 +105,15 @@ int	process(t_msh *msh)
 	wait_for_children(msh, msh->command);
 	return (0);
 }
-
-// void	parent_process(t_msh *msh, t_command *command,
-// 	int *fd, int *prev_pipe_read_fd)
-// {
-// 	if (*prev_pipe_read_fd != STDIN_FILENO)
-// 		close(*prev_pipe_read_fd);
-// 	if (command->index < msh->num_cmds - 1)
-// 	{
-// 		close(fd[1]);
-// 		*prev_pipe_read_fd = fd[0];
-// 	}
-// }
+// this function is not being used?
+void	parent_process(t_msh *msh, t_command *command,
+	int *fd, int *prev_pipe_read_fd)
+{
+	if (*prev_pipe_read_fd != STDIN_FILENO)
+		close(*prev_pipe_read_fd);
+	if (command->index < msh->num_cmds - 1)
+	{
+		close(fd[1]);
+		*prev_pipe_read_fd = fd[0];
+	}
+}
