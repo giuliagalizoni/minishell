@@ -27,58 +27,6 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	(void)waited_pid;
 }
 
-int	single_parent_process(t_msh *msh)
-{
-	int	saved_stdout_fd;
-	int	saved_stdin_fd;
-	int	status;
-
-	saved_stdout_fd = dup(STDOUT_FILENO);
-	if (saved_stdout_fd < 0)
-	{
-		perror("minishell: dup failed for saved_stdout_fd");
-		return (EXIT_FAILURE);
-	}
-	saved_stdin_fd = dup(STDIN_FILENO);
-	if (saved_stdin_fd < 0)
-	{
-		perror("minishell: dup failed for saved_stdin_fd");
-		close(saved_stdout_fd);
-		return (EXIT_FAILURE);
-	}
-	if (msh->command->input_redirect)
-		input_redirection(msh->command);
-	if (msh->command->outfile)
-		output_redirection(msh->command->outfile);
-	status = builtin_router(msh, msh->command);
-	if (dup2(saved_stdin_fd, STDIN_FILENO) < 0)
-	{
-		perror("minishell: dup2 failed to restore stdin");
-		dup2(saved_stdout_fd, STDOUT_FILENO);
-		status = EXIT_FAILURE;
-	}
-	close(saved_stdin_fd);
-	if (dup2(saved_stdout_fd, STDOUT_FILENO) < 0)
-	{
-		perror("minishell: dup2 failed to restore stdout");
-		status = EXIT_FAILURE;
-	}
-	close(saved_stdout_fd);
-	return (status);
-}
-
-void	parent_process(t_msh *msh, t_command *command,
-	int *fd, int *prev_pipe_read_fd)
-{
-	if (*prev_pipe_read_fd != STDIN_FILENO)
-		close(*prev_pipe_read_fd);
-	if (command->index < msh->num_cmds - 1)
-	{
-		close(fd[1]);
-		*prev_pipe_read_fd = fd[0];
-	}
-}
-
 static int	setup_command_pipe(t_command *cmd, int num_cmds, int *pipe_fds, t_msh *msh)
 {
 	if (cmd->index < num_cmds - 1 && num_cmds > 1)
@@ -157,59 +105,15 @@ int	process(t_msh *msh)
 	wait_for_children(msh, msh->command);
 	return (0);
 }
-// int	process(t_msh *msh)
-// {
-// 	int			fd[2];
-// 	int			status;
-// 	int			prev_pipe_read_fd;
-// 	pid_t		pid;
-// 	t_command	*command;
 
-// 	if (!msh->command)
-// 		return (0);
-// 	if (!process_heredocs(msh))
-// 		return (0);
-// 	if (msh->num_cmds == 1 && is_builtin(msh->command->name))
-// 		return (single_parent_process(msh));
-// 	status = 0;
-// 	command = msh->command;
-// 	prev_pipe_read_fd = STDIN_FILENO;
-// 	while (command)
+// void	parent_process(t_msh *msh, t_command *command,
+// 	int *fd, int *prev_pipe_read_fd)
+// {
+// 	if (*prev_pipe_read_fd != STDIN_FILENO)
+// 		close(*prev_pipe_read_fd);
+// 	if (command->index < msh->num_cmds - 1)
 // 	{
-// 		if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
-// 		{
-// 			if (pipe(fd) == -1)
-// 			{
-// 				perror("minishell: pipe failed");
-// 				msh->exit_status = EXIT_FAILURE;
-// 				if (prev_pipe_read_fd != STDIN_FILENO)
-// 					close(prev_pipe_read_fd);
-// 				break ;
-// 			}
-// 		}
-// 		pid = fork();
-// 		command->pid = pid;
-// 		if (pid == -1)
-// 		{
-// 			perror("minishell: fork failed");
-// 			msh->exit_status = EXIT_FAILURE;
-// 			if (command->index < msh->num_cmds - 1 && msh->num_cmds > 1)
-// 			{
-// 				close(fd[0]);
-// 				close(fd[1]);
-// 			}
-// 			if (prev_pipe_read_fd != STDIN_FILENO)
-// 				close(prev_pipe_read_fd);
-// 			break ;
-// 		}
-// 		else if (pid == 0)
-// 			child_process(msh, command, prev_pipe_read_fd, fd);
-// 		else
-// 			parent_process(msh, command, fd, &prev_pipe_read_fd);
-// 		command = command->pipe_next;
+// 		close(fd[1]);
+// 		*prev_pipe_read_fd = fd[0];
 // 	}
-// 	if (prev_pipe_read_fd != STDIN_FILENO)
-// 		close(prev_pipe_read_fd);
-// 	wait_for_children(msh, msh->command);
-// 	return (status);
 // }
