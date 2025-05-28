@@ -27,7 +27,8 @@ void	wait_for_children(t_msh *msh, t_command *first_command)
 	(void)waited_pid;
 }
 
-static int	setup_command_pipe(t_command *cmd, int num_cmds, int *pipe_fds, t_msh *msh)
+static int	setup_command_pipe(t_command *cmd, int num_cmds,
+	int *pipe_fds, t_msh *msh)
 {
 	if (cmd->index < num_cmds - 1 && num_cmds > 1)
 	{
@@ -41,7 +42,8 @@ static int	setup_command_pipe(t_command *cmd, int num_cmds, int *pipe_fds, t_msh
 	return (1);
 }
 
-static pid_t	execute_piped_command(t_msh *msh, t_command *cmd, int *pipe_fds, int *prev_pipe_fd_ptr)
+static pid_t	execute_piped_command(t_msh *msh, t_command *cmd,
+	int *pipe_fds, int *prev_pipe_fd_ptr)
 {
 	pid_t	pid;
 
@@ -81,7 +83,8 @@ static void	execute_pipeline_loop(t_msh *msh, int *prev_pipe_fd_ptr)
 	{
 		if (!setup_command_pipe(current_cmd, msh->num_cmds, pipe_fds, msh))
 			return ;
-		child_pid = execute_piped_command(msh, current_cmd, pipe_fds, prev_pipe_fd_ptr);
+		child_pid = execute_piped_command(msh, current_cmd,
+				pipe_fds, prev_pipe_fd_ptr);
 		if (child_pid == -1)
 			return ;
 		current_cmd = current_cmd->pipe_next;
@@ -105,6 +108,7 @@ int	process(t_msh *msh)
 	wait_for_children(msh, msh->command);
 	return (0);
 }
+
 // this function is not being used?
 void	parent_process(t_msh *msh, t_command *command,
 	int *fd, int *prev_pipe_read_fd)
