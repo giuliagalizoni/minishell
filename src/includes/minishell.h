@@ -81,6 +81,7 @@ int			invalid_option_error(t_command *cmd, char *arg, int status);
 // executer
 void		child_process(t_msh *msh, t_command *command,
 				int prev_pipe_read_fd, int *fd);
+int	single_parent_process(t_msh *msh);
 void		parent_process(t_msh *msh, t_command *command,
 				int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);

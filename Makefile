@@ -23,6 +23,8 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   parser/expand_inline.c\
 	   parser/process_token.c\
 	   executer/executer.c\
+	   executer/child_process.c\
+	   executer/single_parent_process.c\
 	   utils/array_utils.c\
 	   utils/command_utils.c\
 	   utils/path_utils.c\
