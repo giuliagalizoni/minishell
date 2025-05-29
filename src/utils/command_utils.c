@@ -59,15 +59,6 @@ void	clear_command_chain(t_command *command)
 	free(command);
 }
 
-int	is_directory(const char *path)
-{
-	struct stat	statbuf;
-
-	if (stat(path, &statbuf) != 0)
-		return (0);
-	return (S_ISDIR(statbuf.st_mode));
-}
-
 int	count_commands(t_command *command)
 {
 	int	count;
