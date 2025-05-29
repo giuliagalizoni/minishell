@@ -74,6 +74,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_msh	msh;
+	int	exit_code;
 
 	(void)argc;
 	(void)argv;
@@ -89,12 +90,17 @@ int	main(int argc, char **argv, char **envp)
 		g_signal_code = -1;
 		set_signals_child();
 		if (!line)
-			exit_shell(&msh, NULL);
+		{
+			msh.exit = 1;
+			break ;
+		}
 		if (ft_strlen(line) != 0)
 			parse_and_execute(&msh, line);
 		free(line);
 	}
-	return (exit_shell(&msh, NULL), 0);
+	exit_code = msh.exit_status;
+	cleanup(&msh);
+	exit(exit_code);
 }
 /*
 int	main(int argc, char **argv)
