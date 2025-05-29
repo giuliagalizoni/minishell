@@ -49,3 +49,13 @@ char	*get_cmd_path(char *cmd, t_vars *myenv)
 	free_arr((void **)paths);
 	return (NULL);
 }
+
+int	is_directory(const char *path)
+{
+	struct stat	statbuf;
+
+	if (stat(path, &statbuf) != 0)
+		return (0);
+	return (S_ISDIR(statbuf.st_mode));
+}
+

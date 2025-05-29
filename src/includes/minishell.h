@@ -12,6 +12,7 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # define BANNER_FILE_PATH "./cfg/banner.txt"
+# define PATH_MAX 4096
 
 typedef struct s_vars
 {
