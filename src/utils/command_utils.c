@@ -52,8 +52,10 @@ void	clear_command_chain(t_command *command)
 		free_arr((void **)command->input_redirect);
 	if (command->heredoc_delimiter)
 		free(command->heredoc_delimiter);
-	close(command->heredoc_fd[0]);
-	close(command->heredoc_fd[1]);
+	if (command->heredoc_fd[0] != -1)
+		close(command->heredoc_fd[0]);
+	if (command->heredoc_fd[1] != -1)
+		close(command->heredoc_fd[1]);
 	if (command->outfile)
 	{
 		clear_outfile_list(command->outfile);

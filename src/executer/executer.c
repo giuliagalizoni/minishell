@@ -69,6 +69,11 @@ static pid_t	execute_piped_command(t_msh *msh, t_command *cmd,
 		close(pipe_fds[1]);
 		*prev_pipe_fd_ptr = pipe_fds[0];
 	}
+	if (cmd->heredoc_fd[0] != -1)
+	{
+		close(cmd->heredoc_fd[0]);
+		cmd->heredoc_fd[0] = -1;
+	}
 	return (pid);
 }
 
