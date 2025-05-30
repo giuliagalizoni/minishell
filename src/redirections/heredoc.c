@@ -39,27 +39,27 @@ static int	manage_heredoc_line(char *line, t_command *command,
 
 int	handle_heredoc(t_command *command, t_msh *msh)
 {
-	int		pipe_fd[2];
+//	int		pipe_fd[2];
 	char	*current_line;
 	int		line_status;
 
-	if (pipe(pipe_fd) == -1)
+	if (pipe(command->heredoc_fd) == -1)
 		error_cleanup(msh);
-	command->heredoc_fd = pipe_fd[0];
+//	command->heredoc_fd = pipe_fd[0];
 	while (1)
 	{
 		current_line = readline("> ");
 		line_status = manage_heredoc_line(current_line, command,
-				msh, pipe_fd[1]);
+				msh, command->heredoc_fd[1]);
 		if (line_status == -1)
 		{
-			close(pipe_fd[1]);
+			close(command->heredoc_fd[1]);
 			return (0);
 		}
 		if (line_status == 0)
 			break ;
 	}
-	close(pipe_fd[1]);
+	close(command->heredoc_fd[1]);
 	return (1);
 }
 

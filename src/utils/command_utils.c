@@ -8,7 +8,8 @@ void	command_init(t_command *command)
 	command->input_redirect = NULL;
 	command->is_heredoc = 0;
 	command->heredoc_delimiter = NULL;
-	command->heredoc_fd = -1;
+	command->heredoc_fd[0] = -1;
+	command->heredoc_fd[1] = -1;
 	command->heredoc_is_final = 0;
 	command->outfile = NULL;
 	command->is_pipe = 0;
@@ -51,6 +52,10 @@ void	clear_command_chain(t_command *command)
 		free_arr((void **)command->input_redirect);
 	if (command->heredoc_delimiter)
 		free(command->heredoc_delimiter);
+	if (command->heredoc_fd[0] != -1)
+		close(command->heredoc_fd[0]);
+	if (command->heredoc_fd[1] != -1)
+		close(command->heredoc_fd[1]);
 	if (command->outfile)
 	{
 		clear_outfile_list(command->outfile);

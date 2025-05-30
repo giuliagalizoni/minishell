@@ -25,11 +25,11 @@ static void	handle_child_file_redirections(t_msh *msh, t_command *cmd)
 	input_target = NULL;
 	if (cmd->heredoc_is_final)
 	{
-		if (cmd->is_heredoc && cmd->heredoc_fd != -1)
+		if (cmd->is_heredoc && cmd->heredoc_fd[0] != -1)
 		{
-			if (dup2(cmd->heredoc_fd, STDIN_FILENO) == -1)
+			if (dup2(cmd->heredoc_fd[0], STDIN_FILENO) == -1)
 				exit_process(msh, cmd, NULL, "dup2 for heredoc failed");
-			close(cmd->heredoc_fd);
+			close(cmd->heredoc_fd[0]);
 		}
 	}
 	else if (cmd->input_redirect && cmd->input_redirect[0] != NULL)
