@@ -36,7 +36,7 @@ typedef struct s_command
 	char				**input_redirect;
 	int					is_heredoc;
 	char				*heredoc_delimiter;
-	int					heredoc_fd;
+	int					heredoc_fd[2];
 	int					heredoc_is_final;
 	t_outfile			*outfile;
 	int					is_pipe;

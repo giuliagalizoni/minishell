@@ -25,12 +25,12 @@ static int	apply_redirections_and_run_builtin(t_msh *msh)
 	redir_success = 1;
 	if (msh->command->heredoc_is_final)
 	{
-		if (msh->command->is_heredoc && msh->command->heredoc_fd != -1)
+		if (msh->command->is_heredoc && msh->command->heredoc_fd[0] != -1)
 		{
-			if (dup2(msh->command->heredoc_fd, STDIN_FILENO) == -1)
+			if (dup2(msh->command->heredoc_fd[0], STDIN_FILENO) == -1)
 				perror("minishell: dup2 heredoc failed");
 			else
-				redir_success = (close(msh->command->heredoc_fd) != -1);
+				redir_success = (close(msh->command->heredoc_fd[0]) != -1);
 			if (redir_success == 0)
 				perror("minishell: close heredoc_fd failed");
 		}
