@@ -41,10 +41,17 @@ void	super_sigint_handler(int sig)
 {
 //	(void)sig;
 	g_signal_code = sig;
-	ft_putchar_fd('\n', 2);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	exit(123);
+}
+
+void	set_signals_heredoc(void)
+{
+	struct sigaction	sa_sigint;
+
+	ft_bzero(&sa_sigint, sizeof(sa_sigint));
+	sa_sigint.sa_handler = &super_sigint_handler;
+	sa_sigint.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_sigint, NULL);
 }
 
 int	handle_heredoc(t_command *command, t_msh *msh)
@@ -52,38 +59,46 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 //	int		pipe_fd[2];
 	char	*current_line;
 	int		line_status;
-	struct sigaction sa;
-	/*
-	sa.sa_handler = super_sigint_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
+	int	pid;
 
-	*/
-	if (pipe(command->heredoc_fd) == -1)
-		error_cleanup(msh);
-//	command->heredoc_fd = pipe_fd[0];
-	//TODO fork here
-//	while (g_signal_code != SIGINT)
-	while (1)
+	pid = fork();
+
+	if (pid == -1)
+		perror("minishell: fork failed");
+	if (pid == 0)
 	{
-		current_line = readline("> ");
-		if (g_signal_code == SIGINT)
+		set_signals_heredoc();
+		if (pipe(command->heredoc_fd) == -1)
+			error_cleanup(msh);
+	//	command->heredoc_fd = pipe_fd[0];
+		//TODO fork here
+	//	while (g_signal_code != SIGINT)
+		while (1)
 		{
-			fprintf(stderr, "YO MAMA RECEIVED AN SIGNITN\n");
-			break ;
+			current_line = readline("> ");
+			if (g_signal_code == SIGINT)
+			{
+				fprintf(stderr, "YO MAMA RECEIVED AN SIGNITN\n");
+				break ;
+			}
+			line_status = manage_heredoc_line(current_line, command,
+					msh, command->heredoc_fd[1]);
+			if (line_status == -1)
+			{
+				close(command->heredoc_fd[1]);
+				return (0);
+			}
+			if (line_status == 0)
+				break ;
 		}
-		line_status = manage_heredoc_line(current_line, command,
-				msh, command->heredoc_fd[1]);
-		if (line_status == -1)
-		{
-			close(command->heredoc_fd[1]);
-			return (0);
-		}
-		if (line_status == 0)
-			break ;
+		close(command->heredoc_fd[1]);
+		return (1);
 	}
-	close(command->heredoc_fd[1]);
+	else
+	{
+		waitpid(pid, NULL, msh->exit_status);
+		set_signals_parent();
+	}
 	return (1);
 }
 
