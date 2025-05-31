@@ -42,7 +42,7 @@ static int	manage_heredoc_line(char *line, t_command *command,
 void	super_sigint_handler(int sig)
 {
 	g_signal_code = sig;
-	exit(130);
+//	exit(130);
 }
 
 void	set_signals_heredoc(void)
@@ -51,8 +51,17 @@ void	set_signals_heredoc(void)
 
 	ft_bzero(&sa_sigint, sizeof(sa_sigint));
 	sa_sigint.sa_handler = &super_sigint_handler;
-	sa_sigint.sa_flags = SA_RESTART;
+//	sa_sigint.sa_flags = SA_RESTART;
+	sa_sigint.sa_flags = 0;
 	sigaction(SIGINT, &sa_sigint, NULL);
+	rl_catch_signals = 0;
+}
+
+int	readline_interrupt_event_hook()
+{
+	if (g_signal_code == 2)
+		rl_done = 1;
+	return (0);
 }
 
 int	handle_heredoc(t_command *command, t_msh *msh)
@@ -72,9 +81,21 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	if (pid == 0)
 	{
 		set_signals_heredoc();
+		rl_event_hook = readline_interrupt_event_hook;
 		while (1)
 		{
+			if (g_signal_code == 2)
+			{
+				ft_putstr_fd("before rl terminating heredoc\n", 2);
+				break ;
+			}
+
 			current_line = readline("> ");
+			if (g_signal_code == 2)
+			{
+				ft_putstr_fd("after rl terminating heredoc\n", 2);
+				break ;
+			}
 			line_status = manage_heredoc_line(current_line, command,
 					msh, command->heredoc_fd[1]);
 			/*
@@ -84,6 +105,8 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 			if (line_status == 0)
 				break ;
 		}
+		close(command->heredoc_fd[0]);
+		close(command->heredoc_fd[1]);
 		exit(0);
 	}
 	else
