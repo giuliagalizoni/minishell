@@ -4,6 +4,8 @@ void	sigint_reset_prompt(int signal)
 {
 	(void)signal;
 	g_signal_code = signal;
+//	fprintf(stderr, "after sigint in main loop g_signal_code: %d\n", g_signal_code);
+
 	ft_putchar_fd('\n', 2);
 	rl_on_new_line();
 	rl_replace_line("", 0);

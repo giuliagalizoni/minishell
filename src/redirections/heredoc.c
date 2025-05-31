@@ -12,6 +12,7 @@ static int	manage_heredoc_line(char *line, t_command *command,
 {
 	char	*expanded_line;
 
+	/*
 	if (g_signal_code == SIGINT)
 	{
 		msh->exit_status = 130;
@@ -19,6 +20,7 @@ static int	manage_heredoc_line(char *line, t_command *command,
 			free(line);
 		return (-1);
 	}
+	*/
 	if (!line)
 	{
 		ft_perror(command->name, NULL, 1,
@@ -39,9 +41,8 @@ static int	manage_heredoc_line(char *line, t_command *command,
 
 void	super_sigint_handler(int sig)
 {
-//	(void)sig;
 	g_signal_code = sig;
-	exit(123);
+	exit(130);
 }
 
 void	set_signals_heredoc(void)
@@ -56,11 +57,14 @@ void	set_signals_heredoc(void)
 
 int	handle_heredoc(t_command *command, t_msh *msh)
 {
-//	int		pipe_fd[2];
 	char	*current_line;
 	int		line_status;
-	int	pid;
+	int		status;
+	int		pid;
 
+	status = 0;
+	if (pipe(command->heredoc_fd) == -1)
+		error_cleanup(msh);
 	pid = fork();
 
 	if (pid == -1)
@@ -68,36 +72,32 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	if (pid == 0)
 	{
 		set_signals_heredoc();
-		if (pipe(command->heredoc_fd) == -1)
-			error_cleanup(msh);
-	//	command->heredoc_fd = pipe_fd[0];
-		//TODO fork here
-	//	while (g_signal_code != SIGINT)
 		while (1)
 		{
 			current_line = readline("> ");
-			if (g_signal_code == SIGINT)
-			{
-				fprintf(stderr, "YO MAMA RECEIVED AN SIGNITN\n");
-				break ;
-			}
 			line_status = manage_heredoc_line(current_line, command,
 					msh, command->heredoc_fd[1]);
+			/*
 			if (line_status == -1)
-			{
-				close(command->heredoc_fd[1]);
-				return (0);
-			}
+				msh->exit_status = 130;
+			*/
 			if (line_status == 0)
 				break ;
 		}
-		close(command->heredoc_fd[1]);
-		return (1);
+		exit(0);
 	}
 	else
 	{
-		waitpid(pid, NULL, msh->exit_status);
+		waitpid(pid, &status, 0);
+		close(command->heredoc_fd[1]);
+		g_signal_code = -1;
 		set_signals_parent();
+		if (WIFEXITED(status))
+		{
+			msh->exit_status = WEXITSTATUS(status);
+			if (msh->exit_status == 130)
+				return (0);
+		}
 	}
 	return (1);
 }
