@@ -18,7 +18,12 @@ int	cd(t_command *command, t_vars *myenv)
 	//can;t figure out norminette here
 	getcwd(pwd, PATH_MAX);
 	if (command->arguments[1] == NULL)
-		return (ft_perror(command->name, NULL, 1, "Usage: cd <directory>"));
+	{
+		update_var_value(find_var(myenv, "OLDPWD"), (const char *)pwd);
+		if (chdir(find_var(myenv, "HOME")->value) != 0)
+			return (ft_perror(command->name, find_var(myenv, "HOME")->value, 1, NULL));
+		update_var_value(find_var(myenv, "PWD"), find_var(myenv, "HOME")->value);
+	}
 	else if (command->arguments[2])
 		return (ft_perror(command->name, NULL, 1, "too many arguments"));
 	else
