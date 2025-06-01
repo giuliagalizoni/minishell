@@ -38,26 +38,6 @@ void	set_signals_heredoc(void)
 	sig_ignore();
 }
 
-/*
-void	set_signals_parent(void)
-{
-	struct sigaction	sa_int;
-
-	//sig_ignore();
-	ft_bzero(&sa_int, sizeof(sa_int));
-	sa_int.sa_handler = &sigint_reset_prompt;
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa_int, NULL);
-	struct sigaction	sa;
-
-	ft_bzero(&sa, sizeof(sa));
-	sa.sa_handler = SIG_IGN;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-}
-*/
 void	set_signals_parent(void)
 {
 	struct sigaction	sa_int;

@@ -33,4 +33,3 @@ void	sigint_heredoc_handler(int signal)
 {
 	g_signal_code = signal;
 }
-
