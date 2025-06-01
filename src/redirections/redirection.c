@@ -1,5 +1,16 @@
 #include "../includes/minishell.h"
 
+static int	file_redirection_error(t_outfile *outfile)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(outfile->filename, 2);
+	if (is_directory(outfile->filename))
+		ft_putstr_fd(": is a directory\n", 2);
+	else
+		ft_putstr_fd(": No such file or directory\n", 2);
+	return (0);
+}
+
 int	input_redirection(t_command *command)
 {
 	int	i;
@@ -34,15 +45,7 @@ int	output_redirection(t_outfile *outfile)
 		else
 			file = open(outfile->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (file == -1)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(outfile->filename, 2);
-			if (is_directory(outfile->filename))
-				ft_putstr_fd(": is a directory\n", 2);
-			else
-				ft_putstr_fd(": No such file or directory\n", 2);
-			return (0);
-		}
+			return (file_redirection_error(outfile));
 		if (dup2(file, 1) == -1)
 		{
 			ft_putstr_fd("minishell: dup2 failed\n", 2);
