@@ -136,10 +136,10 @@ void		print_banner(void);
 //signals
 void		set_signals_parent(void);
 void		set_signals_child(void);
-void		reset_prompt(int signal);
-void		signal_newline(int signal);
-void		sig_ignore(void);
 void		set_signals_heredoc(void);
+void		sigint_reset_prompt(int signal);
+void		sighandler_child(int signal);
+void		sigint_heredoc_handler(int signal);
 
 //env
 t_vars		*init_envp(char **envp);

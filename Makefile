@@ -16,6 +16,7 @@ MODULES := $(addprefix $(SRCDIR)/,\
 	   main.c\
 	   startup/startup.c\
 	   signals/signals.c\
+	   signals/signal_handlers.c\
 	   parser/parser.c\
 	   parser/lexer.c\
 	   parser/check_syntax.c\
