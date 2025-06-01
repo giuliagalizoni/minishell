@@ -12,13 +12,6 @@ static int	manage_heredoc_line(char *line, t_command *command,
 {
 	char	*expanded_line;
 
-	if (g_signal_code == SIGINT)
-	{
-		msh->exit_status = 130;
-		if (line)
-			free(line);
-		return (-1);
-	}
 	if (!line)
 	{
 		ft_perror(command->name, NULL, 1,
@@ -37,29 +30,42 @@ static int	manage_heredoc_line(char *line, t_command *command,
 	return (1);
 }
 
+static int	heredoc_on_sigint(t_msh *msh, t_command *command)
+{
+	close(command->heredoc_fd[1]);
+	g_signal_code = -1;
+	set_signals_parent();
+	msh->exit_status = 130;
+	rl_event_hook = 0;
+	return (0);
+}
+
 int	handle_heredoc(t_command *command, t_msh *msh)
 {
-//	int		pipe_fd[2];
 	char	*current_line;
 	int		line_status;
+	int		status;
 
+	status = 0;
 	if (pipe(command->heredoc_fd) == -1)
 		error_cleanup(msh);
-//	command->heredoc_fd = pipe_fd[0];
+	set_signals_heredoc();
+	rl_event_hook = readline_interrupt_event_hook;
 	while (1)
 	{
 		current_line = readline("> ");
+		if (g_signal_code == 2)
+			return (heredoc_on_sigint(msh, command));
 		line_status = manage_heredoc_line(current_line, command,
 				msh, command->heredoc_fd[1]);
-		if (line_status == -1)
-		{
-			close(command->heredoc_fd[1]);
-			return (0);
-		}
 		if (line_status == 0)
 			break ;
 	}
 	close(command->heredoc_fd[1]);
+	g_signal_code = -1;
+	set_signals_parent();
+	if (msh->exit_status == 130)
+		return (0);
 	return (1);
 }
 

@@ -1,40 +1,13 @@
 #include "../includes/minishell.h"
 
-void	sigint_reset_prompt(int signal)
+int	readline_interrupt_event_hook(void)
 {
-	(void)signal;
-	g_signal_code = signal;
-	ft_putchar_fd('\n', 2);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	if (g_signal_code == 2)
+		rl_done = 1;
+	return (0);
 }
 
-void	sigint_newline(int signal)
-{
-	g_signal_code = signal;
-	ft_putchar_fd('\n', 2);
-	rl_on_new_line();
-}
-
-void	sigquit_newline(int signal)
-{
-	char	*message;
-	char	*errnum;
-
-	errnum = ft_itoa(signal);
-	if (!errnum)
-		return ;
-	message = ft_strjoin("Quit ", errnum);
-	g_signal_code = signal;
-	ft_putstr_fd(message, 2);
-	ft_putchar_fd('\n', 2);
-	free(message);
-	free(errnum);
-	rl_on_new_line();
-}
-
-void	sig_ignore(void)
+static void	sig_ignore(void)
 {
 	struct sigaction	sa;
 
@@ -51,13 +24,25 @@ void	set_signals_child(void)
 	struct sigaction	sa_sigquit;
 
 	ft_bzero(&sa_sigint, sizeof(sa_sigint));
-	ft_bzero(&sa_sigquit, sizeof(sa_sigquit));
-	sa_sigint.sa_handler = &sigint_newline;
-	sa_sigquit.sa_handler = &sigquit_newline;
+	sa_sigint.sa_handler = &sighandler_child;
 	sa_sigint.sa_flags = SA_RESTART;
-	sa_sigquit.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_sigint, NULL);
+	ft_bzero(&sa_sigquit, sizeof(sa_sigquit));
+	sa_sigquit.sa_handler = &sighandler_child;
+	sa_sigquit.sa_flags = SA_RESTART;
 	sigaction(SIGQUIT, &sa_sigquit, NULL);
+}
+
+void	set_signals_heredoc(void)
+{
+	struct sigaction	sa_sigint;
+
+	ft_bzero(&sa_sigint, sizeof(sa_sigint));
+	sa_sigint.sa_handler = &sigint_heredoc_handler;
+	sa_sigint.sa_flags = 0;
+	sigaction(SIGINT, &sa_sigint, NULL);
+	rl_catch_signals = 0;
+	sig_ignore();
 }
 
 void	set_signals_parent(void)
@@ -70,4 +55,5 @@ void	set_signals_parent(void)
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
+	rl_event_hook = 0;
 }

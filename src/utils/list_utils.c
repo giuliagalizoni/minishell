@@ -80,3 +80,14 @@ void	sort_vars_list(t_vars *head)
 		last_ptr = current;
 	}
 }
+
+t_vars	*find_var(t_vars *var, char *key)
+{
+	while (var)
+	{
+		if (is_equal(var->key, key))
+			return (var);
+		var = var->next;
+	}
+	return (NULL);
+}

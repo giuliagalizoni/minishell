@@ -72,18 +72,19 @@ int			count_commands(t_command *command);
 int			is_directory(const char *path);
 // error_utils
 void		error_cleanup(t_msh *msh);
+void		export_error(char *arg);
 void		exit_process(t_msh *msh, t_command *command, char *arg,
 				char *err_msg);
-void		export_error(char *arg);
-int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 int			invalid_option_error(t_command *cmd, char *arg, int status);
+int			fork_error(t_command *cmd, t_msh *msh, int *pipe_fds);
+
+// ft_perror
+int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 
 // executer
 void		child_process(t_msh *msh, t_command *command,
 				int prev_pipe_read_fd, int *fd);
-int	single_parent_process(t_msh *msh);
-void		parent_process(t_msh *msh, t_command *command,
-				int *fd, int *prev_pipe_read_fd);
+int			single_parent_process(t_msh *msh);
 int			process(t_msh *msh);
 // redirection
 int			input_redirection(t_command *command);
@@ -120,6 +121,7 @@ void		clean_myenv(t_vars *myenv);
 //list_utils
 int			add_outfile(char **tokens, t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
+t_vars		*find_var(t_vars *var, char *key);
 
 //general_utils
 int			is_equal(char *str1, char *str2);
@@ -136,9 +138,12 @@ void		print_banner(void);
 //signals
 void		set_signals_parent(void);
 void		set_signals_child(void);
-void		reset_prompt(int signal);
-void		signal_newline(int signal);
-void		sig_ignore(void);
+void		set_signals_heredoc(void);
+int		readline_interrupt_event_hook(void);
+//signal_handlers
+void		sigint_reset_prompt(int signal);
+void		sighandler_child(int signal);
+void		sigint_heredoc_handler(int signal);
 
 //env
 t_vars		*init_envp(char **envp);

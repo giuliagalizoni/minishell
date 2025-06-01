@@ -33,3 +33,15 @@ int	invalid_option_error(t_command *cmd, char *arg, int status)
 	ft_putstr_fd(": invalid option\n", STDERR_FILENO);
 	return (status);
 }
+
+int	fork_error(t_command *cmd, t_msh *msh, int *pipe_fds)
+{
+	perror("minishell: fork failed");
+	msh->exit_status = EXIT_FAILURE;
+	if (cmd->index < msh->num_cmds - 1 && msh->num_cmds > 1)
+	{
+		close(pipe_fds[0]);
+		close(pipe_fds[1]);
+	}
+	return (-1);
+}

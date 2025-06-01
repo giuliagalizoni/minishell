@@ -55,7 +55,7 @@ static void	parse_and_execute(t_msh *msh, char *line)
 		clear_command_chain(msh->command);
 		msh->command = NULL;
 		add_history(line);
-		return;
+		return ;
 	}
 	msh->num_cmds = count_commands(msh->command);
 	if (!process(msh))
@@ -70,11 +70,21 @@ static void	parse_and_execute(t_msh *msh, char *line)
 	add_history(line);
 }
 
+static void	main_signal_reset(t_msh *msh)
+{
+	if (g_signal_code == SIGINT)
+		msh->exit_status = 130;
+	else if (g_signal_code == SIGQUIT)
+		msh->exit_status = 131;
+	g_signal_code = -1;
+	set_signals_child();
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_msh	msh;
-	int	exit_code;
+	int		exit_code;
 
 	(void)argc;
 	(void)argv;
@@ -83,12 +93,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		set_signals_parent();
 		line = readline("🐚\033[38;5;199mconchinha\033[38;5;99m>\033[0m ");
-		if (g_signal_code == SIGINT)
-			msh.exit_status = 130;
-		else if (g_signal_code == SIGQUIT)
-			msh.exit_status = 131;
-		g_signal_code = -1;
-		set_signals_child();
+		main_signal_reset(&msh);
 		if (!line)
 		{
 			msh.exit = 1;

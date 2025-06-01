@@ -33,15 +33,18 @@ static void	clear_outfile_list(t_outfile *head)
 	}
 }
 
+static void	recursive_command_clear(t_command *command)
+{
+	clear_command_chain(command->pipe_next);
+	command->pipe_next = NULL;
+}
+
 void	clear_command_chain(t_command *command)
 {
 	if (!command)
 		return ;
 	if (command->pipe_next)
-	{
-		clear_command_chain(command->pipe_next);
-		command->pipe_next = NULL;
-	}
+		recursive_command_clear(command);
 	if (command->name)
 		free(command->name);
 	if (command->path)
