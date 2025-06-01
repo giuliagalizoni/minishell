@@ -1,5 +1,6 @@
 #include "../includes/minishell.h"
 
+// TODO move to env utils or something?
 t_vars	*find_var(t_vars *var, char *key)
 {
 	while (var)
@@ -11,14 +12,8 @@ t_vars	*find_var(t_vars *var, char *key)
 	return (NULL);
 }
 
-int	cd(t_command *command, t_vars *myenv)
+static void	cd_home(t_command *command, char *pwd, t_vars *myenv) 
 {
-	char		pwd[PATH_MAX];
-	struct stat	st;
-	//can;t figure out norminette here
-	getcwd(pwd, PATH_MAX);
-	if (command->arguments[1] == NULL)
-	{
 		if (find_var(myenv, "HOME"))
 		{
 			if (find_var(myenv, "OLDPWD"))
@@ -30,7 +25,16 @@ int	cd(t_command *command, t_vars *myenv)
 		}
 		else
 			return (ft_perror(command->name, NULL, 1, "HOME not set"));
-	}
+}
+
+int	cd(t_command *command, t_vars *myenv)
+{
+	char		pwd[PATH_MAX];
+	struct stat	st;
+	//can;t figure out norminette here
+	getcwd(pwd, PATH_MAX);
+	if (command->arguments[1] == NULL)
+		cd_home(command, pwd, myenv);
 	else if (command->arguments[2])
 		return (ft_perror(command->name, NULL, 1, "too many arguments"));
 	else
