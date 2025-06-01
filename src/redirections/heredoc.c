@@ -43,6 +43,7 @@ static int	heredoc_on_sigint(t_msh *msh, t_command *command)
 	g_signal_code = -1;
 	set_signals_parent();
 	msh->exit_status = 130;
+	rl_event_hook = 0;
 	return (0);
 }
 
@@ -70,6 +71,7 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	close(command->heredoc_fd[1]);
 	g_signal_code = -1;
 	set_signals_parent();
+	rl_event_hook = 0;
 	if (msh->exit_status == 130)
 		return (0);
 	return (1);
