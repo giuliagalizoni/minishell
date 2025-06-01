@@ -4,8 +4,6 @@ void	sigint_reset_prompt(int signal)
 {
 	(void)signal;
 	g_signal_code = signal;
-//	fprintf(stderr, "after sigint in main loop g_signal_code: %d\n", g_signal_code);
-
 	ft_putchar_fd('\n', 2);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -17,6 +15,11 @@ void	sigint_newline(int signal)
 	g_signal_code = signal;
 	ft_putchar_fd('\n', 2);
 	rl_on_new_line();
+}
+
+void	sigint_heredoc_handler(int sig)
+{
+	g_signal_code = sig;
 }
 
 void	sigquit_newline(int signal)
@@ -60,6 +63,17 @@ void	set_signals_child(void)
 	sa_sigquit.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_sigint, NULL);
 	sigaction(SIGQUIT, &sa_sigquit, NULL);
+}
+
+void	set_signals_heredoc(void)
+{
+	struct sigaction	sa_sigint;
+
+	ft_bzero(&sa_sigint, sizeof(sa_sigint));
+	sa_sigint.sa_handler = &sigint_heredoc_handler;
+	sa_sigint.sa_flags = 0;
+	sigaction(SIGINT, &sa_sigint, NULL);
+	rl_catch_signals = 0;
 }
 
 void	set_signals_parent(void)

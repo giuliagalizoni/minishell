@@ -39,24 +39,6 @@ static int	manage_heredoc_line(char *line, t_command *command,
 	return (1);
 }
 
-void	super_sigint_handler(int sig)
-{
-	g_signal_code = sig;
-//	exit(130);
-}
-
-void	set_signals_heredoc(void)
-{
-	struct sigaction	sa_sigint;
-
-	ft_bzero(&sa_sigint, sizeof(sa_sigint));
-	sa_sigint.sa_handler = &super_sigint_handler;
-//	sa_sigint.sa_flags = SA_RESTART;
-	sa_sigint.sa_flags = 0;
-	sigaction(SIGINT, &sa_sigint, NULL);
-	rl_catch_signals = 0;
-}
-
 int	readline_interrupt_event_hook()
 {
 	if (g_signal_code == 2)
@@ -69,42 +51,43 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	char	*current_line;
 	int		line_status;
 	int		status;
-	int		pid;
+//	int		pid;
 
 	status = 0;
 	if (pipe(command->heredoc_fd) == -1)
 		error_cleanup(msh);
-	pid = fork();
+//	pid = fork();
 
+	/*
 	if (pid == -1)
 		perror("minishell: fork failed");
 	if (pid == 0)
 	{
-		set_signals_heredoc();
-		rl_event_hook = readline_interrupt_event_hook;
-		while (1)
+	*/
+	set_signals_heredoc();
+	rl_event_hook = readline_interrupt_event_hook;
+	while (1)
+	{
+		if (g_signal_code == 2)
+			break ;
+		current_line = readline("> ");
+		if (g_signal_code == 2)
 		{
-			if (g_signal_code == 2)
-			{
-				ft_putstr_fd("before rl terminating heredoc\n", 2);
-				break ;
-			}
-
-			current_line = readline("> ");
-			if (g_signal_code == 2)
-			{
-				ft_putstr_fd("after rl terminating heredoc\n", 2);
-				break ;
-			}
-			line_status = manage_heredoc_line(current_line, command,
-					msh, command->heredoc_fd[1]);
-			/*
-			if (line_status == -1)
-				msh->exit_status = 130;
-			*/
-			if (line_status == 0)
-				break ;
+			close(command->heredoc_fd[1]);
+			g_signal_code = -1;
+			set_signals_parent();
+			return (0);
 		}
+		line_status = manage_heredoc_line(current_line, command,
+				msh, command->heredoc_fd[1]);
+		/*
+		if (line_status == -1)
+			msh->exit_status = 130;
+		*/
+		if (line_status == 0)
+			break ;
+	}
+		/*
 		close(command->heredoc_fd[0]);
 		close(command->heredoc_fd[1]);
 		exit(0);
@@ -112,16 +95,20 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	else
 	{
 		waitpid(pid, &status, 0);
-		close(command->heredoc_fd[1]);
-		g_signal_code = -1;
-		set_signals_parent();
+	*/
+	close(command->heredoc_fd[1]);
+	g_signal_code = -1;
+	set_signals_parent();
+		/*
 		if (WIFEXITED(status))
 		{
 			msh->exit_status = WEXITSTATUS(status);
 			if (msh->exit_status == 130)
 				return (0);
 		}
-	}
+		*/
+	if (msh->exit_status == 130)
+		return (0); //}
 	return (1);
 }
 
