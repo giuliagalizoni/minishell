@@ -91,4 +91,3 @@ t_vars	*find_var(t_vars *var, char *key)
 	}
 	return (NULL);
 }
-

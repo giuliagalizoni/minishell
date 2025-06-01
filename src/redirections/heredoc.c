@@ -33,7 +33,6 @@ static int	manage_heredoc_line(char *line, t_command *command,
 static int	heredoc_on_sigint(t_msh *msh, t_command *command)
 {
 	close(command->heredoc_fd[1]);
-	close(command->heredoc_fd[0]);
 	g_signal_code = -1;
 	set_signals_parent();
 	msh->exit_status = 130;

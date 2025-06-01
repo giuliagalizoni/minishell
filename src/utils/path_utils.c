@@ -58,4 +58,3 @@ int	is_directory(const char *path)
 		return (0);
 	return (S_ISDIR(statbuf.st_mode));
 }
-
