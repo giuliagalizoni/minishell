@@ -120,6 +120,7 @@ void		clean_myenv(t_vars *myenv);
 //list_utils
 int			add_outfile(char **tokens, t_outfile **outfiles, int *i);
 void		sort_vars_list(t_vars *head);
+t_vars		*find_var(t_vars *var, char *key);
 
 //general_utils
 int			is_equal(char *str1, char *str2);

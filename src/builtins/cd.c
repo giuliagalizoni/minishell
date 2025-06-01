@@ -1,17 +1,5 @@
 #include "../includes/minishell.h"
 
-// TODO move to env utils or something?
-t_vars	*find_var(t_vars *var, char *key)
-{
-	while (var)
-	{
-		if (is_equal(var->key, key))
-			return (var);
-		var = var->next;
-	}
-	return (NULL);
-}
-
 static int	cd_home(t_command *command, char *pwd, t_vars *myenv)
 {
 	if (find_var(myenv, "HOME"))
