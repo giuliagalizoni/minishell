@@ -72,18 +72,19 @@ int			count_commands(t_command *command);
 int			is_directory(const char *path);
 // error_utils
 void		error_cleanup(t_msh *msh);
+void		export_error(char *arg);
 void		exit_process(t_msh *msh, t_command *command, char *arg,
 				char *err_msg);
-void		export_error(char *arg);
-int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 int			invalid_option_error(t_command *cmd, char *arg, int status);
+int			fork_error(t_command *cmd, t_msh *msh, int *pipe_fds);
+
+// ft_perror
+int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 
 // executer
 void		child_process(t_msh *msh, t_command *command,
 				int prev_pipe_read_fd, int *fd);
 int	single_parent_process(t_msh *msh);
-void		parent_process(t_msh *msh, t_command *command,
-				int *fd, int *prev_pipe_read_fd);
 int			process(t_msh *msh);
 // redirection
 int			input_redirection(t_command *command);

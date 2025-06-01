@@ -50,16 +50,7 @@ static pid_t	execute_piped_command(t_msh *msh, t_command *cmd,
 	pid = fork();
 	cmd->pid = pid;
 	if (pid == -1)
-	{
-		perror("minishell: fork failed");
-		msh->exit_status = EXIT_FAILURE;
-		if (cmd->index < msh->num_cmds - 1 && msh->num_cmds > 1)
-		{
-			close(pipe_fds[0]);
-			close(pipe_fds[1]);
-		}
-		return (-1);
-	}
+		return (fork_error(cmd, msh, pipe_fds));
 	if (pid == 0)
 		child_process(msh, cmd, *prev_pipe_fd_ptr, pipe_fds);
 	if (*prev_pipe_fd_ptr != STDIN_FILENO)
@@ -112,17 +103,4 @@ int	process(t_msh *msh)
 		close(prev_pipe_read_fd);
 	wait_for_children(msh, msh->command);
 	return (0);
-}
-
-// this function is not being used?
-void	parent_process(t_msh *msh, t_command *command,
-	int *fd, int *prev_pipe_read_fd)
-{
-	if (*prev_pipe_read_fd != STDIN_FILENO)
-		close(*prev_pipe_read_fd);
-	if (command->index < msh->num_cmds - 1)
-	{
-		close(fd[1]);
-		*prev_pipe_read_fd = fd[0];
-	}
 }
