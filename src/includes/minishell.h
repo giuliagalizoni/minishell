@@ -139,6 +139,8 @@ void		print_banner(void);
 void		set_signals_parent(void);
 void		set_signals_child(void);
 void		set_signals_heredoc(void);
+int		readline_interrupt_event_hook(void);
+//signal_handlers
 void		sigint_reset_prompt(int signal);
 void		sighandler_child(int signal);
 void		sigint_heredoc_handler(int signal);

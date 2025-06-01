@@ -1,5 +1,12 @@
 #include "../includes/minishell.h"
 
+int	readline_interrupt_event_hook(void)
+{
+	if (g_signal_code == 2)
+		rl_done = 1;
+	return (0);
+}
+
 static void	sig_ignore(void)
 {
 	struct sigaction	sa;
@@ -48,4 +55,5 @@ void	set_signals_parent(void)
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
+	rl_event_hook = 0;
 }

@@ -30,16 +30,10 @@ static int	manage_heredoc_line(char *line, t_command *command,
 	return (1);
 }
 
-int	readline_interrupt_event_hook(void)
-{
-	if (g_signal_code == 2)
-		rl_done = 1;
-	return (0);
-}
-
 static int	heredoc_on_sigint(t_msh *msh, t_command *command)
 {
 	close(command->heredoc_fd[1]);
+	close(command->heredoc_fd[0]);
 	g_signal_code = -1;
 	set_signals_parent();
 	msh->exit_status = 130;
@@ -71,7 +65,6 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	close(command->heredoc_fd[1]);
 	g_signal_code = -1;
 	set_signals_parent();
-	rl_event_hook = 0;
 	if (msh->exit_status == 130)
 		return (0);
 	return (1);
