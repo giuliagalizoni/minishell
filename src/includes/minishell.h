@@ -84,7 +84,7 @@ int			ft_perror(char *cmd_name, char *arg, int status, char *err_msg);
 // executer
 void		child_process(t_msh *msh, t_command *command,
 				int prev_pipe_read_fd, int *fd);
-int	single_parent_process(t_msh *msh);
+int			single_parent_process(t_msh *msh);
 int			process(t_msh *msh);
 // redirection
 int			input_redirection(t_command *command);
