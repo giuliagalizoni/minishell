@@ -33,7 +33,9 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 	char	*expanded;
 	char	*processed;
 	int		success;
+	int		was_expanded;
 
+	was_expanded = 0;
 	if (is_equal(token, "$"))
 		return (safe_arr_push(new_tokens, token));
 	if (ft_strchr(token, '$'))
@@ -41,6 +43,7 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 		expanded = expand_inline(token, msh);
 		if (!expanded)
 			return (perror("variable expansion failed"), 0);
+		was_expanded = 1;
 	}
 	else
 		expanded = token;
@@ -49,7 +52,7 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 		return (perror("remove_quotes failed"), 0);
 	success = safe_arr_push(new_tokens, processed);
 	free(processed);
-	if (!is_equal(expanded, token))
+	if (was_expanded)
 		free(expanded);
 	return (success);
 }
