@@ -56,4 +56,6 @@ void	set_signals_parent(void)
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
 	rl_event_hook = 0;
+	rl_catch_signals = 1;
+	sig_ignore();
 }

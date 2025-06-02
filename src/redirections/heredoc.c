@@ -64,8 +64,6 @@ int	handle_heredoc(t_command *command, t_msh *msh)
 	close(command->heredoc_fd[1]);
 	g_signal_code = -1;
 	set_signals_parent();
-	if (msh->exit_status == 130)
-		return (0);
 	return (1);
 }
 

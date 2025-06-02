@@ -44,14 +44,18 @@ int	contains_only_quotes(const char *str)
 
 static void	parse_and_execute(t_msh *msh, char *line)
 {
+	int	parser_status;
+
 	if (contains_only_quotes(line))
 	{
 		ft_putstr_fd("conchinha: : command not found\n", 2);
 		msh->exit_status = 127;
 		return ;
 	}
-	if (parser(line, msh) != 0)
+	parser_status = parser(line, msh);
+	if (parser_status != 0)
 	{
+		msh->exit_status = parser_status;
 		clear_command_chain(msh->command);
 		msh->command = NULL;
 		add_history(line);
@@ -107,21 +111,3 @@ int	main(int argc, char **argv, char **envp)
 	cleanup(&msh);
 	exit(exit_code);
 }
-/*
-int	main(int argc, char **argv)
-{
-	int	x;
-	if (argc > 1)
-	{
-		printf("argv length: %d\n", array_length((void **)argv));
-		if (!is_num_string(argv[1]))
-		{
-			printf("error\n");
-			return (0);
-		}
-		x = ft_atoi(argv[1]) % 256;
-		printf("%d\n", x);
-	}
-	return (0);
-}
-*/
