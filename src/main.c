@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 13:03:00 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/06/02 13:03:01 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/06/02 13:57:34 by marcampo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,7 @@ static void	parse_and_execute(t_msh *msh, char *line)
 		return ;
 	}
 	msh->num_cmds = count_commands(msh->command);
-	if (!process(msh))
-	{
-		clear_command_chain(msh->command);
-		msh->command = NULL;
-		add_history(line);
-		return ;
-	}
+	process(msh);
 	clear_command_chain(msh->command);
 	msh->command = NULL;
 	add_history(line);
