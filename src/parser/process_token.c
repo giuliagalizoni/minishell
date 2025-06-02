@@ -49,6 +49,8 @@ static int	handle_mixed_token(char *token, char ***new_tokens, t_msh *msh)
 		return (perror("remove_quotes failed"), 0);
 	success = safe_arr_push(new_tokens, processed);
 	free(processed);
+	if (!is_equal(expanded, token))
+		free(expanded);
 	return (success);
 }
 
