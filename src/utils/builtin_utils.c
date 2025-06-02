@@ -6,11 +6,11 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 13:01:22 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/06/02 13:01:42 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/06/02 13:05:57 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-s#include "../includes/minishell.h"
+#include "../includes/minishell.h"
 
 int	is_builtin(char *name)
 {
