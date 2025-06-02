@@ -1,7 +1,7 @@
 NAME	:= minishell
-CC := clang
+CC := cc
 CFLAGS	:= -Wall -Wextra -Werror
-DEBUG ?= 1
+DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 CFLAGS += -g
 $(info Building with debug flags enabled: CFLAGS=$(CFLAGS))
@@ -90,5 +90,4 @@ re: fclean all
 
 valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=./suppressions/readline.supp ./minishell
-lextest:
-	cc $(CFLAGS) $(LEXERTESTS) $(LDFLAGS) -o lexertest
+
